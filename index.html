@@ -1,0 +1,1007 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agentic Delivery Framework</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geologica:wght@500;600;700&family=Onest:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: чертёж цеха. Вкладки идут по логике фреймворка: модель → конвейер → спека → обвязка → Andon → контроль → метрики → ритм → внедрение → приложения.
+   Каждое понятие определено в одном месте, остальные разделы на него ссылаются. У каждого правила пометка: источник / гипотеза / наше. */
+:root{
+  --bg:#f2f4f9; --grid:#e3e8f2; --surface:#ffffff; --sunk:#eaeef6;
+  --ink:#121b33; --muted:#566280; --line:#d3dae8;
+  --accent:#1d4ed0; --accent-soft:#e3eafc; --on-accent:#ffffff;
+  --ok:#17723f; --ok-soft:#dcf2e4; --warn:#955600; --warn-soft:#fcecc9; --crit:#b92d1c; --crit-soft:#fce1dc;
+  --our:#6b3fb5; --our-soft:#eee6fb;
+  --hatch:rgba(29,78,208,.09);
+  --display:"Geologica","Onest",system-ui,sans-serif;
+  --body:"Onest",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0b1224; --grid:#121b33; --surface:#131c36; --sunk:#0f1730;
+  --ink:#e7ecf9; --muted:#95a2c2; --line:#27355a;
+  --accent:#86a8ff; --accent-soft:#1a2a57; --on-accent:#0b1224;
+  --ok:#62d296; --ok-soft:#11331f; --warn:#f3bb55; --warn-soft:#3a2c0b; --crit:#ff8773; --crit-soft:#42170f;
+  --our:#c6a6ff; --our-soft:#2b1d4a;
+  --hatch:rgba(134,168,255,.10); color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0b1224; --grid:#121b33; --surface:#131c36; --sunk:#0f1730;
+  --ink:#e7ecf9; --muted:#95a2c2; --line:#27355a;
+  --accent:#86a8ff; --accent-soft:#1a2a57; --on-accent:#0b1224;
+  --ok:#62d296; --ok-soft:#11331f; --warn:#f3bb55; --warn-soft:#3a2c0b; --crit:#ff8773; --crit-soft:#42170f;
+  --our:#c6a6ff; --our-soft:#2b1d4a;
+  --hatch:rgba(134,168,255,.10); color-scheme:dark }
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:400 15px/1.55 var(--body);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:32px 32px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.2}
+h2{font-size:26px;font-weight:600}
+h3{font-size:17px;font-weight:600}
+p{margin:0}
+.mono{font-family:var(--mono);font-size:.9em}
+.muted{color:var(--muted)}
+.eyebrow{font:600 11px/1.2 var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--surface);border-bottom:1px solid var(--line)}
+.top-in{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;gap:18px;align-items:center;min-width:0}
+.brand{font:700 15px/1 var(--display);white-space:nowrap;padding-block:16px}
+.brand small{display:block;font:400 11px/1 var(--mono);color:var(--muted);margin-top:5px}
+nav{display:flex;gap:0;overflow-x:auto;min-width:0;flex:1;scrollbar-width:none}
+nav a{padding:18px 9px;white-space:nowrap;text-decoration:none;color:var(--muted);font-weight:500;border-bottom:2px solid transparent}
+nav a:hover{color:var(--ink)}
+nav a[aria-current="page"]{color:var(--accent);border-bottom-color:var(--accent)}
+
+main{max-width:1180px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.view{display:flex;flex-direction:column;gap:36px}
+.lead{max-width:72ch;color:var(--muted);font-size:16px;margin-top:8px}
+section.blk{display:flex;flex-direction:column;gap:14px;min-width:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px;min-width:0}
+.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.cols3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.stack{display:flex;flex-direction:column;gap:12px;min-width:0}
+.row{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+ul.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+dl.kv{margin:0;display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px 16px}
+dl.kv dt{color:var(--muted);font-size:13px}
+dl.kv dd{margin:0}
+.formula{font-family:var(--mono);font-size:13px;background:var(--sunk);border-left:3px solid var(--accent);padding:10px 12px;border-radius:0 4px 4px 0;white-space:pre-line}
+blockquote{margin:0;padding:12px 14px;background:var(--accent-soft);border-radius:4px;font-size:14px}
+.note{padding:12px 14px;border:1px dashed var(--line);border-radius:4px;font-size:14px;color:var(--muted)}
+.lk{font-weight:500;text-decoration:none;border-bottom:1px dashed var(--accent)}
+.lk::after{content:" →"}
+.src{font-size:13px;color:var(--muted)}
+.src a{color:var(--muted)}
+.links{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:14px}
+
+.pill{display:inline-block;font:600 11px/1 var(--mono);letter-spacing:.04em;padding:5px 8px;border-radius:99px;white-space:nowrap;vertical-align:2px}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.crit{background:var(--crit-soft);color:var(--crit)}
+.pill.info{background:var(--accent-soft);color:var(--accent)} .pill.our{background:var(--our-soft);color:var(--our)}
+.evlegend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;color:var(--muted);align-items:center}
+
+/* tiles */
+.strip{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.strip.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.tile{background:var(--surface);padding:14px;display:flex;flex-direction:column;gap:6px;text-decoration:none;color:inherit;min-width:0}
+a.tile:hover{background:var(--sunk)}
+.tile b{font:600 24px/1.1 var(--display);font-variant-numeric:tabular-nums}
+.tile .norm{font-size:13px;color:var(--muted)}
+.tile .pill{align-self:flex-start}
+
+/* flow strip on the model tab */
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:stretch}
+.flow a{flex:1 1 130px;text-decoration:none;color:inherit;background:var(--surface);border:1.5px solid var(--line);border-radius:6px;padding:10px 12px;font:600 13px/1.25 var(--display);min-width:0}
+.flow a small{display:block;font:400 11px/1.2 var(--mono);color:var(--muted);margin-bottom:5px}
+.flow a.machine{border-style:dashed;background-image:repeating-linear-gradient(135deg,var(--hatch) 0 6px,transparent 6px 12px)}
+.flow a.alarm{border-color:var(--crit);flex-basis:100%}
+.flow a:hover{border-color:var(--accent)}
+
+/* pipeline */
+.pipe{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.st{appearance:none;font:inherit;color:inherit;text-align:left;cursor:pointer;background:var(--surface);border:1.5px solid var(--line);border-radius:6px;padding:12px;display:flex;flex-direction:column;gap:8px;min-width:0;position:relative}
+.st .no{font:600 12px/1 var(--mono);color:var(--muted)}
+.st .nm{font:600 14px/1.25 var(--display)}
+.st .who{font:400 11px/1.25 var(--mono);color:var(--muted)}
+.st.machine{background-image:repeating-linear-gradient(135deg,var(--hatch) 0 6px,transparent 6px 12px);border-style:dashed}
+.st.alarm{border-color:var(--crit);grid-column:1/-1;flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:6px 14px} .st.alarm .no{color:var(--crit)}
+.st:hover{border-color:var(--accent)}
+.st[aria-pressed="true"]{border-color:var(--accent);border-style:solid;box-shadow:0 0 0 2px var(--accent)}
+.st.live::after{content:"";position:absolute;top:10px;right:10px;width:10px;height:10px;border-radius:50%;background:var(--warn);box-shadow:0 0 0 4px var(--warn-soft)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:22px;height:12px;border:1.5px solid var(--line);border-radius:3px;vertical-align:-1px;margin-right:6px;background:var(--surface)}
+.legend i.m{border-style:dashed;background-image:repeating-linear-gradient(135deg,var(--hatch) 0 4px,transparent 4px 8px)}
+.legend i.a{border-color:var(--crit)} .legend i.l{border:0;border-radius:50%;width:10px;height:10px;background:var(--warn)}
+
+/* segmented */
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button,.btn{appearance:none;font:500 14px/1.2 var(--body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:10px 14px;cursor:pointer;text-align:left}
+.seg button small{display:block;font:400 11px/1.2 var(--mono);color:var(--muted);margin-top:3px}
+.seg button:hover,.btn:hover{border-color:var(--accent)}
+.seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.seg button[aria-pressed="true"] small{color:var(--on-accent);opacity:.8}
+.btn:disabled{opacity:.45;cursor:default;border-color:var(--line)}
+
+/* scenario */
+.meter{position:relative;height:10px;background:var(--sunk);border-radius:99px;margin:22px 0 6px}
+.meter span{display:block;height:100%;border-radius:99px;background:var(--ok);transition:width .25s}
+.meter span.warn{background:var(--warn)} .meter span.crit{background:var(--crit)}
+.meter em{position:absolute;top:-18px;transform:translateX(-50%);font:400 10px/1 var(--mono);color:var(--muted);font-style:normal;white-space:nowrap}
+.meter em::after{content:"";position:absolute;left:50%;top:14px;width:1px;height:18px;background:var(--muted)}
+.log{font-family:var(--mono);font-size:13px;background:var(--sunk);border-radius:4px;padding:12px;display:flex;flex-direction:column;gap:4px;overflow-x:auto}
+.player-nav{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.player-nav .cnt{font:400 12px/1 var(--mono);color:var(--muted)}
+
+/* tables */
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:680px;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+th{font:600 11px/1.3 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--sunk)}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:600}
+
+.matrix{display:grid;grid-template-columns:120px repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.matrix>div{background:var(--surface);padding:12px;font-size:14px;min-width:0}
+.matrix .h{background:var(--sunk);font:600 11px/1.3 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+
+/* phases */
+.phases{display:flex;flex-direction:column;gap:10px}
+.ph{display:grid;grid-template-columns:64px minmax(0,1fr);gap:16px;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px;min-width:0}
+.ph .pn{font:700 26px/1 var(--display);color:var(--accent)}
+.gate{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.gate>div{background:var(--sunk);border-radius:4px;padding:10px 12px;font-size:14px}
+.gate b,.segnote b{display:block;font:600 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.segnote{background:var(--accent-soft);border-radius:4px;padding:10px 12px;font-size:14px}
+.segnote b{color:var(--accent)}
+
+.evgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.evc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.evc .big{font:600 24px/1.1 var(--display);font-variant-numeric:tabular-nums}
+
+/* forms */
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.fields label{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--muted)}
+input[type=number]{font:600 15px/1 var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:9px 10px;width:100%}
+.verdict{border-radius:4px;padding:12px 14px;font-size:14px}
+.verdict.ok{background:var(--ok-soft);color:var(--ok)} .verdict.warn{background:var(--warn-soft);color:var(--warn)} .verdict.crit{background:var(--crit-soft);color:var(--crit)} .verdict.info{background:var(--accent-soft);color:var(--accent)}
+.verdict b{display:block;margin-bottom:4px}
+.verdict ul{margin:4px 0 0;padding-left:18px}
+.check{display:flex;gap:10px;align-items:flex-start}
+.check input{margin-top:4px;accent-color:var(--accent);width:16px;height:16px;flex:none}
+.num{font:600 12px/1 var(--mono);color:var(--accent);background:var(--accent-soft);border-radius:3px;padding:4px 6px;margin-right:8px}
+pre.code{margin:0;font:400 13px/1.55 var(--mono);background:var(--sunk);border:1px solid var(--line);border-radius:6px;padding:14px 16px;overflow-x:auto;white-space:pre}
+.flash{animation:flash 1.4s ease-out}
+@keyframes flash{0%{box-shadow:0 0 0 3px var(--accent)}100%{box-shadow:0 0 0 3px transparent}}
+@media (prefers-reduced-motion:reduce){.flash{animation:none}.meter span{transition:none}}
+
+@media (max-width:980px){ .strip{grid-template-columns:repeat(3,minmax(0,1fr))} .pipe{grid-template-columns:repeat(3,minmax(0,1fr))} .cols3,.evgrid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:640px){ .cols,.cols3,.evgrid,.gate,.strip.three{grid-template-columns:minmax(0,1fr)} .strip,.pipe{grid-template-columns:repeat(2,minmax(0,1fr))} dl.kv{grid-template-columns:minmax(0,1fr);gap:2px 0} dl.kv dd{margin-bottom:10px} h2{font-size:22px} .brand small{display:none} .top-in{gap:10px} .ph{grid-template-columns:minmax(0,1fr);gap:8px} .matrix{grid-template-columns:84px repeat(2,minmax(0,1fr))} }
+</style>
+
+<header class="top"><div class="top-in">
+  <div class="brand">Agentic Delivery<small>Framework</small></div>
+  <nav id="nav" aria-label="Разделы">
+    <a href="#model">Модель</a><a href="#conveyor">Конвейер</a><a href="#spec">Спека</a><a href="#harness">Обвязка</a><a href="#andon">Andon</a><a href="#control">Контроль</a><a href="#metrics">Метрики</a><a href="#rhythm">Ритм</a><a href="#adoption">Внедрение</a><a href="#startup">Стартап-кит</a><a href="#evidence">Основания</a>
+  </nav>
+</div></header>
+
+<main>
+<div class="view" id="v-model"></div>
+<div class="view" id="v-conveyor" hidden></div>
+<div class="view" id="v-spec" hidden></div>
+<div class="view" id="v-harness" hidden></div>
+<div class="view" id="v-andon" hidden></div>
+<div class="view" id="v-control" hidden></div>
+<div class="view" id="v-metrics" hidden></div>
+<div class="view" id="v-rhythm" hidden></div>
+<div class="view" id="v-adoption" hidden></div>
+<div class="view" id="v-startup" hidden></div>
+<div class="view" id="v-evidence" hidden></div>
+</main>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const L=(t,x)=>`<a class="lk" href="#${t.split(':')[0]}" data-t="${t}">${x}</a>`;
+const X=(u,x)=>`<a href="${u}" target="_blank" rel="noopener">${x}</a>`;
+const pill=(s,x)=>`<span class="pill ${s}">${x}</span>`;
+const EV={src:['ok','ЕСТЬ ИСТОЧНИК'],hyp:['warn','ГИПОТЕЗА'],our:['our','НАШЕ ПРЕДЛОЖЕНИЕ']};
+const ev=k=>pill(EV[k][0],EV[k][1]);
+const ul=a=>`<ul class="plain">${a.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+const tbl=(head,rows)=>`<div class="scroll"><table><thead><tr>${head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+const pick={};
+const num=id=>parseFloat($('#'+id).value)||0;
+const EVLEG=`<div class="evlegend"><span>${ev('src')} подтверждено внешними данными</span><span>${ev('hyp')} стартовое значение, калибруется на своих данных</span><span>${ev('our')} наш вывод, в источниках напрямую нет</span></div>`;
+const RC=c=>pill(c==='R2'?'crit':c==='R1'?'warn':'ok',c);
+
+/* ================= ПОСТЫ (единый источник для Модели и Конвейера) ================= */
+const ST=[
+ {k:'spec',n:'Спека готова',en:'Spec Ready',who:'человек',cls:'',owner:'Автор спеки',
+  inp:'Идея или требование от бизнеса.',
+  what:'Автор спеки и владелец capability собирают пакет спецификации: намерение, критерии приёмки, контракт, тесты-критерии, класс риска и границы задачи.',
+  out:'Definition of Ready: каждый критерий привязан к исполняемому тесту, который пока падает. Класс риска присвоен. Для R2 спеку утвердил второй человек.',
+  fail:'Задача остаётся у людей. Агент её не получает.',
+  ev:'src',evn:'Структура пакета взята из GitHub Spec Kit и AWS Kiro. Требование, чтобы тесты-критерии утверждал человек, наше: Бёкелер предупреждает, что тесты, написанные тем же агентом, могут проверять не то.',
+  links:[L('spec','Как собрать спеку'),L('model:risk','Классы риска')]},
+ {k:'run',n:'Запуск агента',en:'Sandboxed Run',who:'агент',cls:'machine',owner:'Владелец capability',
+  inp:'Пакет спецификации, прошедший Definition of Ready.',
+  what:'Агент работает в изолированной песочнице под своей учётной записью: читает код, пишет изменение, сам запускает тесты и открывает PR в своей ветке.',
+  out:'PR открыт, тесты-критерии зелёные в песочнице.',
+  fail:'Срабатывает триггер Andon: цикл, выход за границы задачи, правка тестов-критериев, превышение порога шагов, времени или бюджета.',
+  ev:'src',evn:'Так устроены фоновые агенты Stripe и Ramp и облачные режимы основных кодинг-агентов: удалённая песочница, которая возвращает PR.',
+  links:[L('harness','Обвязка'),L('andon:triggers','Триггеры Andon'),L('control:security','Контроли безопасности')]},
+ {k:'gates',n:'Гейты',en:'Automated Gates',who:'автоматика',cls:'machine',owner:'Владелец обвязки',
+  inp:'PR агента.',
+  what:'Детерминированные проверки: типы, линтеры, сборка, юнит- и интеграционные тесты, структурные тесты, анализ уязвимостей, зависимости, конфигурация доступа к данным.',
+  out:'Все проверки зелёные. Результат бинарный, людей здесь нет.',
+  fail:'Агент получает текст ошибки и исправляет. На один запуск даётся 2 раунда CI, включая исправления после ИИ-ревью. Не уложился — Andon.',
+  ev:'src',evn:'Лимит в 2 раунда CI — правило Stripe Minions: после второго неудачного раунда ветка уходит инженеру. Мы читали его во вторичных источниках, формулировка в них совпадает.',
+  links:[L('harness:matrix','Guides и sensors'),L('metrics:firstpass','First-Time Pass Rate')]},
+ {k:'aireview',n:'ИИ-ревью',en:'AI Review',who:'автоматика',cls:'machine',owner:'Владелец обвязки',
+  inp:'PR с зелёными гейтами.',
+  what:'Один или несколько ИИ-ревьюеров сверяют изменение со спекой и ищут то, что не ловят тесты: уязвимости, архитектурный дрейф, незапрошенные изменения, признаки подгонки под тесты.',
+  out:'Блокирующих замечаний нет.',
+  fail:'Агент исправляет замечания в рамках того же лимита раундов CI. Не уложился — Andon.',
+  ev:'src',evn:'ИИ-ревью на каждом PR до человека — самая распространённая схема 2026 года по обзору Pragmatic Engineer; GitHub встроил её в цикл своего агента. Это дополнение к гейтам, а не замена: проверки с помощью LLM труднее аудировать.',
+  links:[L('harness:matrix','Инференциальные сенсоры'),L('model:risk','Для R0 человек смотрит выборочно')]},
+ {k:'review',n:'Суждение человека',en:'Human Judgment',who:'человек',cls:'',owner:'Ревьюер',
+  inp:'PR, прошедший гейты и ИИ-ревью.',
+  what:'Ревьюер проверяет замысел: решает ли изменение задачу бизнеса, вписывается ли в архитектуру, безопасно ли оно. Читает спеку, тесты и дифф.',
+  out:'Одобрение по правилам класса риска: R0 — выборочный аудит, R1 — один человек, R2 — двое. Тот, кто поставил задачу агенту, её PR не одобряет.',
+  fail:'Один возврат агенту с замечаниями. Повторный отказ — Andon: человек доделывает сам, или спека возвращается на пост 1.',
+  limit:'У каждого ревьюера есть лимит очереди. Очередь переполнена — новые запуски агентов останавливаются.',
+  ev:'hyp',evn:'То, что ревью стало ограничением, показывают Faros, LinearB и Scrum.org. Запрет одобрять свой PR — правило GitHub Copilot agent. Числа (лимит очереди, один возврат) стартовые.',
+  links:[L('model:risk','Классы риска'),L('rhythm:wip','Калькулятор очереди'),L('metrics:review','Human Review Time')]},
+ {k:'verified',n:'Влито и проверено',en:'Merged → Verified',who:'прод',cls:'',owner:'Владелец capability',
+  inp:'Одобренный PR.',
+  what:'Изменение вливается и выкатывается. Деплой запускает человек или пайплайн после одобрения человека: у агента прав на прод нет. В аудит-трейл записывается происхождение. Начинается окно наблюдения.',
+  out:'Статус Verified: за окно наблюдения не было отката и инцидента.',
+  fail:'Откат или инцидент снимает статус. Разбор на trace retro, задача возвращается на пост 1.',
+  ev:'our',evn:'Исследования на открытых данных показывают, что успешный мерж не гарантирует качества после него. Окно в 14 дней стартовое: на таком окне GitClear меряет переписывание кода.',
+  links:[L('metrics:verified','Verified Capabilities'),L('metrics:postmerge','Качество после мержа'),L('control:provenance','Аудит-трейл')]},
+ {k:'andon',n:'Andon',en:'буфер остановок',who:'диспетчер и лид',cls:'alarm',owner:'Диспетчер потока',
+  inp:'Задача, остановленная на постах 2–5.',
+  what:'Процесс агента прибит, ветка закрыта для ИИ, тимлиду ушёл алерт с трассой. Диспетчер назначает инженера на разбор.',
+  out:'Одно из трёх решений: человек доделывает руками; спека возвращается на пост 1, чтобы её переписали или разрезали мельче; перезапуск после правки обвязки.',
+  fail:'Разбор не уложился в срок — задача выносится на дейлик.',
+  ev:'hyp',evn:'Механизм соответствует прерывателям цепи из OWASP ASI08. Срок разбора в 1 час стартовый.',
+  links:[L('andon','Триггеры и журнал'),L('rhythm:ceremonies','Trace retro')]}
+];
+
+/* ================= МОДЕЛЬ ================= */
+const FACTS=[
+ ['+98% / +91%','Команды с высоким внедрением ИИ вливают вдвое больше PR, а время ревью растёт на 91%. Поставка компании в целом не ускоряется.','Faros AI, 2025 · вендор аналитики'],
+ ['−19%','Опытные разработчики в своих репозиториях работали с ИИ медленнее и при этом считали, что ускорились на 20%.','METR, 2025 · независимое'],
+ ['Усилитель','ИИ усиливает то, что уже есть: растёт пропускная способность и вместе с ней нестабильность поставки.','DORA 2025 · исследование Google']
+];
+const PRINC=[
+ ['Ограничение — проверка, а не генерация','Темп и объём работы в процессе задаёт ёмкость человеческого ревью. Скорость агентов её не меняет.','conveyor:review','Пост 5','src'],
+ ['Сначала критерий, потом код','Задача уходит агенту только с исполняемыми критериями приёмки, которые утвердил человек.','spec','Спека','src'],
+ ['Обязательное живёт в проверках, а не в тексте','Инструкцию агент может пропустить. Hook, линтер и тест — нет.','harness:rules','Обвязка','src'],
+ ['Риск определяет меру контроля','Чем больше радиус поражения и чем труднее откат, тем больше людей и меньше автономии.','model:risk','Классы риска','src'],
+ ['Агент не одобряет и не выкатывает свою работу','У каждого изменения есть человек-владелец. Поставил задачу — не одобряешь.','control:security','Контроль','src'],
+ ['Остановка — это данные','Каждая остановка агента и каждый отклонённый PR меняет спеку, guide или sensor.','andon','Andon','hyp'],
+ ['Считаем результат, а не активность','Проверенные возможности, их стоимость и качество после мержа. Не строки и не процент кода от ИИ.','metrics','Метрики','src']
+];
+const CHG=[
+ ['Требования','User story и оценка в story points','Спека с исполняемыми критериями приёмки и классом риска','spec'],
+ ['Проектирование','Архитектурный документ для людей','Обвязка: правила, контракты и структурные тесты, которые проверяет машина','harness'],
+ ['Разработка','Инженер пишет код','Агент пишет код в песочнице, инженер владеет задачей','conveyor:run'],
+ ['Тестирование','После кода, часто тем же автором','Тесты-критерии до кода; гейты и ИИ-ревью на каждом PR','conveyor:gates'],
+ ['Ревью','Построчное чтение каждого PR','Суждение о замысле; глубина зависит от класса риска','conveyor:review'],
+ ['Релиз','По расписанию спринта','Непрерывный поток, деплой по одобрению человека, окно наблюдения','conveyor:verified'],
+ ['Управление','Velocity и burndown','Verified Capabilities, очередь ревью, стоимость на capability','metrics']
+];
+const RISK=[
+ ['R0','Откат дешёвый, пользователя не касается: документация, тесты, внутренние инструменты, механические рефакторинги','Короткая задача с критерием','ИИ-ревью и выборочный аудит человеком','Ведёт агент'],
+ ['R1','Обычная продуктовая логика и интерфейс','Полный пакет спецификации','Один человек после ИИ-ревью','Ведёт агент, человек судит результат'],
+ ['R2','Деньги, идентичность и доступы, персональные данные, регуляторные правила, схемы данных и миграции, секреты, инфраструктура','Полный пакет, спеку утверждают двое до запуска','Двое, ни один не ставил задачу. Деплой запускает человек','Ведёт человек, агент исполняет под спеку']
+];
+const ROLES=[
+ ['Автор спеки','Намерение, критерии приёмки, класс риска','Продакт или аналитик вместе с лидом'],
+ ['Владелец capability','Ставит задачу агенту и отвечает за изменение до статуса Verified. Свой PR не одобряет','Инженер'],
+ ['Ревьюер','Суждение о замысле, архитектуре и безопасности','Senior-инженер; для R2 двое'],
+ ['Владелец обвязки','AGENTS.md, гейты, песочницы, бюджеты, пороги Andon','Платформенная команда; в стартапе тимлид'],
+ ['Диспетчер потока','Следит за лимитом очереди ревью, сроком разбора Andon и запасом спек. Останавливает запуск агентов, когда очередь переполнена, и снимает задачу с агента, когда разработчик крутит её промптами по кругу','Delivery-менеджер или ПМ'],
+ ['Владелец риска','Классы риска, аудит-трейл, политика инструментов','Комплаенс и безопасность; обязателен в регулируемых компаниях']
+];
+const GLOSS=[
+ ['Capability','Наименьшая единица работы с бинарным результатом: один контракт, проверяемые критерии, один проход агента.'],
+ ['Verified Capability','Capability, которая влита и пережила окно наблюдения без отката и инцидента.'],
+ ['Спека','Пакет: намерение, критерии приёмки, контракт, тесты-критерии, класс риска и границы задачи.'],
+ ['Обвязка (harness)','Всё вокруг модели, что направляет агента и проверяет его работу.'],
+ ['Guide','То, что действует до шага агента: правила, контракты, примеры, границы задачи.'],
+ ['Sensor','То, что проверяет результат: тесты, линтеры, ИИ-ревью, человек.'],
+ ['Класс риска','R0, R1 или R2. Определяет, сколько контроля нужно изменению.'],
+ ['Andon','Автоматическая остановка агента и передача задачи человеку.'],
+ ['Трасса','Запись всех шагов агента по задаче: вызовы инструментов, ошибки, расход.']
+];
+function renderModel(){
+ $('#v-model').innerHTML=`
+ <section class="blk"><div><h2>Как команды поставляют софт с ИИ-агентами</h2>
+  <p class="lead">Агенты сделали написание кода дешёвым. Дорогими остались две вещи: понять, что именно строить, и убедиться, что построено правильно. Фреймворк управляет этим ограничением. Человек работает на входе, где задаётся намерение, и на выходе, где выносится суждение. Между ними работают агент и автоматика.</p></div>
+  <div class="strip three">${FACTS.map(f=>`<a class="tile" href="#evidence" data-t="evidence:facts"><b>${f[0]}</b><span>${f[1]}</span><span class="norm">${f[2]}</span></a>`).join('')}</div>
+  ${EVLEG}
+ </section>
+ <section class="blk" id="principles"><h3>Семь принципов</h3>
+  <div class="cols">${PRINC.map((p,i)=>`<div class="card stack"><div class="row"><span class="num">${i+1}</span>${ev(p[4])}</div><h3>${p[0]}</h3><p>${p[1]}</p><div class="links">${L(p[2],p[3])}</div></div>`).join('')}</div></section>
+ <section class="blk"><div><h3>Поток одним взглядом</h3><p class="muted">Шесть постов и буфер остановок. Каждый пост либо пропускает задачу дальше, либо возвращает её назад по своему правилу.</p></div>
+  <div class="flow">${ST.map((s,i)=>`<a class="${s.cls}" href="#conveyor" data-t="conveyor:${s.k}"><small>${i<6?'ПОСТ '+(i+1)+' · ':''}${s.who}</small>${s.n}${i===6?' — сюда падают остановленные задачи с постов 2–5, отсюда они уходят человеку или обратно на пост 1':''}</a>`).join('')}</div></section>
+ <section class="blk" id="changes"><h3>Что меняется по сравнению с обычным SDLC</h3>
+  ${tbl(['Этап','Было','Стало','Подробнее'],CHG.map(c=>[c[0],c[1],c[2],L(c[3],'Открыть')]))}</section>
+ <section class="blk" id="risk"><div class="row"><h3>Классы риска</h3>${ev('our')}</div>
+  <p class="muted">Класс задаёт, какая нужна спека, кто ревьюит и кто ведёт задачу. Принцип маршрутизации по риску взят из практики (Citi, Coinbase, обзор Pragmatic Engineer), три режима исполнения — из рекомендаций Gartner. Разбиение на R0, R1 и R2 наше. Класс определяется автоматически по путям в репозитории и меткам задачи; человек может его только повысить.</p>
+  ${tbl(['Класс','Что входит','Спека','Ревью','Кто ведёт'],RISK.map(r=>[RC(r[0]),r[1],r[2],r[3],r[4]]))}
+  <div class="note">Долю выборочного аудита для R0 вы задаёте сами и повышаете после каждого найденного дефекта. В регулируемой компании влитие R0 без человека допустимо, только если это утвердил комплаенс.</div></section>
+ <section class="blk" id="roles"><div><h3>Роли</h3><p class="muted">В стартапе один человек совмещает несколько ролей. Правило «поставил задачу — не одобряешь» для R2 действует и там.</p></div>
+  ${tbl(['Роль','За что отвечает','Кто обычно'],ROLES)}</section>
+ <section class="blk" id="glossary"><h3>Словарь</h3>
+  <div class="cols3">${GLOSS.map(g=>`<div class="stack" style="gap:4px"><b>${g[0]}</b><span class="muted">${g[1]}</span></div>`).join('')}</div></section>`;
+}
+
+/* ================= КОНВЕЙЕР ================= */
+const SC={
+ auth:{id:'AUTH-214',title:'Rate-limiting для /api/v1/auth/login',sub:'Не более 5 попыток в минуту с одного IP, ответ 429. Класс R2: авторизация.',norm:6,steps:[
+  {s:0,c:0,h:'Пакет спецификации',b:ul(['Критерии приёмки и OpenAPI-контракт ошибки 429.','3 теста-критерия: успех, превышение лимита, сброс таймера через 60 секунд. Сейчас все три падают.','Границы: агент меняет только модуль auth.','Класс R2, поэтому спеку утвердил второй инженер.'])+'<p>'+pill('ok','DEFINITION OF READY ПРОЙДЕН')+'</p>'},
+  {s:1,c:6,h:'Агент работает в песочнице',b:`<div class="log"><span>search_code · находит auth.controller.ts</span><span>read_file · читает redis.config.ts</span><span>write_file · создаёт RateLimiterMiddleware.ts</span><span>edit_file · подключает middleware в auth.routes.ts</span><span>write_file · пишет юнит-тесты</span><span>run_command · прогоняет тесты, включая тесты-критерии</span></div><p>6 вызовов инструментов, 3 мин 40 с, 42k токенов.</p>`},
+  {s:2,c:6,h:'Гейты',b:ul(['Типы и линтер: пройдено','Тесты и регрессия: 142 из 142','Анализ уязвимостей: чисто'])+'<p>'+pill('ok','ПЕРВЫЙ РАУНД CI ЗЕЛЁНЫЙ')+'</p>'},
+  {s:3,c:6,h:'ИИ-ревью',b:ul(['Изменение соответствует спеке.','IP-адреса не попадают в открытые логи.','Незапрошенных изменений нет.'])},
+  {s:4,c:6,h:'Суждение человека: двое, потому что R2',b:ul(['Первый ревьюер: стиль совпадает с кодовой базой, middleware подключён в правильном месте. 12 минут.','Второй ревьюер: у ключей Redis есть TTL, память не утечёт. 9 минут.','Ни один из них не ставил задачу агенту.'])},
+  {s:5,c:6,h:'Влито и проверено',b:'<p>Деплой запустил инженер. В аудит-трейле: спека, трасса агента, результаты гейтов, оба одобрения. Через 14 дней без откатов capability получает статус Verified.</p>'+ul(['Гейты пройдены с первого раунда.','Время людей: 21 минута на ревью.','Расход: 42k токенов.'])}
+ ]},
+ bill:{id:'BILL-109',title:'Налог при заказе с мультивалютными промокодами',sub:'Что бывает, когда пост 1 пропускает дыру в требованиях. Класс R2: деньги.',norm:6,steps:[
+  {s:0,c:0,h:'Задача ушла агенту текстом из трекера',b:'<p>Нет правил округления, нет контракта, не сказано, применять промокод до налога или после. Границы задачи не заданы.</p><p>'+pill('crit','DEFINITION OF READY НЕ ПРОЙДЕН')+'</p><p class="muted">По правилам фреймворка такая задача агенту не уходит. Дальше видно почему.</p>'},
+  {s:1,c:5,h:'Шаги 1–5: первая попытка',b:`<div class="log"><span>1–4 · переписывает калькулятор в CheckoutService.ts, запускает тесты</span><span>5 · тест корзины падает: ожидалось 100.00, получено 98.45</span></div>`},
+  {s:1,c:9,h:'Шаги 6–9: починил одно, сломал другое',b:`<div class="log"><span>6–8 · меняет округление, запускает тесты</span><span>9 · корзина прошла, упали 3 несвязанных теста в InvoiceGenerationService</span></div>`},
+  {s:1,c:14,h:'Шаги 10–14: агент уходит в чужой модуль',b:`<div class="log"><span>10–14 · правит InvoiceGenerationService, падает модуль валют</span></div><p class="muted">Если бы границы задачи были заданы, песочница отклонила бы запись, и Andon сработал бы уже здесь.</p>`},
+  {s:1,c:18,h:'Шаги 15–18: цикл',b:`<div class="log"><span>15–18 · три раза подряд одинаковая правка, два файла переписываются туда и обратно</span></div>`},
+  {s:6,c:18,h:'Срабатывает Andon',b:ul(['Жёсткий триггер: одинаковая правка 3 раза подряд.','Калибруемый порог: 18 шагов при P95 класса 15.','Регрессия: сломаны несвязанные тесты.'])+`<p>Процесс прибит, ветка закрыта для ИИ, расход остановлен на $4.10.</p><div class="log"><span>[ANDON] BILL-109 остановлена: цикл, 18 шагов, регрессия в Invoicing</span></div>`},
+  {s:6,c:18,h:'Разбор: 30 минут инженера',b:ul(['Трасса показывает конфликт требований: промокод в долларах нельзя вычесть из налоговой базы в евро без фиксации курса. Агент пытался угадать правило.','Решение: человек доделывает руками, 20 строк кода.'])},
+  {s:6,c:18,h:'Одна остановка даёт три правки',b:ul(['<b>Спека:</b> правило применения промокодов записано как критерий приёмки.','<b>Guide:</b> правило добавлено в constitution.md.','<b>Sensor:</b> в песочнице заданы границы путей, запись в InvoiceGenerationService без флага в задаче отклоняется.'])},
+  {s:5,c:18,h:'Влито человеком',b:'<p>Дефект с налогами не дошёл до прода. Инженер потратил 30 минут на разбор вместо часов на чтение кода из 18 попыток.</p>'}
+ ]}
+};
+let scKey='auth', scI=0;
+function renderConveyor(){
+ $('#v-conveyor').innerHTML=`
+ <section class="blk"><div><h2>Конвейер: путь одной задачи</h2>
+  <p class="lead">Шесть постов. У каждого есть вход, условие выхода и правило возврата. Задачи между постами 2, 3 и 4 двигаются автоматически. Выберите пост, чтобы увидеть его правила.</p></div>
+  <div class="pipe" id="pipe">${ST.map((s,i)=>`<button class="st ${s.cls}" data-k="${s.k}" aria-pressed="false"><span class="no">${i<6?'ПОСТ '+(i+1):'ANDON'}</span><span class="nm">${i<6?s.n:'Буфер остановок'}</span><span class="who">${i<6?s.en+' · '+s.who:'сюда падают задачи с постов 2–5, отсюда уходят человеку или на пост 1'}</span></button>`).join('')}</div>
+  <div class="legend"><span><i></i>работают люди</span><span><i class="m"></i>работают машины</span><span><i class="a"></i>буфер остановок</span><span><i class="l"></i>текущий шаг сценария</span></div>
+  <div class="card" id="conveyor-panel"></div>
+ </section>
+ <section class="blk"><div><h3>Два сценария</h3><p class="muted">Иллюстрации с условными цифрами. Листайте шаги и следите за точкой на постах выше.</p></div>
+  <div class="seg" id="sc-seg"><button data-k="auth">AUTH-214 · всё по правилам</button><button data-k="bill">BILL-109 · дыра в спеке и Andon</button></div>
+  <div class="card stack" id="sc-panel"></div>
+ </section>`;
+ $('#pipe').onclick=e=>{const b=e.target.closest('.st'); if(b) pick.conveyor(b.dataset.k)};
+ $('#sc-seg').onclick=e=>{const b=e.target.closest('button'); if(b){scKey=b.dataset.k;scI=0;renderSc()}};
+ pick.conveyor('spec'); renderSc();
+}
+pick.conveyor=k=>{const s=ST.find(x=>x.k===k); if(!s) return false; const i=ST.indexOf(s);
+ $$('#pipe .st').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));
+ $('#conveyor-panel').innerHTML=`<div class="stack"><div><div class="eyebrow">${i<6?'Пост '+(i+1):'Вне потока'} · ${s.en} · ${s.who}</div><h3 style="margin-top:6px">${s.n}</h3></div>
+  <dl class="kv"><dt>Вход</dt><dd>${s.inp}</dd><dt>Что происходит</dt><dd>${s.what}</dd><dt>Выход</dt><dd><b>${s.out}</b></dd><dt>Если не прошло</dt><dd>${s.fail}</dd>${s.limit?`<dt>Лимит</dt><dd>${s.limit}</dd>`:''}<dt>Отвечает</dt><dd>${L('model:roles',s.owner)}</dd><dt>Основание</dt><dd><div class="row">${ev(s.ev)}</div><span class="src">${s.evn}</span></dd></dl>
+  <div class="links">${s.links.join('')}</div></div>`; return true};
+function renderSc(){const sc=SC[scKey], st=sc.steps[scI], max=20;
+ $$('#sc-seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===scKey));
+ $$('#pipe .st').forEach((b,i)=>b.classList.toggle('live',i===st.s));
+ const cls=st.c>15?'crit':st.c>9?'warn':'';
+ $('#sc-panel').innerHTML=`<div><div class="eyebrow">${sc.id}</div><h3 style="margin-top:6px">${sc.title}</h3><p class="muted">${sc.sub}</p></div>
+  <div><div class="meter"><span class="${cls}" style="width:${Math.min(100,st.c/max*100)}%"></span><em style="left:${sc.norm/max*100}%">медиана класса</em><em style="left:75%">P95 класса</em></div>
+  <div class="mono muted">вызовов инструментов: ${st.c}${st.c>15?' · выше P95':''}</div></div>
+  <div class="stack"><div><span class="num">${scI+1}</span><b>${st.h}</b> <span class="muted">· ${st.s<6?'пост '+(st.s+1):'Andon'}</span></div>${st.b}</div>
+  <div class="player-nav"><button class="btn" id="sc-prev" ${scI===0?'disabled':''}>Назад</button><button class="btn" id="sc-next" ${scI===sc.steps.length-1?'disabled':''}>Дальше</button><span class="cnt">шаг ${scI+1} из ${sc.steps.length}</span></div>`;
+ $('#sc-prev').onclick=()=>{scI--;renderSc()}; $('#sc-next').onclick=()=>{scI++;renderSc()};
+}
+
+/* ================= СПЕКА ================= */
+const PKG=[
+ ['Намерение','2–3 абзаца: кому это нужно, что должно получиться и зачем бизнесу.'],
+ ['Критерии приёмки','В формате EARS: «WHEN событие THE SYSTEM SHALL поведение». Каждый критерий проверяем.'],
+ ['Контракт','OpenAPI или JSON Schema для всего, что capability принимает и возвращает.'],
+ ['Тесты-критерии','Исполняемые тесты на каждый критерий. Сейчас падают. Их пишет или утверждает человек, для агента они только на чтение.'],
+ ['Класс риска и границы','R0, R1 или R2 и список путей в репозитории, которые агент может менять.']
+];
+const CAP=[
+ ['CAP-1','Право на спин','Игрок авторизован, внёс депозит не меньше порога за 7 дней, с прошлого вращения прошло 24 часа.','/wheel/status возвращает can_spin и таймер. Тест эмулирует 3 пограничные даты.','R2'],
+ ['CAP-2','Математика розыгрыша','Серверный расчёт сектора через сертифицированный генератор случайных чисел, фиксированный RTP.','100 000 симуляций: отклонение вероятностей секторов не больше ±0,5%.','R2'],
+ ['CAP-3','Начисление','Выигрыш зачисляется транзакционно с записью аудиторского следа.','При секторе «10 фриспинов» в журнале появляется запись с audit_hash, баланс растёт ровно на 10.','R2'],
+ ['CAP-4','Защита от повторов','Игрок не может параллельными запросами выбить несколько призов.','20 параллельных запросов с одним токеном дают 1 успех (HTTP 200) и 19 отказов (HTTP 409).','R2'],
+ ['CAP-5','Интерфейс колеса','Анимация и состояния кнопки поверх готовых контрактов.','E2E-тесты на 3 состояния: можно крутить, таймер, ошибка сети.','R1']
+];
+const SESSION=[
+ ['Намерение','Продакт пишет 2–3 абзаца бизнес-логики.'],
+ ['Краевые случаи','Продакт отдаёт черновик модели с задачей: «Действуй как придирчивый тестировщик и регулятор. Найди 10 уязвимостей, сценариев мошенничества и пограничных ситуаций». Модель находит разрывы сессий, повторные клики, отрицательные балансы.'],
+ ['Нарезка','Лид и продакт отбирают обязательные случаи и режут фичу на независимые контракты. Проверочный вопрос: может ли агент сделать одну capability, ничего не зная о соседней? Каждой присваивается класс риска.'],
+ ['Фиксация','Критерии записываются в EARS, к ним прикладываются контракт и падающие тесты. Для R2 пакет утверждает второй человек.']
+];
+function renderSpec(){
+ $('#v-spec').innerHTML=`
+ <section class="blk"><div><h2>Спека: что должно быть готово до запуска агента</h2><p class="lead">Пост 1 конвейера. Качество всего, что происходит дальше, определяется здесь: агент не восполняет дыры в требованиях, он их угадывает.</p><div class="links" style="margin-top:10px">${L('conveyor:spec','Пост 1 на конвейере')}${L('model:risk','Классы риска')}</div></div></section>
+ <section class="blk" id="package"><div class="row"><h3>Пакет спецификации</h3>${ev('src')}</div>
+  <div class="cols">${PKG.map((p,i)=>`<div class="card stack"><div><span class="num">${i+1}</span><b>${p[0]}</b></div><p>${p[1]}</p></div>`).join('')}
+   <div class="card stack"><b>Чего в пакете нет</b><p>Правил, общих для всех задач. Они лежат в constitution.md и AGENTS.md и проверяются обвязкой.</p><div class="links">${L('harness','Обвязка')}</div></div></div>
+  <p class="src">Структуру задают GitHub Spec Kit (constitution → specify → plan → tasks → implement) и AWS Kiro (requirements.md в EARS, design.md, tasks.md). Пятый пункт и запрет агенту менять тесты-критерии добавлены нами.</p></section>
+ <section class="blk" id="slice"><div><h3>Какого размера должна быть capability</h3></div>
+  <div class="cols3">
+   <div class="card stack"><div class="row"><b>Один домен</b>${ev('src')}</div><p>Затрагивает один контракт данных или один сервис. Spec Kit называет такие задачи независимо реализуемыми и тестируемыми.</p></div>
+   <div class="card stack"><div class="row"><b>Бинарный результат</b>${ev('src')}</div><p>Прошла или не прошла по детерминированному тесту. Состояния «работает наполовину» нет.</p></div>
+   <div class="card stack"><div class="row"><b>Один проход</b>${ev('our')}</div><p>Помещается в одну сессию агента, даёт небольшой PR и проходит CI не больше чем за 2 раунда. Если агент регулярно упирается в пороги Andon, capability нарезана крупно.</p></div>
+  </div>
+  <div class="note">Нейтрального ориентира по размеру задачи в часах или шагах в источниках нет. Thoughtworks предупреждает о другой крайности: спека на весь релиз превращает процесс в водопад. Спека живёт на уровне одной capability.</div></section>
+ <section class="blk"><div class="row"><h3>Сколько живёт спека</h3>${ev('our')}</div>
+  <div class="cols3">
+   <div class="card stack"><b>Spec-first</b><p>Спека пишется до кода и после мержа может устареть. Достаточно для R0 и R1.</p></div>
+   <div class="card stack"><b>Spec-anchored</b><p>Спека обновляется вместе с кодом. Нужна для R2: на аудите по ней видно, что система должна делать.</p></div>
+   <div class="card stack"><b>Spec-as-source</b><p>Человек правит только спеку, код генерируется заново. Не рекомендуем: источником истины остаётся исполняемый код.</p></div>
+  </div>
+  <p class="src">Три уровня описала Биргитта Бёкелер (Thoughtworks). Привязка уровней к классам риска наша.</p></section>
+ <section class="blk" id="example"><div><h3>Пример: «Колесо фортуны» в онлайн-казино</h3><p class="muted">Бизнес приходит с одной фразой: хотим колесо фортуны для удержания игроков. После сессии нарезки это пять capability.</p></div>
+  ${tbl(['#','Capability','Границы','Критерий готовности','Класс'],CAP.map(c=>[`<span class="mono">${c[0]}</span>`,c[1],c[2],c[3],RC(c[4])]))}
+  <div class="formula">CAP-4 в формате EARS:
+WHEN поступает 20 параллельных запросов на вращение с одним токеном пользователя
+THE SYSTEM SHALL выполнить ровно 1 вращение (HTTP 200) и вернуть 19 отказов (HTTP 409)</div>
+  <p class="muted">Четыре из пяти capability относятся к R2: деньги и регуляторика. Каждая уходит отдельному агенту в свою песочницу.</p></section>
+ <section class="blk" id="session"><div><h3>Сессия нарезки: 30–45 минут на крупную идею</h3><p class="muted">Продакт, лид и тестировщик, с моделью в роли оппонента.</p></div>
+  <div class="cols">${SESSION.map((a,i)=>`<div class="card stack"><div><span class="num">${i+1}</span><b>${a[0]}</b></div><p>${a[1]}</p></div>`).join('')}</div></section>
+ <section class="blk" id="noagent"><div class="row"><h3>Когда задачу агенту не давать</h3>${ev('our')}</div>
+  <div class="cols">
+   <div class="card stack">${ul(['Критерий приёмки не удаётся сформулировать. Значит, задача ещё исследовательская.','Нужно архитектурное решение с долгими последствиями.','Задача класса R2, а спека не утверждена вторым человеком.','Идёт инцидент на проде: агент помогает искать причину, но изменения вносит человек.'])}</div>
+   <div class="card stack"><b>Три режима исполнения</b><p>Gartner советует раскладывать задачи на три режима: ведёт разработчик, разработчик вместе с агентом, полностью ведёт агент. Список слева — это первый режим. Два других привязаны к классам риска.</p><div class="links">${L('model:risk','Кто ведёт задачу в каждом классе')}</div></div>
+  </div></section>`;
+}
+
+/* ================= ОБВЯЗКА ================= */
+const LAYERS=[
+ ['Постоянные инструкции','constitution.md и AGENTS.md','guide','Посты 1–2'],
+ ['Контекст по требованию','docs/, навыки, спека задачи','guide','Пост 2'],
+ ['Инструменты','MCP-серверы и разрешённые команды','guide','Пост 2'],
+ ['Изоляция','Песочница, отдельная учётная запись, границы путей, закрытый исходящий трафик','guide','Пост 2'],
+ ['Детерминированные сенсоры','Типы, линтеры, тесты, структурные тесты, анализ уязвимостей','sensor','Пост 3'],
+ ['Инференциальные сенсоры','ИИ-ревью','sensor','Пост 4'],
+ ['Человек','Суждение о замысле','sensor','Пост 5']
+];
+const RULES=[
+ ['Обязательное переносится в проверки','Всё, что должно выполняться всегда, живёт в hooks, линтерах и тестах. Anthropic пишет об этом прямо: файл инструкций носит рекомендательный характер, а hooks детерминированы.','src'],
+ ['AGENTS.md — карта, а не энциклопедия','Около 100 строк со ссылками в docs/. Команда OpenAI пробовала один большой файл и отказалась: он дрейфует, и его нельзя проверить механически. Каждую строку проверяем вопросом «ошибётся ли агент без неё?».','src'],
+ ['Сообщение проверки учит агента','Текст ошибки линтера или теста объясняет, что не так и как исправить. Агент читает его и исправляет сам.','src'],
+ ['Тесты-критерии только на чтение','Агент может добавлять свои тесты, но не менять те, что утвердил человек. Попытка правки — жёсткий триггер Andon.','our'],
+ ['Смена модели — повод перемерить','При смене модели или агента пороги Andon и базовые метрики снимаются заново.','our'],
+ ['Обвязка ловит ошибки, но не доказывает понимание','Зелёные проверки не значат, что агент понял задачу. Поэтому после обвязки стоит человек.','src']
+];
+function renderHarness(){
+ $('#v-harness').innerHTML=`
+ <section class="blk"><div><h2>Обвязка: что окружает модель</h2><p class="lead">Модель одинакова у всех, кто покупает её по API. Результат определяет обвязка: то, что направляет агента до действия и проверяет после. Она своя у каждого проекта, и ею владеет конкретный человек или команда.</p><div class="links" style="margin-top:10px">${L('model:roles','Владелец обвязки')}${L('control:security','Контроли безопасности')}</div></div></section>
+ <section class="blk" id="matrix"><div class="row"><h3>Guides и sensors</h3>${ev('src')}</div>
+  <p class="muted">Словарь Биргитты Бёкелер (Thoughtworks, 2026). Guides направляют агента до шага, sensors проверяют результат. Вторая ось: детерминированные проверки надёжны и аудируемы, проверки с помощью LLM ловят смысловые ошибки, но аудировать их труднее.</p>
+  <div class="matrix">
+   <div class="h"></div><div class="h">Guides · до действия</div><div class="h">Sensors · после действия</div>
+   <div class="h">Детерми­нированные</div><div>Типы и схемы, контракты OpenAPI, шаблоны проекта, hooks, границы путей в песочнице</div><div>Тесты, линтеры, структурные и архитектурные тесты, анализ уязвимостей, проверка доступа к данным</div>
+   <div class="h">С помощью LLM</div><div>constitution.md, AGENTS.md, спека, примеры, навыки</div><div>ИИ-ревью, оценочные прогоны (evals)</div>
+  </div></section>
+ <section class="blk" id="rules"><h3>Шесть правил обвязки</h3>
+  <div class="cols">${RULES.map((r,i)=>`<div class="card stack"><div class="row"><span class="num">${i+1}</span>${ev(r[2])}</div><b>${r[0]}</b><p>${r[1]}</p></div>`).join('')}</div></section>
+ <section class="blk" id="layers"><div><h3>Семь слоёв и где они работают</h3></div>
+  ${tbl(['Слой','Что это','Тип','Где на конвейере'],LAYERS.map(l=>[l[0],l[1],pill(l[2]==='guide'?'info':'ok',l[2].toUpperCase()),l[3]]))}
+  <div class="links">${L('conveyor','Конвейер')}${L('andon:triggers','Что происходит, когда sensor срабатывает')}</div></section>`;
+}
+
+/* ================= ANDON ================= */
+const HARD=[
+ ['Цикл','Один и тот же вызов с одинаковыми аргументами или одинаковая правка 3 раза подряд.','Циклы — первый признак сбоя агента по Кенту Беку. Число 3 стартовое.','src'],
+ ['Исчерпаны раунды CI','Изменение не прошло гейты и ИИ-ревью за 2 раунда CI.','Правило Stripe Minions.','src'],
+ ['Правка тестов-критериев','Агент пытается изменить тесты, утверждённые человеком.','Подгонка под тесты — второй признак сбоя по Беку.','src'],
+ ['Выход за границы','Запись вне разрешённых путей или обращение по адресу не из списка разрешённых.','Песочница отклоняет действие и останавливает запуск.','our']
+];
+const SOFT=[
+ ['Шаги выше P95','Число вызовов инструментов выше 95-го перцентиля своего класса задач.'],
+ ['Время выше P95','Время в песочнице выше 95-го перцентиля своего класса.'],
+ ['Бюджет','Расход токенов на задачу выше лимита. Лимит держит шлюз, а не сам агент.'],
+ ['Три промпта подряд','Разработчик трижды уточняет одну и ту же ошибку, а проверки всё ещё красные.'],
+ ['Регрессия','Агент починил целевой модуль и сломал 2 или больше несвязанных теста.']
+];
+const LOG=[
+ ['BILL-109','Налог с мультивалютными промокодами','Цикл: одинаковая правка 3 раза; 18 шагов при P95 15','Человек доделал руками','Критерий в спеке, правило в constitution.md, границы путей в песочнице'],
+ ['AUTH-218','Проверка подписи токена внешнего провайдера','Исчерпаны раунды CI: падала проверка сертификата','Перезапуск после правки обвязки','Агенту не хватало мока центра сертификации. Добавлен мок-сервер']
+];
+function renderAndon(){
+ const f=(id,l,v)=>`<label for="${id}">${l}<input type="number" id="${id}" min="0" value="${v}"></label>`;
+ $('#v-andon').innerHTML=`
+ <section class="blk"><div><h2>Andon: когда задачу забирают у агента</h2><p class="lead">Остановка срабатывает автоматически. Разработчик не решает, дать ли агенту ещё одну попытку: в этот момент человеку всегда кажется, что следующий промпт всё исправит.</p><div class="links" style="margin-top:10px">${L('conveyor:andon','Буфер остановок на конвейере')}${L('evidence:lean','Откуда это в Lean')}</div></div></section>
+ <section class="blk" id="triggers"><div><h3>Жёсткие триггеры</h3><p class="muted">Останавливают агента всегда.</p></div>
+  <div class="cols">${HARD.map((t,i)=>`<div class="card stack"><div class="row"><span class="num">${i+1}</span>${ev(t[3])}</div><b>${t[0]}</b><p>${t[1]}</p><p class="src">${t[2]}</p></div>`).join('')}</div>
+  <div class="row" style="margin-top:8px"><h3>Калибруемые пороги</h3>${ev('hyp')}</div>
+  <p class="muted">Считаются от ваших трасс. В источниках общих чисел нет, а фиксированный лимит вроде «15 шагов» мешает агентам, которые сами гоняют тесты: им нормально делать десятки вызовов.</p>
+  <div class="cols3">${SOFT.map((t,i)=>`<div class="card stack"><div><span class="num">${i+5}</span><b>${t[0]}</b></div><p>${t[1]}</p></div>`).join('')}</div></section>
+ <section class="blk" id="calib"><div class="row"><h3>Как калибровать</h3>${ev('our')}</div>
+  <div class="cols3">
+   <div class="card stack"><div><span class="num">1</span><b>Собрать трассы</b></div><p>Первые 4 недели работают только жёсткие триггеры. По каждому запуску пишутся шаги, время и расход.</p></div>
+   <div class="card stack"><div><span class="num">2</span><b>Поставить P95</b></div><p>Отдельно для каждого класса задач: исправление дефекта, новая capability, рефакторинг, миграция.</p></div>
+   <div class="card stack"><div><span class="num">3</span><b>Пересматривать</b></div><p>На trace retro разбираются ложные срабатывания. При смене модели пороги снимаются заново.</p></div>
+  </div></section>
+ <section class="blk"><h3>Что происходит после остановки</h3>
+  <div class="cols3">
+   <div class="card stack"><b>Человек доделывает</b><p>Когда до результата близко, а причина остановки понятна.</p></div>
+   <div class="card stack"><b>Спека возвращается на пост 1</b><p>Когда агент угадывал требования или задача оказалась слишком крупной.</p></div>
+   <div class="card stack"><b>Перезапуск после правки обвязки</b><p>Когда агенту не хватило инструмента, мока или правила.</p></div>
+  </div>
+  <blockquote>Любой из трёх исходов заканчивается записью в журнал и пунктом на trace retro: что изменить в спеке, guide или sensor, чтобы эта остановка не повторилась. ${L('rhythm:ceremonies','Trace retro')}</blockquote></section>
+ <section class="blk" id="sim"><div><h3>Проверить задачу на триггеры</h3><p class="muted">Подставлены цифры BILL-109. Значения P95 и бюджета условные, замените своими.</p></div>
+  <div class="card stack"><div class="fields">${f('a-rep','Одинаковых вызовов подряд',3)}${f('a-ci','Раундов CI в запуске',1)}${f('a-tt','Изменено тестов-критериев',0)}${f('a-oob','Действий вне границ',0)}${f('a-calls','Вызовов инструментов',18)}${f('a-p95','P95 шагов для класса',15)}${f('a-min','Минут в песочнице',12)}${f('a-p95m','P95 минут для класса',20)}${f('a-tok','Токенов, тыс.',180)}${f('a-bud','Бюджет, тыс.',250)}${f('a-pr','Уточняющих промптов подряд',1)}${f('a-br','Сломано несвязанных тестов',3)}</div><div id="a-out"></div></div></section>
+ <section class="blk" id="log"><div><h3>Журнал остановок</h3><p class="muted">Пример. По журналу считается метрика остановок.</p></div>
+  ${tbl(['Задача','Что делали','Триггер','Исход','Что изменили'],LOG.map(r=>[`<span class="mono">${r[0]}</span>`,r[1],r[2],r[3],r[4]]))}
+  <div class="links">${L('metrics:andonrate','Метрика остановок')}</div></section>`;
+ const run=()=>{const h=[],s=[];
+  if(num('a-rep')>=3)h.push('Цикл: одинаковый вызов 3 раза подряд.');
+  if(num('a-ci')>2)h.push('Исчерпаны раунды CI: больше 2 в одном запуске.');
+  if(num('a-tt')>0)h.push('Агент изменил тесты-критерии.');
+  if(num('a-oob')>0)h.push('Действие вне границ задачи.');
+  if(num('a-calls')>Math.max(1,num('a-p95')))s.push(`Шаги: ${num('a-calls')} при P95 класса ${num('a-p95')}.`);
+  if(num('a-min')>num('a-p95m'))s.push('Время в песочнице выше P95 класса.');
+  if(num('a-tok')>num('a-bud'))s.push('Бюджет токенов исчерпан.');
+  if(num('a-pr')>=3)s.push('Три уточняющих промпта подряд без результата.');
+  if(num('a-br')>=2)s.push('Регрессия: сломано 2 или больше несвязанных теста.');
+  const li=(t,a)=>a.length?`<div style="margin-top:6px">${t}</div><ul>${a.map(x=>`<li>${x}</li>`).join('')}</ul>`:'';
+  $('#a-out').innerHTML=(h.length||s.length)?`<div class="verdict crit"><b>Andon: задача уходит человеку</b>${li('Жёсткие триггеры:',h)}${li('Калибруемые пороги:',s)}</div>`:`<div class="verdict ok"><b>Триггеры не сработали</b>Агент продолжает работу.</div>`};
+ $$('#sim input').forEach(i=>i.oninput=run); run();
+}
+
+/* ================= КОНТРОЛЬ ================= */
+const SEC=[
+ ['Идентичность',[
+  ['Своя учётная запись у каждого агента','С минимальными правами. По ней видно, что сделал агент, а что человек.','NIST NCCoE 2026, OWASP ASI03'],
+  ['Запись только в ветки агента','В основную и релизные ветки агент не пишет.','GitHub Copilot agent'],
+  ['Список разрешённых инструментов','Какие модели и агенты можно использовать и какие данные нельзя отправлять в промпты.','DORA: ясная позиция по ИИ']]],
+ ['Изоляция',[
+  ['Исходящий трафик закрыт по умолчанию','Песочница ходит только по списку разрешённых адресов.','OWASP ASI05, GitHub'],
+  ['Нет доступа к проду','Ни ключей, ни данных. Среды разработки и прода разделены.','Инцидент Replit, июль 2025'],
+  ['Входные данные не доверенные','Тикеты, логи и документы, которые читает агент, могут содержать чужие инструкции.','OWASP ASI01, ASI06'],
+  ['Зависимости и MCP-серверы под контролем','Цепочка поставок агента проверяется так же, как код.','OWASP ASI04']]],
+ ['Разделение обязанностей',[
+  ['Поставил задачу — не одобряешь','Одобряет другой человек.','GitHub Copilot agent'],
+  ['CI на агентных PR запускается после одобрения человеком','Защищает секреты CI от кода, который написал агент.','GitHub Copilot agent'],
+  ['Деплой только по одобрению человека','У агента нет прав выкатывать.','Citi: агентам деплой запрещён']]],
+ ['Проверки и учёт',[
+  ['Конфигурация доступа к данным проверяется в CI','Таблица без политики доступа роняет сборку.','Lovable, CVE-2025-48757'],
+  ['Аудит-трейл пишется независимо от агента','Логи, которые ведёт сам агент, слабое доказательство.','Банковская практика'],
+  ['Бюджеты на шлюзе','Лимиты токенов и денег по задачам и командам.','Gartner: пороги токенов и правила эскалации']]]
+];
+function renderControl(){
+ let n=0;
+ $('#v-control').innerHTML=`
+ <section class="blk"><div><h2>Контроль: что агенту нельзя и как это доказать</h2><p class="lead">Обвязка помогает агенту сделать правильно. Контроли ограничивают ущерб, когда он сделал неправильно. Индустрия сводит их к четырём группам, а меру строгости задаёт класс риска.</p><div class="links" style="margin-top:10px">${L('model:risk','Классы риска')}${L('harness','Обвязка')}</div></div></section>
+ <section class="blk" id="security"><div class="row"><h3>Тринадцать контролей</h3>${ev('src')}</div>
+  ${SEC.map(g=>`<div class="stack"><div class="eyebrow">${g[0]}</div><div class="cols">${g[1].map(s=>{n++;return `<label class="check card" for="sec${n}"><input type="checkbox" id="sec${n}"><span class="stack" style="gap:4px"><b>${s[0]}</b><span>${s[1]}</span><span class="src">${s[2]}</span></span></label>`}).join('')}</div></div>`).join('')}</section>
+ <section class="blk" id="provenance"><div class="row"><h3>Происхождение изменения</h3>${ev('our')}</div>
+  <div class="cols"><div class="card stack"><p>Рабочий принцип банков: код от ИИ не разрешён и не запрещён как категория. <b>Разрешён код, у которого можно доказать происхождение, ревью и одобрение.</b></p><p>По каждому изменению в аудит-трейле:</p>${ul(['кто поставил задачу и какой была спека;','какой агент работал и что было у него в контексте;','результаты гейтов и ИИ-ревью;','кто ревьюил и одобрил;','кто выкатил и как откатить.'])}</div>
+  <div class="card stack"><b>Что говорят регуляторы</b><p>Специальных указаний по коду, написанному ИИ, мы не нашли ни у европейских финансовых надзоров, ни у игорных регуляторов. EU AI Act возлагает обязательства на поставщиков моделей, а не на команды, которые пользуются кодинг-агентами.</p><div class="verdict warn"><b>Если вы под регулятором</b>Сверьте требования к аудиту изменений и разделению обязанностей со своим комплаенсом до того, как пускать агентов дальше R0.</div></div></div></section>
+ <section class="blk" id="skills"><div class="row"><h3>Атрофия навыков</h3>${ev('src')}</div>
+  <p class="muted">Эксперимент Anthropic (январь 2026, 52 инженера, в основном начинающие, осваивали новую библиотеку): группа с ИИ набрала 50% на тесте понимания, группа без ИИ — 67%. Сильнее всего просело умение отлаживать. Ревьюер, который не понимает код, перестаёт быть сенсором.</p>
+  <div class="cols">${[['Ротация','Инженеры регулярно реализуют capability без агента.'],['Объяснение в R2','Ревьюер R2 письменно объясняет, почему решение верно.'],['Нагрузка на ревьюера','Сколько агентного кода приходится на человека, отслеживается вместе с временем ревью.'],['Путь для начинающих','Есть задачи, где они пишут код сами и получают ревью от опытного инженера.']].map(x=>`<div class="card stack"><div class="row"><b>${x[0]}</b>${ev('our')}</div><p>${x[1]}</p></div>`).join('')}</div></section>`;
+}
+
+/* ================= МЕТРИКИ ================= */
+const M=[
+ {k:'verified',g:'Результат',n:'Verified Capabilities',ev:'our',
+  what:'Сколько возможностей из скоупа дошло до конца. Считаются два числа: Merged — влито, Verified — влито и пережило окно наблюдения без отката и инцидента.',
+  formula:'Merged = capability с влитым PR\nVerified = Merged без отката и инцидента за окно наблюдения\nПрогресс, % = Verified / все capability в скоупе × 100%',
+  src:'Трекер задач, git, журнал инцидентов.',
+  read:'Merged показывает темп, Verified — подтверждённый результат. Большой разрыв между ними значит, что работа уезжает в прод недоделанной. Сервис, который написан, но не проходит гейты, даёт 0%.',
+  evn:'Scrum.org советует не мерить агентную работу в story points. Единица и окно наблюдения наши.',
+  cad:{day:'Merged и Verified на табло',month:'Сколько возможностей закрыто за месяц',quarter:'План против факта по скоупу'}},
+ {k:'lead',g:'Результат',n:'Lead time по постам',ev:'src',
+  what:'Время от «спека готова» до мержа и то, как оно распределено между постами.',
+  formula:'Lead time = мерж − «спека готова» (медиана и P90)\nПо постам: кумулятивная диаграмма потока',
+  src:'События трекера и системы контроля версий.',
+  read:'Диаграмма показывает, на каком посту копится работа. Чаще всего это пост 5.',
+  evn:'Lead time — одна из четырёх метрик DORA. Диаграмму потока по постам предлагаем мы.',
+  cad:{week:'Где копится работа',month:'Медиана и P90'}},
+ {k:'review',g:'Ограничение',n:'Human Review Time',ev:'hyp',
+  what:'Сколько изменение ждёт человека и сколько человек на него тратит. Три числа: время до первого ревью, время от открытия PR до мержа, возраст самого старого PR в очереди.',
+  formula:'Время до мержа = мерж − открытие PR (медиана и P90, по классам риска)\nВремя до первого ревью = первый отзыв человека − открытие PR\nВозраст очереди = сейчас − открытие самого старого PR',
+  src:'API системы контроля версий.',
+  read:'Рост времени при том же числе PR значит, что PR стали крупнее: режьте capability мельче. У LinearB ИИ-PR на 75-м перцентиле в 2,6 раза крупнее обычных.',
+  evn:'То, что ущерб проявляется здесь, показывают Faros и LinearB (оба — вендоры аналитики). Пороги 2 и 4 часа стартовые: общего норматива нет.',
+  judge:v=>v<=2?['ok','В пределах стартовой нормы. Саму норму уточните по своей медиане ревью человеческих PR.']:v<=4?['warn','Выше стартовой нормы. Проверьте лимит очереди и размер PR.']:['crit','Больше 4 часов. Ревью не справляется: остановите новые запуски и разберите очередь.'],
+  cad:{day:'Очередь и самый старый PR',week:'Тренд по классам риска',month:'Отчёт об узком месте'}},
+ {k:'buffer',g:'Ограничение',n:'Запас спек',ev:'our',
+  what:'На сколько дней работы агентов хватит задач, прошедших Definition of Ready.',
+  formula:'Запас, дней = готовые спеки / среднее число запусков в день',
+  src:'Трекер задач.',
+  read:'Меньше дня — агенты встанут. Больше недели — спеки начнут устаревать. Обе границы стартовые.',
+  evn:'Метрика наша. Симметрична очереди ревью: там копится выход, здесь кончается вход.',
+  cad:{day:'Хватит ли на завтра',week:'Хватит ли на следующую неделю'}},
+ {k:'postmerge',g:'Качество',n:'Качество после мержа',ev:'src',
+  what:'Что происходит с изменением после влития: сколько релизов вызвали инцидент, сколько изменений откатили, сколько кода переписали в первые две недели.',
+  formula:'Доля неудачных релизов = релизы с инцидентом / все релизы\nДоля откатов = откаченные PR / влитые PR\nПереписывание = строки, изменённые за 14 дней после мержа / все влитые строки',
+  src:'Пайплайн деплоя, журнал инцидентов, история git. С разбивкой по классам риска.',
+  read:'Сравнивается с базовой линией, снятой до агентов. Рост числа PR без роста этих метрик — настоящее ускорение. Рост вместе с ними — работа переехала в прод.',
+  evn:'DORA 2025: ИИ коррелирует с ростом пропускной способности и с ростом нестабильности. GitClear фиксирует рост дублирования и падение доли рефакторинга (вендор, данные 2020–2024).',
+  cad:{week:'Откаты за неделю и их причины',quarter:'Доля неудачных релизов и время восстановления против базовой линии'}},
+ {k:'cost',g:'Стоимость',n:'Стоимость на Verified Capability',ev:'src',
+  what:'Во что обходится одна проверенная возможность: деньги на токены, вычисления и CI и часы людей на спеку, ревью и разбор остановок.',
+  formula:'Деньги = (токены + вычисления + минуты CI) / Verified\nЛюди = (часы на спеки + часы на ревью + часы на Andon) / Verified',
+  src:'Счета провайдеров, учёт на шлюзе по задачам, события трекера.',
+  read:'Важны тренд и разбивка по классам. Если стоимость растёт быстрее числа Verified, агенты крутятся впустую или capability нарезаны крупно.',
+  evn:'Gartner прогнозирует, что к 2028 году расходы на ИИ-кодинг превысят среднюю зарплату разработчика. Scrum.org советует мерить агентную работу стоимостью и временем проверки человеком.',
+  cad:{month:'Стоимость одной возможности',quarter:'Тренд и разбивка по классам риска'}},
+ {k:'firstpass',g:'Диагностика обвязки',n:'First-Time Pass Rate',ev:'hyp',
+  what:'Доля PR агента, у которых первый прогон CI зелёный.',
+  formula:'PR агента с зелёным первым прогоном CI / все PR агента × 100%',
+  src:'CI: статус первого прогона после открытия PR.',
+  read:'Показывает разрыв между тем, что агент проверил в песочнице, и тем, что проверяет CI. Смотрите на тренд и причины падений: линтеры указывают на правила, тесты — на спеку. Значение около 100% проверьте на слабые гейты.',
+  evn:'Внешнего ориентира для этой метрики нет. Цифры из исследований относятся к другой величине — доле принятых PR.',
+  cad:{week:'Тренд и причины падений'}},
+ {k:'accept',g:'Диагностика обвязки',n:'Принятие агентных PR',ev:'src',
+  what:'Какая доля PR агента в итоге влита и в какую часть влитых человек дописывал код.',
+  formula:'Принятие = влитые PR агента / открытые PR агента × 100%\nДоводка = влитые PR агента с коммитами человека / влитые PR агента × 100%',
+  src:'Система контроля версий: авторы PR и коммитов.',
+  read:'Смотрите по модулям и классам риска. Низкое принятие на одном модуле значит, что агенту там не хватает контекста. Целевого значения нет: для R2 высокая доводка нормальна.',
+  evn:'В открытых репозиториях принимается 55–86% агентных PR в зависимости от агента и выборки (датасет AIDev, независимое). У LinearB за 30 дней вливается 32,7% ИИ-PR против 84,4% обычных (вендор).',
+  cad:{week:'Принятие и доводка по модулям'}},
+ {k:'andonrate',g:'Диагностика обвязки',n:'Остановки Andon',ev:'our',
+  what:'Доля запусков, остановленных Andon, с разбивкой по триггерам.',
+  formula:'Остановленные запуски / все запуски × 100%, по триггерам и классам задач',
+  src:'Журнал остановок.',
+  read:'Один и тот же триггер на одном модуле — дыра в спеке или обвязке. Ноль остановок тоже плохой знак: пороги слишком мягкие.',
+  evn:'Метрика наша.',
+  cad:{day:'Что остановилось за сутки',week:'Какие триггеры и модули повторяются'}}
+];
+const SIG=[
+ ['Растут время ревью и возраст очереди','Остановить новые запуски, резать capability мельче, усилить ИИ-ревью','metrics:review','Faros, LinearB'],
+ ['Падает First-Time Pass','Разобрать причины, повторяющееся перенести в guide или sensor','metrics:firstpass','AIDev: отклонённые PR чаще падают в CI'],
+ ['Кончается запас спек','Перевести людей на спеки, сократить число запусков','metrics:buffer','Наш вывод'],
+ ['Стоимость растёт быстрее результата','Искать циклы и крупные задачи, ужесточить бюджеты','metrics:cost','Gartner'],
+ ['Откаты растут вместе с числом мержей','Усилить гейты, повысить класс риска модуля','metrics:postmerge','DORA 2025'],
+ ['Большие PR одобряются за минуты, дефекты проходят ревью в R2','Ротация, письменное объяснение решения в R2','control:skills','Anthropic, Thoughtworks']
+];
+const CADN={day:'День',week:'Неделя',month:'Месяц',quarter:'Квартал'};
+function renderMetrics(){
+ $('#v-metrics').innerHTML=`
+ <section class="blk"><div><h2>Метрики</h2><p class="lead">Девять метрик в пяти группах. Две отвечают на вопрос «что получили», две следят за ограничением, одна за качеством, одна за деньгами и три помогают чинить обвязку. Процент кода от ИИ и автономия агента целями не являются: их легко накрутить.</p></div>
+  <div class="seg" id="m-seg">${M.map(m=>`<button data-k="${m.k}">${m.n}<small>${m.g}</small></button>`).join('')}</div>
+  <div class="card" id="metrics-panel"></div></section>
+ <section class="blk" id="signals"><div><h3>Ранние сигналы</h3><p class="muted">Что должно насторожить и что с этим делать.</p></div>
+  ${tbl(['Сигнал','Действие','Метрика','Основание'],SIG.map(s=>[s[0],s[1],L(s[2],'Открыть'),s[3]]))}</section>`;
+ $('#m-seg').onclick=e=>{const b=e.target.closest('button'); if(b) pick.metrics(b.dataset.k)};
+ pick.metrics('verified');
+}
+pick.metrics=k=>{const m=M.find(x=>x.k===k); if(!m) return false;
+ $$('#m-seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));
+ $('#metrics-panel').innerHTML=`<div class="stack" style="gap:18px">
+  <div class="row"><h3>${m.n}</h3>${pill('info',m.g.toUpperCase())}${ev(m.ev)}</div>
+  <div class="cols">
+   <div class="stack"><dl class="kv"><dt>Что это</dt><dd>${m.what}</dd><dt>Где брать</dt><dd>${m.src}</dd><dt>Как читать</dt><dd>${m.read}</dd><dt>Основание</dt><dd><span class="src">${m.evn}</span></dd></dl></div>
+   <div class="stack"><div class="formula">${m.formula}</div>
+    ${m.judge?`<div class="stack" style="background:var(--sunk);padding:14px;border-radius:4px"><div class="fields" style="grid-template-columns:minmax(0,220px)"><label for="m-val">Медиана времени до мержа, часов<input type="number" id="m-val" step="0.1" value="1.8"></label></div><div id="m-verdict"></div></div>`:''}
+    <div><div class="eyebrow" style="margin-bottom:8px">Где смотрим</div>${ul(Object.keys(m.cad).map(c=>`${L('rhythm:'+c,CADN[c])} ${m.cad[c]}`))}</div>
+   </div></div></div>`;
+ if(m.judge){const upd=()=>{const [s,t]=m.judge(num('m-val')); $('#m-verdict').innerHTML=`<div class="verdict ${s}">${t}</div>`}; $('#m-val').oninput=upd; upd();}
+ return true};
+
+/* ================= РИТМ ================= */
+const LV=[
+ {k:'day',n:'День',aud:'Команда · 10–15 минут',goal:'Увидеть заторы на конвейере прямо сейчас.',
+  say:'В очереди ревью 5 PR при лимите 4. До обеда новых агентов не запускаем, двое помогают с ревью.'},
+ {k:'week',n:'Неделя',aud:'Лиды, диспетчер, владелец обвязки',goal:'Понять, где копится работа и что чинить в обвязке.',
+  say:'Четыре остановки на модуле отчётности, причина — двусмысленность в спеке. Спеку переписали, в CI добавили проверку.'},
+ {k:'month',n:'Месяц',aud:'Заказчики и руководители направлений',goal:'Оценить темп, узкое место и стоимость.',
+  say:'За месяц закрыли 21 возможность. Узкое место — ревью изменений класса R2, добавляем второго ревьюера.'},
+ {k:'quarter',n:'Квартал',aud:'Руководство компании',goal:'Подтвердить срок, бюджет и качество.',extra:'<b>Для регулируемых компаний:</b> готовность к аудиту — доля пунктов чек-листа регулятора, закрытых проверенными возможностями.',
+  say:'Проверено 78 возможностей из 120, идём по плану. Одна возможность стоит на 15% дешевле, чем кварталом раньше. Доля неудачных релизов на уровне до агентов.'}
+];
+const BOARD=[
+ ['Merged / Verified','65 / 58','из 120 в скоупе','ok','В ГРАФИКЕ','metrics:verified'],
+ ['Очередь ревью','3 PR','лимит 4 на двоих ревьюеров','warn','ВНИМАНИЕ','rhythm:wip'],
+ ['Самый старый PR','1,5 ч','порог 4 рабочих часа','ok','В НОРМЕ','metrics:review'],
+ ['Остановки за сутки','2','обе разобраны в срок','ok','РАЗОБРАНЫ','metrics:andonrate'],
+ ['Запас спек','3 дня','ниже 1 дня агенты встанут','ok','В НОРМЕ','metrics:buffer'],
+ ['First-Time Pass','84%','неделю назад 86%','ok','СТАБИЛЬНО','metrics:firstpass']
+];
+const DAILY=[
+ ['Очередь ревью','пост 5','Превышен ли лимит? Есть ли PR старше порога?','Очередь переполнена — новые запуски останавливаются, свободные инженеры помогают с ревью.','conveyor:review'],
+ ['Буфер Andon','вне потока','Что остановилось за сутки и разобрано ли в срок?','Назначить инженера на каждую неразобранную задачу.','conveyor:andon'],
+ ['Гейты и ИИ-ревью','посты 3–4','Что повторяется в падениях и замечаниях?','Повторяющаяся ошибка — задача владельцу обвязки: добавить проверку или поправить правило.','conveyor:gates'],
+ ['Запас спек','пост 1','Хватит ли готовых спек на завтра?','Не хватает — часть людей переключается на спеки.','conveyor:spec']
+];
+const CER=[
+ ['Sprint Planning','Подготовка спек','Команда собирает пакеты спецификации и присваивает классы риска. Story points для агентной работы не используются.','spec:session','src'],
+ ['Definition of Done','Условие выхода с поста 6','Гейты зелёные, ИИ-ревью пройдено, ревью по классу риска пройдено, происхождение записано.','conveyor:verified','our'],
+ ['Daily Standup','Обход конвейера','Четыре точки справа налево: очередь ревью, Andon, гейты, запас спек.','rhythm:daily','our'],
+ ['Code Review','Суждение','Человек проверяет замысел, архитектуру и безопасность. Форматирование и типовые ошибки ловят линтер и ИИ-ревью.','conveyor:review','src'],
+ ['Sprint Demo','Приёмка по Verified','Показывается то, что работает от начала до конца и влито. Сколько возможностей из скоупа закрыто.','metrics:verified','our'],
+ ['Retrospective','Trace retro','Разбор трасс. Каждая остановка и каждый отклонённый PR превращается в правку спеки, guide или sensor.','andon:log','hyp']
+];
+function renderRhythm(){
+ $('#v-rhythm').innerHTML=`
+ <section class="blk"><div><h2>Ритм: кто, когда и на что смотрит</h2><p class="lead">Четыре уровня. Каждый видит свои метрики из одного набора: чем выше уровень, тем меньше деталей и больше про срок, деньги и качество.</p></div>
+  <div class="seg" id="lv-seg">${LV.map(l=>`<button data-k="${l.k}">${l.n}</button>`).join('')}</div>
+  <div class="card" id="rhythm-panel"></div></section>
+ <section class="blk" id="board"><div><h3>Табло диспетчера</h3><p class="muted">Пример с условными цифрами: что видно на дневном уровне.</p></div>
+  <div class="strip">${BOARD.map(d=>`<a class="tile" href="#${d[5].split(':')[0]}" data-t="${d[5]}"><span class="eyebrow">${d[0]}</span><b>${d[1]}</b><span class="norm">${d[2]}</span>${pill(d[3],d[4])}</a>`).join('')}</div></section>
+ <section class="blk" id="daily"><div><h3>Обход конвейера на дейлике</h3><p class="muted">Справа налево, от готового к началу: сначала разгружаем выход, потом смотрим на вход.</p></div>
+  <div class="cols">${DAILY.map((d,i)=>`<div class="card stack"><div><span class="num">${i+1}</span><b>${d[0]}</b> <span class="muted mono">${d[1]}</span></div><p>${d[2]}</p><p class="muted">${d[3]}</p><div class="links">${L(d[4],'Правила поста')}</div></div>`).join('')}</div></section>
+ <section class="blk" id="wip"><div class="row"><h3>Калькулятор очереди ревью</h3>${ev('hyp')}</div>
+  <p class="muted">Лимит на ревьюера стартовый. Источники советуют начать свободнее и затягивать его, пока очередь не перестанет расти.</p>
+  <div class="card stack"><div class="fields"><label for="w-pr">PR агентов в ревью<input type="number" id="w-pr" min="0" value="3"></label><label for="w-rv">Ревьюеров<input type="number" id="w-rv" min="1" value="2"></label><label for="w-lim">Лимит на ревьюера<input type="number" id="w-lim" min="1" value="2"></label><label for="w-age">Самый старый PR, часов<input type="number" id="w-age" min="0" step="0.5" value="1.5"></label></div><div id="w-out"></div></div></section>
+ <section class="blk" id="ceremonies"><div><h3>Что происходит с церемониями Scrum</h3><p class="muted">Scrum.org: не выставлять агентам story points и не сокращать спринт только потому, что агенты быстрые. Темп задаёт ёмкость человеческого ревью.</p></div>
+  ${tbl(['Было','Стало','Что происходит','Основание','Связь'],CER.map(c=>[c[0],c[1],c[2],ev(c[4]),L(c[3],'Открыть')]))}</section>`;
+ $('#lv-seg').onclick=e=>{const b=e.target.closest('button'); if(b) pick.rhythm(b.dataset.k)};
+ const w=()=>{const pr=num('w-pr'),rv=Math.max(1,num('w-rv')),per=Math.max(1,num('w-lim')),age=num('w-age'),lim=rv*per; let s='ok',h='Очередь в норме',t=[`Лимит ${lim} PR: по ${per} на ревьюера. Свободно ${lim-pr}.`];
+  if(pr>lim){s='crit';h='Стоп новых запусков';t=[`В очереди ${pr} PR при лимите ${lim}. Агентов не запускаем, пока очередь не разобрана.`]}
+  else if(pr>=lim-1&&pr>0){s='warn';h='Внимание';t=[`${pr} из ${lim}. Ещё ${lim-pr+1} PR — и запуски останавливаются.`]}
+  if(age>4){if(s==='ok')s='warn'; t.push(`Самый старый PR висит ${age} ч, порог 4 рабочих часа превышен.`)}
+  $('#w-out').innerHTML=`<div class="verdict ${s}"><b>${h}</b>${t.join(' ')}</div>`};
+ ['w-pr','w-rv','w-lim','w-age'].forEach(i=>$('#'+i).oninput=w); w();
+ pick.rhythm('day');
+}
+pick.rhythm=k=>{const l=LV.find(x=>x.k===k); if(!l) return false;
+ $$('#lv-seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));
+ const items=M.filter(m=>m.cad[k]).map(m=>`${L('metrics:'+m.k,m.n)} ${m.cad[k]}`); if(l.extra) items.push(l.extra);
+ $('#rhythm-panel').innerHTML=`<div class="stack"><div><div class="eyebrow">${l.aud}</div><h3 style="margin-top:6px">${l.goal}</h3></div>
+  <div><div class="eyebrow" style="margin-bottom:8px">Что смотрим</div>${ul(items)}</div>
+  <div><div class="eyebrow" style="margin-bottom:8px">Как это звучит · пример</div><blockquote>«${l.say}»</blockquote></div></div>`; return true};
+
+/* ================= ВНЕДРЕНИЕ ================= */
+const PH=[
+ {n:'Фундамент',what:'Политика ИИ и список разрешённых инструментов. Защита веток и обязательные проверки. Базовая линия метрик до агентов.',proc:'Процесс не меняется.',inp:'Решение руководства, назначен владелец обвязки.',out:'Политика опубликована. Базовая линия снята минимум за 4 недели: lead time, время ревью, откаты, доля неудачных релизов.',err:'Пропустить базовую линию. Эффект потом не с чем сравнить, остаются ощущения, а они обманывают: см. эксперимент METR.'},
+ {n:'Ассистенты и конвенции',what:'Ассистенты в редакторе и терминале у всех. AGENTS.md с владельцем, первые hooks, линтеры и структурные тесты в CI.',proc:'Scrum и оценки работают как раньше.',inp:'Фаза 0 закрыта.',out:'Инструментами пользуется большинство команды. AGENTS.md ревьюится как код. Обязательные правила перенесены в проверки.',err:'Огромный AGENTS.md, который никто не поддерживает. Цель «процент внедрения» вместо результата.'},
+ {n:'Агенты на R0',what:'Фоновые агенты в песочницах на документации, тестах и механических рефакторингах. Свои учётные записи, закрытый исходящий трафик, нет доступа к проду. ИИ-ревью перед человеком. Жёсткие триггеры Andon.',proc:'Агентная работа идёт без story points. Появляются очередь ревью и её лимит.',inp:'Фаза 1. Песочница и ИИ-ревью настроены.',out:'4 недели подряд: First-Time Pass стабилен, откаты не выше базовой линии, время ревью не растёт, стоимость задачи известна.',err:'Мерить успех процентом кода от ИИ. Давать агенту доступ к проду «для удобства».'},
+ {n:'Конвейер на R1',what:'Полный конвейер для продуктовой логики: пакет спецификации с тестами до запуска, лимит очереди от пропускной способности, диаграмма потока, trace retro.',proc:'Планирование превращается в подготовку спек. Темп задаёт ревью.',inp:'Фаза 2. Шаблон спеки утверждён.',out:'Доля неудачных релизов не хуже базовой линии. Очередь ревью не растёт 4 недели. Пороги Andon откалиброваны по своим трассам.',err:'Наращивать число агентов, когда ревью уже не справляется.',hard:1},
+ {n:'Классы риска и масштаб',what:'Маршрутизация по риску работает автоматически: R0 с выборочным аудитом, R1 с одним ревьюером, R2 с двумя. Параллельные агенты, бюджеты на шлюзе.',proc:'Спринты уступают место непрерывному потоку. Инженер в основном пишет спеки и судит результат.',inp:'Фаза 3. Класс риска определяется по путям и меткам.',out:'Аудит-трейл проходит внутреннюю проверку. Стоимость на capability в бюджете. Меры против атрофии навыков работают.',err:'Расширять автономию на R2 раньше, чем проверен аудит-трейл.'},
+ {n:'Оркестрация',what:'Несколько агентов в связке: один пишет, другой тестирует, третий ревьюит. Ночные прогоны регрессии и миграций.',proc:'Люди управляют потоком и разбирают исключения.',inp:'Фаза 4 держится не меньше квартала.',out:'Только для R0 и R1. В R2 человек остаётся у одобрения и деплоя.',err:'Гнаться за числом агентов: очередь ревью от этого только растёт.',opt:1}
+];
+const SEG=[
+ {k:'startup',n:'Стартап',sub:'до 20 инженеров',
+  model:'Агенты пишут почти всё, основатель думает и ревьюит',harness:'Минимальная: AGENTS.md, быстрый CI, песочница без доступа к проду',review:'Основатель или лид; ИИ-ревью на каждом PR',metrics:'Скорость выпуска, с платящими клиентами — откаты и инциденты',risk:'Агент с доступом к проду; небезопасные настройки по умолчанию',stop:'Фаза 4 в упрощённом виде: два класса вместо трёх',
+  ex:[['Y Combinator, зимний набор 2025: примерно у четверти компаний около 95% кода сгенерировано ИИ. Основатели при этом сильные инженеры.','https://techcrunch.com/2025/03/06/a-quarter-of-startups-in-ycs-current-cohort-have-codebases-that-are-almost-entirely-ai-generated','заявление YC'],['Replit, июль 2025: агент удалил продовую базу во время объявленной заморозки кода. После этого Replit автоматически разделил среды.','https://incidentdatabase.ai/cite/1152/','инцидент'],['Lovable: у 170 из 1 645 проверенных приложений таблицы были открыты наружу.','https://cvefeed.io/vuln/detail/CVE-2025-48757','CVE-2025-48757']],
+  ph:[['1 неделя','Гигиена: среды разделены, доступ к данным закрыт политиками, основная ветка защищена, стоит лимит трат. Базовой линии нет — сравнивать не с чем, и это нормально.'],['та же неделя','Сливается с фазой 0: AGENTS.md и CI ставятся сразу.'],['недели 2–8','Две зоны кода. Периферия пишется свободно, без спек. Ядро (деньги, авторизация, схема данных) — только через спеку, тесты и ревью основателя.'],['месяцы 3–6','Начинается с первыми платящими клиентами: фоновые агенты, обязательная регрессия, запрет вливать в ядро без ревью.'],['от 6 месяцев','Обычно хватает двух классов: ядро живёт по правилам R2, остальное по R1.'],['не нужна','Пока каждый PR ревьюят один-два человека, больше агентов значит только длиннее очередь.']],
+  kit:1},
+ {k:'scaleup',n:'Скейлап',sub:'50–500 инженеров',
+  model:'Своя платформа фоновых агентов поверх готовых моделей',harness:'Полная: песочницы, внутренние инструменты через MCP, сценарии из детерминированных и агентных шагов',review:'ИИ-ревью и человек; часть PR одобряет ИИ',metrics:'Влитые PR на инженера вместе с противовесами качества',risk:'Перегрузка ревью, рост расходов, сопротивление приказам сверху',stop:'Фаза 4–5',
+  ex:[['Stripe Minions: агенты запускаются из Slack, больше 1 300 влитых PR в неделю, каждый с ревью человека, не больше 2 раундов CI на запуск.','https://www.infoq.com/news/2026/03/stripe-autonomous-coding-agents','заявление компании'],['Ramp Inspect: песочницы в облаке, около половины влитых PR в феврале 2026.','https://www.infoq.com/news/2026/01/ramp-coding-agent-platform','заявление компании'],['Intercom: удвоили число влитых PR на инженера; очередь дефектов при этом сократилась на 54%.','https://www.lennysnewsletter.com/p/how-intercom-2xd-their-engineering','заявление компании'],['Shopify: прежде чем просить новую ставку, команда показывает, что задачу нельзя решить с ИИ.','https://www.digitalcommerce360.com/2025/04/08/internal-memo-shopify-ceo-declares-ai-non-optional/','заявление компании']],
+  ph:[['4 недели','Базовая линия обязательна: без неё эффект не доказать ни себе, ни совету директоров.'],['1–2 месяца','Цель ставится на результат с противовесами качества. Приказ «всем пользоваться ИИ» без этого даёт цифры внедрения и сопротивление.'],['2–4 месяца','Платформенная команда строит фоновых агентов: песочницы, инструменты, сценарии с лимитом раундов CI. Так начинали Stripe и Ramp.'],['квартал','Шаблон спеки, лимит очереди от пропускной способности, диаграмма потока.'],['дальше','Агенты запускаются из чата и трекера. Метрика как у Intercom: влитые PR на инженера и качество рядом.'],['по зрелости','Для миграций и регрессии.']]},
+ {k:'enterprise',n:'Крупная компания',sub:'тысячи инженеров',
+  model:'Ассистент для всех, затем агенты на миграциях и унаследованном коде',harness:'Платформа и центр компетенций, утверждённые инструменты',review:'Обязательный человек; главная жалоба — перегрузка ревью',metrics:'Измерения через опросы и телеметрию, сэкономленные часы',risk:'Ускорение кодинга не доходит до уровня организации',stop:'Фаза 4; фаза 5 точечно',
+  ex:[['Google: 75% нового кода генерирует ИИ и одобряют инженеры (апрель 2026). Как это считается, не раскрыто.','https://the-decoder.com/google-says-75-percent-of-its-new-code-is-now-written-by-ai/','заявление компании'],['ANZ: шестинедельный контролируемый пилот перед раскаткой.','https://www.itnews.com.au/news/anz-examines-uneven-benefits-from-ai-augmented-coding-609907','заявление компании'],['Morgan Stanley: 9 млн строк унаследованного кода переведены в спецификации. Код по ним переписывают люди.','https://www.businessinsider.nl/a-team-of-engineers-saved-morgan-stanley-more-than-280000-hours-this-year-the-bank-says-their-tool-wont-take-jobs/','заявление компании'],['Опрос McKinsey 2026: заметное ускорение видит примерно четверть компаний, у 30% продуктивность упала.','https://www.ciodive.com/news/enterprises-bet-coding-agents-despite-ROI/830943/','консалтинг']],
+  ph:[['6 недель','Контролируемый пилот с контрольной группой. Самоотчёты разработчиков не считаются.'],['2–6 месяцев','Лицензии, центр компетенций, обучение через внутренних тренеров, правила против неразрешённых инструментов.'],['квартал','Агенты на дорогих ограниченных задачах: обновление версий, перевод унаследованного кода в спецификации, генерация тестов. Здесь самые измеримые результаты.'],['2 квартала','В выбранных продуктовых командах. Платформа владеет учётными записями агентов, аудит-трейлом и бюджетами.'],['год','Перестройка ролей и автоматизация планирования, тестирования и релиза. Forrester: без этого ускорение кодинга на 30–40% даёт команде меньше 10%.'],['точечно','После фазы 4 и только для R0 и R1.']]},
+ {k:'regulated',n:'Регулируемая',sub:'банки, финтех, iGaming',
+  model:'Ассистент, затем агенты на ограниченных задачах под контролем',harness:'Как у крупной компании плюс независимые логи; часть банков строит инструменты сама',review:'Обязательный человек и доказуемое происхождение каждого изменения',metrics:'Часы и продуктивность; сценарии использования по риск-аппетиту',risk:'Аудит, зависимость от поставщика, атрофия навыков',stop:'Фаза 4 для R0 и R1; R2 остаётся на фазе 3',
+  ex:[['Citi: «мы точно не разрешаем агентам деплоить код», за каждой задачей агента закреплён человек.','https://www.americanbanker.com/news/citi-is-rolling-out-agentic-ai-to-its-40-000-developers','заявление компании'],['Goldman Sachs: пилот агента Devin с июля 2025, инженеры ставят задачи и ревьюят результат.','https://fortune.com/2025/07/14/goldman-sachs-ai-powered-software-engineer-devin-new-employee-increase-productivity-fears-of-job-replacement/','заявление компании'],['Coinbase: «не надо вайб-кодить системы, которые двигают деньги».','https://dc.fortune.com/2025/08/25/coinbase-ceo-brian-armstrong-ai-coding-assistants-mandate-tech','заявление компании'],['JPMorgan: собственный ассистент, 10–20% продуктивности. Цифры банков заметно скромнее, чем у техкомпаний.','https://finance.yahoo.com/news/jpmorgan-engineers-efficiency-jumps-much-190410471.html','заявление компании']],
+  ph:[['до старта','Вместе с комплаенсом: требования к происхождению изменений, разделению обязанностей и аудиту. Логи пишутся независимо от агентов.'],['1–2 месяца','Закрытый контур: утверждённые или собственные модели, запрет чувствительных данных в промптах.'],['2–3 месяца','Только R0, у каждой задачи человек-владелец.'],['квартал','Конвейер для R1. В R2 задачу ведёт человек, спеку и код проверяют двое, деплой запускает человек.'],['после внутреннего аудита','Автономия растёт только на R0 и R1.'],['только R0 и R1','В R2 человек остаётся у одобрения и деплоя. Так работают Citi и Goldman.']],
+  note:'<b>Пример: iGaming под лицензией.</b> В R2 попадают кошелёк, бонусы, проверка личности, реестр самоисключения, лимиты ответственной игры и отчётность регулятору. До получения лицензии R2 не уходит дальше фазы 3, а требования регулятора к процессу разработки сверяются с комплаенсом на фазе 0.'}
+];
+function renderAdoption(){
+ const F=[['Как работают','model'],['Обвязка','harness'],['Ревью','review'],['Что меряют','metrics'],['Главный риск','risk'],['Где разумно остановиться','stop']];
+ $('#v-adoption').innerHTML=`
+ <section class="blk"><div><h2>Внедрение: шесть фаз и четыре размера компании</h2><p class="lead">Лестница одна, проходят её по-разному. Стартап сжимает первые фазы в неделю, банк на каждой задерживается на кварталы и для самого рискованного кода останавливается раньше.</p></div>
+  <div class="note">Единой модели зрелости в индустрии нет. Вендоры считают прогрессом рост автономии агентов, DORA и McKinsey — фундамент и перестройку процесса; мы идём за вторыми. Последовательность фаз собрана из нескольких источников, критерии входа и выхода и сроки наши. Примеры компаний — их собственные заявления без независимого аудита.</div></section>
+ <section class="blk" id="compare"><h3>Чем отличаются размеры</h3>
+  ${tbl(['',...SEG.map(s=>s.n)],F.map(f=>[f[0],...SEG.map(s=>s[f[1]])]))}</section>
+ <section class="blk" id="ladder"><div><h3>Лестница</h3><p class="muted">Выберите размер компании: в каждой фазе появится, как её проходит этот сегмент.</p></div>
+  <div class="seg" id="s-seg">${SEG.map(s=>`<button data-k="${s.k}">${s.n}<small>${s.sub}</small></button>`).join('')}</div>
+  <div id="adoption-panel" class="stack" style="gap:20px"></div></section>`;
+ $('#s-seg').onclick=e=>{const b=e.target.closest('button'); if(b) pick.adoption(b.dataset.k)};
+ pick.adoption('scaleup');
+}
+pick.adoption=k=>{const s=SEG.find(x=>x.k===k); if(!s) return false;
+ $$('#s-seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));
+ $('#adoption-panel').innerHTML=`
+  ${s.note?`<blockquote>${s.note}</blockquote>`:''}${s.kit?`<div class="links">${L('startup','Открыть стартап-кит')}</div>`:''}
+  <div class="phases">${PH.map((p,i)=>`<div class="ph"><div class="pn">${i}</div><div class="stack" style="gap:10px"><div class="row"><b>${p.n}</b>${p.hard?pill('crit','САМЫЙ ТРУДНЫЙ ПЕРЕХОД'):''}${p.opt?pill('info','ПО ЖЕЛАНИЮ'):''}</div><p>${p.what}</p><p class="muted">${p.proc}</p>
+   <div class="segnote"><b>${s.n} · ${s.ph[i][0]}</b>${s.ph[i][1]}</div>
+   <div class="gate"><div><b>Вход</b>${p.inp}</div><div><b>Выход</b>${p.out}</div></div><p class="src"><b>Типичная ошибка.</b> ${p.err}</p>
+   ${p.hard?`<p class="src">Почему трудно: генерация растёт сразу, а пропускная способность ревью — нет. Снимается только вложениями в сенсоры: тесты, структурные проверки, ИИ-ревью. Это наш вывод из данных о ревью, а не измеренный факт.</p>`:''}</div></div>`).join('')}</div>
+  <div class="stack"><h3>Что делают компании этого размера</h3><div class="cols">${s.ex.map(e=>`<div class="card stack"><p>${e[0]}</p><span class="src">${X(e[1],'Источник')} · ${e[2]}</span></div>`).join('')}</div></div>`; return true};
+
+/* ================= СТАРТАП-КИТ ================= */
+const KIT=[
+ ['Задачи и спеки','пост 1','Трекер задач (Linear, GitHub Issues). Спеки лежат файлами в репозитории, чтобы их читал агент. GitHub Spec Kit даёт готовую структуру.','now'],
+ ['Агент','пост 2','Один основной: Claude Code, Codex или Cursor. У всех есть облачный режим со своей песочницей, строить её не нужно.','now'],
+ ['Код и CI','пост 3','GitHub и GitHub Actions. Основная ветка защищена. В CI типы, линтер, 3 сквозных теста, проверка зависимостей и уязвимостей.','now'],
+ ['ИИ-ревью','пост 4','CodeRabbit, Greptile или Copilot code review на каждом PR.','now'],
+ ['Бэкенд и деплой','пост 6','Supabase и Vercel или аналоги. Разработка и прод — разные проекты. Предпросмотр на каждый PR.','now'],
+ ['Бюджет','Andon','Лимит расходов в консоли провайдера модели и оповещение о превышении.','now'],
+ ['Ошибки и аналитика','пост 6','Sentry и PostHog или аналоги: по ним видно откаты и инциденты.','soon'],
+ ['Оповещения','Andon','Канал в мессенджере для упавших сборок, остановок агента и превышения бюджета.','soon'],
+ ['Шлюз для моделей','Andon','LiteLLM, Portkey или аналог, когда агентов несколько и нужны бюджеты по задачам.','later'],
+ ['Аналитика конвейера','метрики','Первые месяцы хватает таблицы раз в неделю. Отдельный сервис — когда инженеров больше 20.','later']
+];
+const WHEN={now:['ok','СРАЗУ'],soon:['warn','ПОСЛЕ ЗАПУСКА'],later:['info','ПОЗЖЕ']};
+const WEEK=[
+ ['Разделить разработку и прод','Отдельный проект базы для разработки. Ключи от прода есть только у людей и в секретах деплоя.'],
+ ['Закрыть доступ к данным политиками','На каждой таблице. Проверка в CI: новая таблица без политики роняет сборку.'],
+ ['Защитить основную ветку','Только через PR, с зелёным CI и одобрением человека.'],
+ ['Написать AGENTS.md','Около 100 строк: стек, структура, команды, что нельзя трогать.'],
+ ['Настроить CI','Типы, линтер и 3 сквозных теста: регистрация, главное действие, оплата.'],
+ ['Подключить ИИ-ревью','На все PR.'],
+ ['Поставить лимит трат','С оповещением на 50% и 90%.'],
+ ['Записать зоны кода','В AGENTS.md: какие папки — ядро, какие — периферия.']
+];
+const ZONES=[
+ ['Что входит','Лендинги, интерфейс, админка, эксперименты','Деньги, авторизация, схема данных, всё регуляторное'],
+ ['Класс риска','R1, для черновиков R0','R2'],
+ ['Как пишем','Свободно, можно без спеки','Только по пакету спецификации'],
+ ['Тесты','По желанию. Не взлетело — ветка удаляется','Тесты-критерии до запуска, агент их не меняет'],
+ ['Ревью','ИИ-ревью, человек по желанию','ИИ-ревью и обязательно основатель или лид']
+];
+const AGENTSMD=`# AGENTS.md
+
+## Стек
+Next.js 15 (App Router), TypeScript strict, Supabase (Postgres + Auth), Tailwind.
+
+## Команды
+pnpm dev          # локальный запуск
+pnpm test         # юнит-тесты
+pnpm e2e          # сквозные тесты
+pnpm lint && pnpm typecheck
+
+## Структура
+app/               страницы и роуты
+lib/core/          ЯДРО: платежи, авторизация. Только по спеке.
+lib/ui/            компоненты
+specs/             спеки: spec.md, plan.md, tasks.md
+tests/acceptance/  тесты-критерии, только на чтение
+supabase/          миграции
+
+## Правила
+- Не трогай lib/core/ и supabase/migrations/ без задачи со спекой.
+- Не меняй тесты в tests/acceptance/: их утверждает человек.
+- Новая таблица = миграция + политика доступа в том же PR.
+- Никаких секретов в коде. Ключи только из переменных окружения.
+- Один PR = одна задача. Правок больше чем в ~10 файлах — остановись и спроси.
+
+## Подробнее
+docs/architecture.md, docs/payments.md`;
+const CIYML=`# .github/workflows/ci.yml
+name: ci
+on: [pull_request]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm test
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm e2e        # регистрация, главное действие, оплата
+      - run: pnpm check:rls  # падает, если у таблицы нет политики доступа`;
+const SKIP=[
+ ['Свой шлюз для моделей','Пока агент один, хватает лимита в консоли провайдера.'],
+ ['Платная аналитика конвейера','До двух десятков инженеров достаточно таблицы раз в неделю.'],
+ ['Связки из нескольких агентов','Пока каждый PR ревьюите вы сами, больше агентов значит только длиннее очередь.'],
+ ['Три агента «на пробу»','Выберите один и настройте под него AGENTS.md.']
+];
+function renderStartup(){
+ let saved={}; try{saved=JSON.parse(localStorage.getItem('kit-week')||'{}')}catch(e){}
+ $('#v-startup').innerHTML=`
+ <section class="blk"><div><h2>Стартап-кит: фазы 0–2 за неделю</h2><p class="lead">Приложение к разделу «Внедрение» для команды до 20 человек. Хватает шести-семи сервисов. Важнее не набор инструментов, а два правила: агент не видит прод, а в ядро ничего не попадает без спеки и человека.</p><div class="links" style="margin-top:10px">${L('adoption:startup','Все фазы для стартапа')}${L('control:security','Полный список контролей')}</div></div></section>
+ <section class="blk" id="tools"><h3>Сервисы по постам конвейера</h3>
+  ${tbl(['Что','Где на конвейере','Чем закрыть','Когда'],KIT.map(k=>[k[0],`<span class="mono muted">${k[1]}</span>`,k[2],pill(WHEN[k[3]][0],WHEN[k[3]][1])]))}
+  <p class="src">Названия сервисов — примеры, а не рекомендация поставщика. Внутри строки они взаимозаменяемы.</p></section>
+ <section class="blk" id="kit-week"><div><h3>Первая неделя</h3><p class="muted">Восемь шагов. Отметки сохраняются в вашем браузере.</p></div>
+  <div class="cols">${WEEK.map((w,i)=>`<label class="check card" for="kw${i}"><input type="checkbox" id="kw${i}" ${saved[i]?'checked':''}><span class="stack" style="gap:4px"><b>${i+1}. ${w[0]}</b><span class="muted">${w[1]}</span></span></label>`).join('')}</div>
+  <div id="kw-out"></div></section>
+ <section class="blk" id="zones"><div><h3>Две зоны кода</h3><p class="muted">Упрощённые классы риска: скорость на периферии, дисциплина в ядре.</p></div>
+  ${tbl(['','Периферия','Ядро'],ZONES)}
+  <div class="note">Если продукт регулируемый, стартап-режим относится только к периферии. Ядро с первого дня живёт по правилам R2, даже если в команде три человека. ${L('model:risk','Классы риска')}</div></section>
+ <section class="blk" id="agentsmd"><div class="row"><h3>Шаблон AGENTS.md</h3><button class="btn" data-copy="a">Скопировать</button></div><p class="muted">Пример под Next.js и Supabase. Замените стек и папки на свои.</p><pre class="code">${AGENTSMD.replace(/</g,'&lt;')}</pre></section>
+ <section class="blk" id="ci"><div class="row"><h3>Шаблон CI</h3><button class="btn" data-copy="c">Скопировать</button></div><p class="muted">GitHub Actions. Скрипт check:rls нужно написать под свою схему: он читает список таблиц и падает, если у какой-то нет политики.</p><pre class="code">${CIYML.replace(/</g,'&lt;')}</pre></section>
+ <section class="blk"><div><h3>Две привычки, которые экономят недели</h3></div>
+  <div class="cols"><div class="card stack"><b>Проверка идеи до кода</b><p>Попросите модель сыграть скептичного клиента: пять причин не платить и три краевых случая. Это та же сессия нарезки, только короче.</p><div class="links">${L('spec:session','Сессия нарезки')}</div></div>
+  <div class="card stack"><b>Уборка раз в неделю</b><p>Агент ищет мёртвый код, дубликаты и неиспользуемые зависимости и открывает PR на удаление. Задача класса R0.</p></div></div></section>
+ <section class="blk"><h3>Что пока не нужно</h3>
+  <div class="cols">${SKIP.map(s=>`<div class="card stack"><b>${s[0]}</b><p class="muted">${s[1]}</p></div>`).join('')}</div></section>`;
+ const upd=()=>{const st={};let n=0;$$('#kit-week input').forEach((c,i)=>{if(c.checked){st[i]=1;n++}});try{localStorage.setItem('kit-week',JSON.stringify(st))}catch(e){}
+  $('#kw-out').innerHTML=n===WEEK.length?`<div class="verdict ok"><b>Фазы 0 и 1 закрыты</b>Можно переходить к двум зонам кода.</div>`:`<div class="verdict info"><b>Сделано ${n} из ${WEEK.length}</b>Пока список не закрыт, агент не получает задач в ядро.</div>`};
+ $$('#kit-week input').forEach(c=>c.onchange=upd); upd();
+ $$('#v-startup [data-copy]').forEach(b=>b.onclick=()=>{const txt=b.dataset.copy==='a'?AGENTSMD:CIYML, pre=b.closest('section').querySelector('pre');
+  const done=()=>{b.textContent='Скопировано';setTimeout(()=>b.textContent='Скопировать',1600)};
+  const sel=()=>{const r=document.createRange();r.selectNodeContents(pre);const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Выделено, нажмите Ctrl+C'};
+  try{navigator.clipboard.writeText(txt).then(done,sel)}catch(e){sel()}});
+}
+
+/* ================= ОСНОВАНИЯ ================= */
+const EVD=[
+ ['−19%','16 опытных разработчиков в своих репозиториях работали с ИИ медленнее, а считали, что ускорились на 20%. Инструменты начала 2025 года; повторить опыт в 2026 не удалось: участники не хотели работать без ИИ.','METR, июль 2025','https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/','НЕЗАВИСИМОЕ','ok'],
+ ['+98% / +91%','Команды с высоким внедрением ИИ вливают вдвое больше PR, время ревью растёт на 91%, размер PR на 154%. На уровне компании поставка не меняется.','Faros AI, 2025','https://www.faros.ai/blog/ai-productivity-paradox-report-2025','ВЕНДОР','warn'],
+ ['+441%','Медианное время PR в ревью от периодов с низким внедрением ИИ к периодам с высоким. 22 000 разработчиков.','Faros AI, 2026','https://www.faros.ai/blog/ai-acceleration-whiplash-takeaways','ВЕНДОР','warn'],
+ ['33% и 84%','Доля PR, влитых за 30 дней: сгенерированные ИИ и обычные. 8,1 млн PR.','LinearB, 2026','https://linearb.io/resources/engineering-benchmarks-report','ВЕНДОР','warn'],
+ ['55–86%','Доля принятых агентных PR в открытых репозиториях. Сильно зависит от агента и отбора. Отклонённые PR крупнее и чаще падают в CI.','Датасет AIDev, MSR 2026','https://solar.cs.ucl.ac.uk/pdf/pinna2026msr.pdf','НЕЗАВИСИМОЕ','ok'],
+ ['Усилитель','ИИ коррелирует с ростом пропускной способности и с ростом нестабильности поставки. Малые партии названы особенно важными. Около 5 000 опрошенных.','DORA 2025','https://cloud.google.com/blog/products/ai-machine-learning/announcing-the-2025-dora-report','ИССЛЕДОВАНИЕ GOOGLE','ok'],
+ ['2 раунда CI','После второго неудачного раунда ветка возвращается инженеру: дальнейшие попытки дают убывающую отдачу.','Stripe Minions, 2026','https://www.infoq.com/news/2026/03/stripe-autonomous-coding-agents','ЗАЯВЛЕНИЕ КОМПАНИИ','info'],
+ ['45%','Доля решений от LLM с уязвимостями из OWASP Top 10 в тестовых задачах.','Veracode, 2025','https://www.veracode.com/press-release/ai-generated-code-poses-major-security-risks-in-nearly-half-of-all-development-tasks-veracode-research-reveals/','ВЕНДОР','warn'],
+ ['50% и 67%','Результат теста на понимание у группы с ИИ и без. 52 инженера, в основном начинающие, осваивали новую библиотеку.','Anthropic, январь 2026','https://www.anthropic.com/research/AI-assistance-coding-skills','ИССЛЕДОВАНИЕ ВЕНДОРА','warn'],
+ ['2028','К этому году расходы на ИИ-кодинг превысят среднюю зарплату разработчика. Советуют делить задачи на три режима исполнения и ставить пороги по токенам.','Gartner, июнь 2026','https://gartner.com/en/newsroom/press-releases/2026-06-24-gartner-predicts-ai-coding-costs-will-surpass-average-developer-salary-by-2028-as-token-consumption-surges','ПРОГНОЗ АНАЛИТИКА','info'],
+ ['Меньше 10%','Столько прибавляет команда целиком, если ускорен только кодинг, а планирование, тестирование и релиз остались ручными.','Forrester','https://forrester.com/blogs/agentic-software-development-takes-the-lead-from-code-assistants-to-orchestrated-sdlc-agents','АНАЛИТИК','info'],
+ ['26 ч и 1 ч','Медианное время до мержа с ревью человеком и без него в одной из команд.','Pragmatic Engineer, 2026','https://newsletter.pragmaticengineer.com/p/what-is-happening-with-code-reviews','ЖУРНАЛИСТИКА','info']
+];
+const HYP=[
+ ['Лимит очереди на ревьюера','2 PR для R1 и R2','Начать свободнее и затягивать, пока очередь не перестанет расти 4 недели подряд','rhythm:wip'],
+ ['Нормы времени ревью','Медиана 2 часа, самый старый PR не старше 4 рабочих часов','Взять свою медиану ревью человеческих PR, отдельно по классам риска','metrics:review'],
+ ['Порог цикла','3 одинаковых вызова подряд','Разбирать ложные срабатывания на trace retro','andon:triggers'],
+ ['Пороги шагов и времени','P95 своего класса задач','Собирать трассы 4 недели; перемерять при смене модели','andon:calib'],
+ ['Бюджет на задачу','250 тыс. токенов','P95 расхода задач своего класса','andon:calib'],
+ ['Возврат от человека агенту','Один','Смотреть, как часто второй возврат заканчивается мержем','conveyor:review'],
+ ['Окно наблюдения','14 дней','Построить распределение времени от мержа до отката на своих данных','conveyor:verified'],
+ ['Срок разбора Andon','1 час','По тому, сколько задача может простоять без ущерба для очереди','conveyor:andon'],
+ ['Выборка аудита R0','Задаёте сами','Повышать после каждого найденного дефекта','model:risk'],
+ ['Запас спек','От 1 до 5 дней','По тому, как быстро у вас устаревают требования','metrics:buffer'],
+ ['Сроки фаз внедрения','См. лестницу','Двигаться по критериям выхода, а не по календарю','adoption:ladder']
+];
+const LEAN=[
+ ['Единица потока','Деталь','Capability','spec:slice'],
+ ['Малая партия','Одна деталь за раз','Одна capability на один проход агента','spec:slice'],
+ ['Лимит незавершённой работы','Карточки между станками','Лимит очереди ревью','rhythm:wip'],
+ ['Jidoka','Станок останавливается при браке','Гейты прерывают агента при красной проверке','conveyor:gates'],
+ ['Poka-yoke','Деталь нельзя вставить неправильно','Границы путей, минимальные права, тесты-критерии только на чтение','harness:rules'],
+ ['Шнур Андон','Рабочий останавливает линию','Триггеры останавливают агента','andon:triggers'],
+ ['Стандартная работа','Карта операции на посту','constitution.md, AGENTS.md, контракты','harness:matrix'],
+ ['Кайдзен','Поиск первопричины, доработка оснастки','Trace retro: правка спеки, guide или sensor','rhythm:ceremonies']
+];
+const MUDA=[
+ ['Перепроизводство','Агенты открыли 20 PR за день, команда успевает проверить 5','Лимит очереди ревью','rhythm:wip'],
+ ['Ожидание','PR ждёт ревьюера, агент ждёт спеку','Метрики ограничения','metrics:review'],
+ ['Передачи','Требование пересказывается из трекера в промпт и теряет детали','Спека файлом в репозитории','spec:package'],
+ ['Лишняя обработка','Десять уточняющих промптов вместо одного падающего теста','Тесты-критерии до запуска','spec:package'],
+ ['Запасы','Большие невлитые ветки и устаревающие спеки','Малые capability, запас спек','metrics:buffer'],
+ ['Лишние движения','Ручное копирование логов и схем в промпт','Инструменты и контекст в обвязке','harness:layers'],
+ ['Дефекты','Ошибка агента, пропущенная уставшим ревьюером','ИИ-ревью, классы риска, меры против атрофии','control:skills']
+];
+function renderEvidence(){
+ $('#v-evidence').innerHTML=`
+ <section class="blk"><div><h2>Основания: на чём это стоит и что ещё не доказано</h2><p class="lead">Три части: данные, на которые опирается фреймворк; список чисел, которые в нём являются стартовыми гипотезами; происхождение идей из Lean.</p></div>
+  <div class="note">Часть источников мы читали по выдержкам и пересказам, а не в оригинале. Цифры компаний — их собственные заявления: независимого аудита нет, определения у всех разные. Данные вендоров аналитики собраны на их клиентах. Шесть ключевых цифр повторно сверены поиском в ноябре 2026, расхождений не нашли.</div></section>
+ <section class="blk" id="facts"><h3>Данные</h3>
+  <div class="evgrid">${EVD.map(e=>`<div class="evc"><div class="row">${pill(e[5],e[4])}</div><div class="big">${e[0]}</div><p>${e[1]}</p><span class="src">${X(e[3],e[2])}</span></div>`).join('')}</div></section>
+ <section class="blk" id="hyp"><div class="row"><h3>Что здесь гипотеза</h3>${ev('hyp')}</div>
+  <p class="muted">Числа, у которых нет внешнего обоснования. С них можно начать, но каждое нужно заменить своим.</p>
+  ${tbl(['Параметр','Стартовое значение','Как калибровать','Где используется'],HYP.map(h=>[h[0],h[1],h[2],L(h[3],'Открыть')]))}</section>
+ <section class="blk" id="lean"><div><h3>Что взято из Lean</h3><p class="muted">Из производственной системы Toyota взято управление потоком и остановка линии. Стандартизация продукта не взята: каждая capability уникальна, а посты 1 и 5 — проектная работа, а не сборка. «Конвейер» здесь — картинка потока, а не сборочная линия.</p></div>
+  ${tbl(['Понятие','На заводе','Здесь','Где'],LEAN.map(r=>[r[0],r[1],r[2],L(r[3],'Открыть')]))}</section>
+ <section class="blk" id="muda"><h3>Семь потерь и чем они закрыты</h3>
+  ${tbl(['Потеря','Как выглядит','Чем закрыта','Где'],MUDA.map(r=>[r[0],r[1],r[2],L(r[3],'Открыть')]))}</section>`;
+}
+
+/* ================= РОУТИНГ ================= */
+const VIEWS=['model','conveyor','spec','harness','andon','control','metrics','rhythm','adoption','startup','evidence'];
+const ALIAS={slicing:'spec',basis:'harness',scale:'adoption',transition:'adoption'};
+const curView=()=>{let v=location.hash.slice(1); v=ALIAS[v]||v; return VIEWS.includes(v)?v:'model'};
+let pending;
+function route(){
+ const v=curView();
+ VIEWS.forEach(x=>$('#v-'+x).hidden=x!==v);
+ $$('#nav a').forEach(a=>{if(a.getAttribute('href')==='#'+v){a.setAttribute('aria-current','page');a.scrollIntoView({block:'nearest',inline:'nearest'})}else a.removeAttribute('aria-current')});
+ const k=pending; pending=undefined;
+ if(k===undefined) return;
+ if(!k){window.scrollTo(0,0);return}
+ let el=(pick[v]&&pick[v](k))?$('#'+v+'-panel'):document.getElementById(k);
+ if(!el){window.scrollTo(0,0);return}
+ const y=el.getBoundingClientRect().top+window.scrollY-$('header.top').offsetHeight-70;
+ window.scrollTo({top:Math.max(0,y),behavior:'auto'});
+ el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+}
+document.addEventListener('click',e=>{
+ const a=e.target.closest('a[href^="#"]'); if(!a) return;
+ e.preventDefault();
+ const t=a.dataset.t||a.getAttribute('href').slice(1), [v,k]=t.split(':');
+ pending=k||'';
+ if(curView()===v) route(); else location.hash=v;
+});
+window.addEventListener('hashchange',route);
+renderModel();renderConveyor();renderSpec();renderHarness();renderAndon();renderControl();renderMetrics();renderRhythm();renderAdoption();renderStartup();renderEvidence();
+route();
+</script>
+
+</html>
