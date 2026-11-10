@@ -160,6 +160,26 @@ td:first-child{font-weight:600}
 .segnote{background:var(--accent-soft);border-radius:4px;padding:10px 12px;font-size:14px}
 .segnote b{color:var(--accent)}
 
+.waves{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;align-items:start}
+.wave{display:flex;flex-direction:column;gap:8px;min-width:0}
+.wave .wh{padding:10px 12px;background:var(--sunk);border-radius:4px;min-height:64px}
+.wave .wh b{display:block;font:600 15px/1.2 var(--display)}
+.wave .wh span{font:400 11px/1.3 var(--mono);color:var(--muted)}
+.ep{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:4px;padding:10px 12px;display:flex;flex-direction:column;gap:5px;font-size:13px;min-width:0}
+.ep .code{font:600 11px/1 var(--mono);color:var(--muted)}
+.ep b{font:600 14px/1.25 var(--display)}
+.ep .lk{font-size:13px;align-self:flex-start}
+.wave .after{font-size:13px;color:var(--muted);padding:0 2px}
+@media (max-width:980px){.waves{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.waves{grid-template-columns:minmax(0,1fr)}}
+.ep.prop{border-style:dashed;border-left:3px solid var(--our)}
+.ep.prop .code{color:var(--our)}
+.ep .links{font-size:13px;gap:4px 12px}
+.hideprop .ep.prop,.hideprop .propc{display:none}
+.propc{color:var(--our)}
+tr.flash{animation:none}
+tr.flash td{animation:flashbg 1.6s ease-out}
+@keyframes flashbg{0%{background:var(--accent-soft)}100%{background:transparent}}
 .evgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .evc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
 .evc .big{font:600 24px/1.1 var(--display);font-variant-numeric:tabular-nums}
@@ -187,7 +207,7 @@ pre.code{margin:0;font:400 13px/1.55 var(--mono);background:var(--sunk);border:1
 <header class="top"><div class="top-in">
   <div class="brand">Agentic Delivery<small>Framework</small></div>
   <nav id="nav" aria-label="Разделы">
-    <a href="#model">Модель</a><a href="#conveyor">Конвейер</a><a href="#spec">Спека</a><a href="#harness">Обвязка</a><a href="#andon">Andon</a><a href="#control">Контроль</a><a href="#metrics">Метрики</a><a href="#rhythm">Ритм</a><a href="#adoption">Внедрение</a><a href="#startup">Стартап-кит</a><a href="#evidence">Основания</a>
+    <a href="#model">Модель</a><a href="#conveyor">Конвейер</a><a href="#spec">Спека</a><a href="#harness">Обвязка</a><a href="#andon">Andon</a><a href="#control">Контроль</a><a href="#metrics">Метрики</a><a href="#rhythm">Ритм</a><a href="#adoption">Внедрение</a><a href="#platform">Платформа</a><a href="#startup">Стартап-кит</a><a href="#evidence">Основания</a>
   </nav>
 </div></header>
 
@@ -201,6 +221,7 @@ pre.code{margin:0;font:400 13px/1.55 var(--mono);background:var(--sunk);border:1
 <div class="view" id="v-metrics" hidden></div>
 <div class="view" id="v-rhythm" hidden></div>
 <div class="view" id="v-adoption" hidden></div>
+<div class="view" id="v-platform" hidden></div>
 <div class="view" id="v-startup" hidden></div>
 <div class="view" id="v-evidence" hidden></div>
 </main>
@@ -781,7 +802,8 @@ function renderAdoption(){
  const F=[['Как работают','model'],['Обвязка','harness'],['Ревью','review'],['Что меряют','metrics'],['Главный риск','risk'],['Где разумно остановиться','stop']];
  $('#v-adoption').innerHTML=`
  <section class="blk"><div><h2>Внедрение: шесть фаз и четыре размера компании</h2><p class="lead">Лестница одна, проходят её по-разному. Стартап сжимает первые фазы в неделю, банк на каждой задерживается на кварталы и для самого рискованного кода останавливается раньше.</p></div>
-  <div class="note">Единой модели зрелости в индустрии нет. Вендоры считают прогрессом рост автономии агентов, DORA и McKinsey — фундамент и перестройку процесса; мы идём за вторыми. Последовательность фаз собрана из нескольких источников, критерии входа и выхода и сроки наши. Примеры компаний — их собственные заявления без независимого аудита.</div></section>
+  <div class="note">Единой модели зрелости в индустрии нет. Вендоры считают прогрессом рост автономии агентов, DORA и McKinsey — фундамент и перестройку процесса; мы идём за вторыми. Последовательность фаз собрана из нескольких источников, критерии входа и выхода и сроки наши. Примеры компаний — их собственные заявления без независимого аудита.</div>
+  <div class="links">${L('platform','Пример: план постройки платформы по волнам')}</div></section>
  <section class="blk" id="compare"><h3>Чем отличаются размеры</h3>
   ${tbl(['',...SEG.map(s=>s.n)],F.map(f=>[f[0],...SEG.map(s=>s[f[1]])]))}</section>
  <section class="blk" id="ladder"><div><h3>Лестница</h3><p class="muted">Выберите размер компании: в каждой фазе появится, как её проходит этот сегмент.</p></div>
@@ -799,6 +821,105 @@ pick.adoption=k=>{const s=SEG.find(x=>x.k===k); if(!s) return false;
    <div class="gate"><div><b>Вход</b>${p.inp}</div><div><b>Выход</b>${p.out}</div></div><p class="src"><b>Типичная ошибка.</b> ${p.err}</p>
    ${p.hard?`<p class="src">Почему трудно: генерация растёт сразу, а пропускная способность ревью — нет. Снимается только вложениями в сенсоры: тесты, структурные проверки, ИИ-ревью. Это наш вывод из данных о ревью, а не измеренный факт.</p>`:''}</div></div>`).join('')}</div>
   <div class="stack"><h3>Что делают компании этого размера</h3><div class="cols">${s.ex.map(e=>`<div class="card stack"><p>${e[0]}</p><span class="src">${X(e[1],'Источник')} · ${e[2]}</span></div>`).join('')}</div></div>`; return true};
+
+/* ================= ПЛАТФОРМА ================= */
+const WAVEN=[['Волна 0','Предпосылки','После волны: есть с чем сравнивать, видно, кто что сделал и сколько это стоит, у правил есть владелец.'],['Волна 1','Пилот и независимая работа','После волны: первая возможность прошла весь конвейер, и её можно остановить на любом шаге.'],['Волна 2','После базовой линии','После волны: замкнут выход. Релиз, откат, вердикт после релиза и оценка того, что изменение заденет.'],['Волна 3','Оптимизация и решения','После волны: настройка по данным. Стоимость, архитектура, документация, оценка агентов.'],['Security Gateway','Проверка концепции','Отдельная ветка: какие документы компании агент вообще может читать.']];
+const PARTS=[['spec','Пост 1 · Спека','conveyor:spec'],['run','Пост 2 · Запуск агента','conveyor:run'],['gates','Пост 3 · Гейты','conveyor:gates'],['aireview','Пост 4 · ИИ-ревью','conveyor:aireview'],['review','Пост 5 · Суждение и классы риска','conveyor:review'],['verified','Пост 6 · Влито и проверено','conveyor:verified'],['andon','Andon','andon'],['harness','Обвязка и контекст','harness'],['control','Контроль','control'],['metrics','Метрики','metrics'],['adopt','Внедрение и люди','adoption']];
+/* [код, название, описание, волна, часть фреймворка, ссылка, подпись ссылки] */
+const EPICS=[
+ ['N0','Proof of Impact: Baseline','Замер до агентов: пропущенные дефекты, неудачные релизы, откаты, время до доступности и минуты людей. Каждое число помечается как наблюдаемое, оценочное или неизвестное.',0,'metrics','adoption:ladder','Фаза 0: базовая линия'],
+ ['N1','Ticket-to-Execution Engine','Задача из трекера превращается в запуск агента без ручной пересылки.',0,'run','conveyor:run','Пост 2'],
+ ['N2','Agent Identity and Audit','Отдельные учётные записи агентов и запись того, кто что сделал.',0,'control','control:security','Контроли'],
+ ['E6','TaskFlow Hub: Agent Work Tracking','На каком посту каждая задача агента и сколько она там находится.',0,'metrics','rhythm:board','Табло диспетчера'],
+ ['E10b','Agent Ledger: Spend per Epic','Учёт расходов на агентов по эпикам.',0,'metrics','metrics:cost','Стоимость на capability'],
+ ['E11','Private Inference: Local Models','Модели в собственном контуре для данных, которые нельзя отправлять наружу.',0,'run','adoption:regulated','Закрытый контур'],
+ ['E9a','Pilot Delivery: First Feature','Первая фича, проведённая через весь поток как пилот.',1,'adopt','conveyor','Конвейер'],
+ ['E8','QA Evidence Hub: Verification','Доказательства проверки: что тестировалось и с каким результатом.',1,'gates','conveyor:gates','Пост 3'],
+ ['E7','Product Studio: Requirements Research','Исследование требований до написания спеки.',1,'spec','spec:session','Сессия нарезки'],
+ ['E4','SpecStandard: Decisions as Specs','Единый формат: решения записываются как спецификации.',1,'spec','spec:package','Пакет спецификации'],
+ ['E2','SmartFix Engine','Агент на исправлении дефектов: ограниченная задача, с которой удобно начинать.',1,'run','model:risk','Классы риска'],
+ ['E3','Release Hub','Единая точка выпуска релизов.',2,'verified','conveyor:verified','Пост 6'],
+ ['E5','Release Health Verdict','Вердикт о здоровье релиза после выкатки.',2,'verified','metrics:postmerge','Качество после мержа'],
+ ['E10a','Product Studio: Single Window','Одно окно для входящих требований.',2,'spec','conveyor:spec','Пост 1'],
+ ['E9b','Impact Map: Backend and Clients','Какие сервисы и клиенты заденет изменение.',2,'review','model:risk','Класс риска и границы'],
+ ['E10a-1','Product Studio: BRD Drafting','Черновик бизнес-требований с помощью ИИ.',2,'spec','spec:package','Намерение в пакете'],
+ ['E10a-3','Product Studio: Complexity Scoring','Оценка сложности задачи до запуска.',2,'spec','spec:slice','Размер capability'],
+ ['E12a','CostWise: Model Routing','Выбор модели под задачу: дешёвая там, где её хватает, дорогая там, где она нужна.',3,'metrics','metrics:cost','Стоимость на capability'],
+ ['E12b','ArchRadar: Architecture Evidence','Доказательства соответствия архитектуре.',3,'gates','harness:matrix','Структурные сенсоры'],
+ ['E12c','Code2Doc Hub: Release Docs Sync','Документация обновляется вместе с релизом.',3,'harness','harness:layers','Контекст для агента'],
+ ['E12c-2','Code2Doc Hub: Documentation Coverage','Какая часть кода покрыта документацией.',3,'harness','harness:layers','Контекст для агента'],
+ ['E12c-3','Code2Doc Hub: Drift Watch and Publish','Отслеживание расхождений между кодом и документацией и публикация исправлений.',3,'harness','harness:matrix','Сенсор расхождений'],
+ ['E10b-2','Agent Ledger: Agent Evals','Оценочные прогоны агентов и моделей.',3,'harness','harness:rules','Правило о смене модели'],
+ ['E1','Document Gateway: Drive and Gmail','Шлюз к документам компании: что из Drive и почты агент может читать.',4,'control','control:security','Контроли: изоляция']
+];
+/* [код, название, что делает, волна, часть, ссылка, подпись, важность, тип, почему] */
+const PROP=[
+ ['P1','Защита обвязки','Конфигурация CI, настройки линтера, AGENTS.md и constitution.md закрыты для агента. Любая их правка идёт по классу R2.',0,'control','harness:rules','Правила обвязки','crit','правило','Агенту запрещено менять только тесты-критерии. Ослабив линтер или CI, он меняет правила для всех следующих задач.'],
+ ['P2','Справочник capability','Стабильный список возможностей скоупа с весом каждой.',0,'metrics','metrics:verified','Verified Capabilities','crit','правило','Capability можно нарезать вдвое мельче: прогресс вырастет вдвое, стоимость на единицу упадёт. Без справочника тренды ничего не значат.'],
+ ['P3','Граф зависимостей и интеграционная проверка','Порядок запуска зависимых capability, правило на конфликт правок и проверка нескольких capability вместе.',2,'gates','conveyor:gates','Пост 3','crit','компонент','Параллельные агенты трогают общие контракты и файлы. Каждая capability по отдельности зелёная, а вместе они не сходятся.'],
+ ['P4','Аудит классов риска','Регулярная проверка, верно ли присвоены классы, и пересмотр уже влитого R0, когда выборочный аудит нашёл дефект.',2,'review','model:risk','Классы риска','crit','правило','Класс ставится по путям. Правка в общей библиотеке класса R1 может сломать платежи, и этого никто не заметит.'],
+ ['P5','Общий стоп','Остановка всех агентов на модуле или во всей системе одним действием и сценарий реагирования.',1,'andon','andon','Andon','crit','компонент','Andon останавливает одну задачу. Инцидент на проде от агентного изменения или успешная инъекция в промпт требуют остановить всех.'],
+ ['P6','Сервис ИИ-ревью','ИИ-ревьюер на каждом PR до человека.',1,'aireview','conveyor:aireview','Пост 4','plan','компонент','Это пост 4 конвейера. В плане под него нет эпика.'],
+ ['P7','Триггеры остановки агента','Жёсткие триггеры, калибруемые пороги и журнал остановок.',1,'andon','andon:triggers','Триггеры','plan','компонент','Механизм остановки одной задачи. В плане под него нет эпика.'],
+ ['P8','Лимиты трат','Бюджет на задачу и на команду, который останавливает запуск при превышении.',1,'andon','control:security','Бюджеты на шлюзе','plan','компонент','Agent Ledger считает расходы, но не ограничивает их.'],
+ ['P9','Обучение и роли','Как писать спеки и тесты-критерии, как ревьюить агентный код, кто кем становится.',1,'adopt','model:roles','Роли','plan','процесс','Узкое место переезжает к людям на входе и выходе. В плане нет эпика про людей.'],
+ ['P10','Отбор идей и метрика пользы','Какие идеи становятся спеками и пользуются ли тем, что выпущено.',2,'metrics','metrics:verified','Verified Capabilities','imp','компонент','Когда код дешёвый, главный риск — построить лишнее. Verified считает выпуск, а не пользу.'],
+ ['P11','Приёмка автором спеки','Автор спеки смотрит результат в окружении предпросмотра до мержа.',2,'review','conveyor:review','Пост 5','imp','процесс','Инженер судит код, но никто не подтверждает, что получилось то, что просили.'],
+ ['P12','Постепенная выкатка и откат','Флаги функций, выкатка на часть пользователей, план отката в спеке R2, отдельный порядок для миграций данных.',2,'verified','conveyor:verified','Пост 6','imp','компонент','Откат везде подразумевается возможным, а миграции данных не откатываются.'],
+ ['P13','Срочный путь','Ускоренная полоса для исправлений на проде с проверкой задним числом.',2,'review','conveyor:review','Пост 5','imp','правило','По общим правилам хотфикс ждёт спеку и двух ревьюеров.'],
+ ['P14','Сопровождение кода','Кто дежурит по коду, написанному агентом, как убираются дубли и техдолг, как обновляются зависимости.',3,'verified','metrics:postmerge','Качество после мержа','imp','процесс','Конвейер заканчивается через 14 дней после мержа. Код живёт дольше.'],
+ ['P15','Подготовка существующего кода','Тесты, фиксирующие текущее поведение модуля, до того как его тронет агент.',1,'spec','spec:package','Пакет спецификации','imp','процесс','Всё рассчитано на новый код. В унаследованном критерии приёмки не на что опереть.'],
+ ['P16','Нефункциональные гейты','Проверки производительности, нагрузки и внешнего вида интерфейса.',2,'gates','conveyor:gates','Пост 3','imp','компонент','Гейты проверяют логику. Медленный или криво свёрстанный экран проходит их зелёным.'],
+ ['P17','Право и данные','Кому принадлежит сгенерированный код, лицензии открытого кода в нём, условия провайдера, сроки хранения трасс и доступ к ним.',0,'control','control:provenance','Аудит-трейл','imp','правило','Трассы и аудит-трейл сами хранят промпты с чувствительными данными.'],
+ ['P18','Запасная модель','Второй провайдер или модель и план на сбой, рост цены и снятие модели.',3,'run','harness:rules','Правило о смене модели','imp','компонент','Вся поставка зависит от одного поставщика.'],
+ ['P19','Управление правилами','Кто меняет пороги и классы риска, как версионируются правила, когда команда возвращается на фазу назад.',0,'adopt','adoption:ladder','Лестница внедрения','imp','правило','Критерии выхода из фаз есть, критериев возврата нет. У самих правил нет владельца.']
+];
+const SEV={crit:['crit','КРИТИЧНО'],plan:['warn','ПОСТ БЕЗ ЭПИКА'],imp:['info','ВАЖНО']};
+const PADD=[
+ ['Impact Map (E9b)','Класс риска и границы задачи определяются по карте влияния, а не только по путям и меткам','model:risk'],
+ ['CostWise (E12a)','Стоимость не только меряется, но и управляется: модель подбирается под класс задачи','metrics:cost'],
+ ['Drift Watch (E12c-3)','Сенсор, который ловит расхождение кода со спекой и документацией. Нужен для спек класса R2','harness:matrix'],
+ ['Agent Evals (E10b-2)','Агент и модель проверяются до замены, а не после первых остановок','harness:rules'],
+ ['Document Gateway (E1)','Контроль над тем, какие данные компании попадают в контекст агента','control:security']
+];
+function renderPlatform(){
+ const so={crit:0,plan:1,imp:2};
+ const gaps=[...PROP].sort((x,y)=>so[x[7]]-so[y[7]]);
+ $('#v-platform').innerHTML=`
+ <section class="blk"><div><h2>Платформа: что строить и в каком порядке</h2><p class="lead">Фреймворк описывает, как идёт работа. Здесь план, по которому компания строит под неё платформу: ${EPICS.length} эпика в четырёх волнах и ветке безопасности. К ним добавлено ${PROP.length} предлагаемых эпиков, которые закрывают пробелы, найденные при аудите фреймворка и самого плана.</p><div class="links" style="margin-top:10px">${L('adoption','Фазы внедрения')}${L('startup','Стартапу это строить не нужно')}</div></div>
+  <div class="note">Названия эпиков плана и разбивка по волнам взяты из плана. Их описания — наша трактовка по названиям, кроме N0: его описание взято из карточки эпика. Предлагаемые эпики и их место в волнах — наше предложение.</div></section>
+ <section class="blk" id="waves"><div class="row"><h3>Волны</h3><label class="check" for="pl-prop" style="align-items:center"><input type="checkbox" id="pl-prop" checked style="margin-top:0"><span>Показывать предлагаемые эпики</span></label></div>
+  <div class="legend"><span><i style="border-left:3px solid var(--accent)"></i>эпик плана</span><span><i style="border-style:dashed;border-left:3px solid var(--our)"></i>предлагаемый эпик</span><span>правило — настройка или политика на дни · процесс — изменение в работе людей · компонент — сервис, который нужно построить</span></div>
+  <div class="waves">${WAVEN.map((w,i)=>{const pl=EPICS.filter(e=>e[3]===i),pr=PROP.filter(e=>e[3]===i);return `<div class="wave"><div class="wh"><b>${w[0]}</b><span>${w[1]} · ${pl.length} в плане${pr.length?`<span class="propc"> · +${pr.length}</span>`:''}</span></div>
+   ${pl.map(e=>`<div class="ep"><span class="code">${e[0]}</span><b>${e[1]}</b><span>${e[2]}</span>${L(e[5],e[6])}</div>`).join('')}
+   ${pr.map(e=>`<div class="ep prop"><span class="code">${e[0]} · ${e[8]}</span><b>${e[1]}</b><span>${e[2]}</span><div class="links">${L(e[5],e[6])}${L('platform:gap-'+e[0],'Зачем')}</div></div>`).join('')}
+   <p class="after">${w[2]}</p></div>`}).join('')}</div></section>
+ <section class="blk" id="coverage"><div><h3>Покрытие фреймворка планом</h3><p class="muted">Какие эпики обеспечивают каждую часть фреймворка и где плану не хватает своих.</p></div>
+  ${tbl(['Часть фреймворка','Эпики плана','Предлагаем добавить','Статус'],PARTS.map(p=>{const pl=EPICS.filter(e=>e[4]===p[0]),pr=PROP.filter(e=>e[4]===p[0]);
+   return [L(p[2],p[1]),pl.length?pl.map(e=>`<span class="mono">${e[0]}</span> ${e[1]}`).join('<br>'):'—',pr.length?pr.map(e=>`<span class="mono">${e[0]}</span> ${e[1]}`).join('<br>'):'—',!pl.length?pill('crit','В ПЛАНЕ НЕ ПОКРЫТО'):pr.length?pill('warn','ЕСТЬ ПРОБЕЛЫ'):pill('ok','ПОКРЫТО')]}))}</section>
+ <section class="blk" id="gaps"><div class="row"><h3>Что закрывают предлагаемые эпики</h3>${ev('our')}</div>
+  <p class="muted">${PROP.filter(e=>e[7]==='crit').length} критичных пробелов, ${PROP.filter(e=>e[7]==='plan').length} частей фреймворка без эпика в плане и ${PROP.filter(e=>e[7]==='imp').length} важных дополнений.</p>
+  <div class="scroll"><table><thead><tr><th>Эпик</th><th>Важность</th><th>Что делает</th><th>Почему нужен</th><th>Тип и волна</th><th>Во фреймворке</th></tr></thead><tbody>${gaps.map(e=>`<tr id="gap-${e[0]}"><td><span class="mono">${e[0]}</span><br>${e[1]}</td><td>${pill(SEV[e[7]][0],SEV[e[7]][1])}</td><td>${e[2]}</td><td>${e[9]}</td><td>${e[8]}<br><span class="muted">${WAVEN[e[3]][0]}</span></td><td>${L(e[5],e[6])}</td></tr>`).join('')}</tbody></table></div></section>
+ <section class="blk" id="reorder"><div class="row"><h3>Что переставить в плане</h3>${ev('our')}</div>
+  <div class="cols">
+   <div class="card stack"><b>Impact Map — раньше пилота</b><p>E9b стоит в волне 2, пилот E9a в волне 1. Пилот пойдёт без маршрутизации по риску. Минимальная версия, хотя бы классы по путям в репозитории, нужна до пилота.</p><div class="links">${L('model:risk','Классы риска')}</div></div>
+   <div class="card stack"><b>Release Hub и Health Verdict — к концу пилота</b><p>E3 и E5 стоят в волне 2. Без них пилот нечем оценить по качеству после релиза. Минимальные версии нужны к концу волны 1.</p><div class="links">${L('metrics:postmerge','Качество после мержа')}</div></div>
+  </div></section>
+ <section class="blk" id="planreview"><div class="row"><h3>Что показал разбор плана</h3>${ev('src')}</div>
+  <div class="cols">
+   <div class="card stack"><b>Базовая линия нужна раньше всего</b><p>От N0 зависят пилот (E9a), маршрутизация моделей (E12a) и архитектурные доказательства (E12b). Пилоту базовая линия нужна, чтобы показать, что качество сохранилось. Экономию от маршрутизации без неё не посчитать.</p><div class="links">${L('adoption:ladder','Фаза 0 во внедрении')}</div></div>
+   <div class="card stack"><b>Есть циклические зависимости</b><p>В плане найдены 2 группы эпиков, которые зависят друг от друга по кругу. Их нужно разорвать до старта, иначе волны не состыкуются.</p></div>
+  </div></section>
+ <section class="blk" id="planadds"><div class="row"><h3>Что этот план добавляет к фреймворку</h3>${ev('our')}</div>
+  ${tbl(['Компонент','Что даёт','Куда во фреймворке'],PADD.map(a=>[a[0],a[1],L(a[2],'Открыть')]))}</section>
+ <section class="blk"><div class="row"><h3>Замечания к объёму</h3>${ev('our')}</div>
+  <div class="cols3">
+   <div class="card stack"><b>Волна 0 тяжёлая</b><p>В плане шесть эпиков до первой фичи, и мы предлагаем добавить ещё четыре. Все четыре — правила на дни, а не сервисы. Из сервисов до пилота обязательны N0 и N2, остальное можно достраивать по его итогам.</p></div>
+   <div class="card stack"><b>Свои модели — только по необходимости</b><p>Private Inference оправдан, когда данные нельзя отправлять наружу по требованию регулятора или договора. В остальных случаях он задерживает старт.</p></div>
+   <div class="card stack"><b>Это план для крупной компании</b><p>Стартап те же функции покупает: облачный агент, ИИ-ревью, лимит трат у провайдера. Из предлагаемого ему сразу нужны P1, P12 и P13.</p><div class="links">${L('startup','Стартап-кит')}</div></div>
+  </div></section>`;
+ $('#pl-prop').onchange=e=>$('#v-platform').classList.toggle('hideprop',!e.target.checked);
+}
 
 /* ================= СТАРТАП-КИТ ================= */
 const KIT=[
@@ -975,7 +1096,7 @@ function renderEvidence(){
 }
 
 /* ================= РОУТИНГ ================= */
-const VIEWS=['model','conveyor','spec','harness','andon','control','metrics','rhythm','adoption','startup','evidence'];
+const VIEWS=['model','conveyor','spec','harness','andon','control','metrics','rhythm','adoption','platform','startup','evidence'];
 const ALIAS={slicing:'spec',basis:'harness',scale:'adoption',transition:'adoption'};
 const curView=()=>{let v=location.hash.slice(1); v=ALIAS[v]||v; return VIEWS.includes(v)?v:'model'};
 let pending;
@@ -1000,7 +1121,7 @@ document.addEventListener('click',e=>{
  if(curView()===v) route(); else location.hash=v;
 });
 window.addEventListener('hashchange',route);
-renderModel();renderConveyor();renderSpec();renderHarness();renderAndon();renderControl();renderMetrics();renderRhythm();renderAdoption();renderStartup();renderEvidence();
+renderModel();renderConveyor();renderSpec();renderHarness();renderAndon();renderControl();renderMetrics();renderRhythm();renderAdoption();renderPlatform();renderStartup();renderEvidence();
 route();
 </script>
 
