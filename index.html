@@ -270,6 +270,42 @@ nav a.newtab[aria-current="page"]{color:var(--our);border-bottom-color:var(--our
 .gq i{display:block;font-style:italic}
 .gq span{color:var(--muted)}
 @media (max-width:760px){.pgrid{grid-template-columns:minmax(0,1fr)}.pcard dl{grid-template-columns:minmax(0,1fr);gap:2px}}
+.rchain{display:grid;grid-template-columns:minmax(0,1fr) 18px minmax(0,1fr) 18px minmax(0,1fr) 18px minmax(0,1fr) 18px minmax(0,1fr) 18px minmax(0,1fr);gap:6px;align-items:stretch}
+.rchain .rbox{padding:12px;gap:6px}
+.rchain .rbox .q{font-size:15px}
+.rchain .rbox small{font-size:12px;color:var(--muted)}
+.rchain .rarrow{display:flex;align-items:center;justify-content:center;color:var(--muted);font-weight:700}
+.rsup{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+.rsup .rbox{border-style:solid;border-color:var(--line);background:var(--sunk);padding:12px;gap:6px}
+.rsup .rbox .q{font-size:15px}
+.rsup .rbox small{font-size:12px;color:var(--muted)}
+.rsuplabel{font:600 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:14px}
+.rcard .q2{font:600 13px/1.3 var(--mono);color:var(--our)}
+.ba{display:grid;grid-template-columns:minmax(0,1fr) 24px minmax(0,1fr);gap:8px;align-items:stretch}
+.ba>div{border-radius:4px;padding:10px;font-size:14px}
+.ba .was{background:var(--sunk);color:var(--body)}
+.ba .now{background:var(--our-soft)}
+.ba b{display:block;font:600 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;color:var(--muted)}
+.ba .now b{color:var(--our)}
+.ba .ar{display:flex;align-items:center;justify-content:center;color:var(--muted);font-weight:700;padding:0}
+.yn2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;font-size:14px}
+.yn2 ul{margin:4px 0 0;padding-left:18px}
+.yn2 .h{font:600 12px/1.2 var(--mono)}
+.yn2 .y .h{color:var(--ok)} .yn2 .n .h{color:var(--crit)}
+.raci th,.raci td{text-align:center;vertical-align:middle}
+.raci td:first-child,.raci th:first-child{text-align:left;min-width:200px}
+.raci th{font-size:12px;line-height:1.25}
+.raci td.ag,.raci th.ag{background-image:repeating-linear-gradient(135deg,var(--hatch) 0 6px,transparent 6px 12px);font-size:12px;color:var(--muted);min-width:130px;text-align:left}
+.rl{display:inline-block;min-width:24px;padding:3px 6px;border-radius:4px;font:700 12px/1.2 var(--mono)}
+.rl.A{background:var(--our);color:var(--on-accent)}
+.rl.R{background:var(--accent);color:var(--on-accent)}
+.rl.C{border:1.5px solid var(--accent);color:var(--accent)}
+.rl.I{color:var(--muted);border:1px dashed var(--line)}
+.agcols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.never{border:1.5px solid var(--crit);border-radius:6px;padding:14px 16px;background:var(--crit-soft)}
+.never b{color:var(--crit)}
+@media (max-width:980px){.rchain{grid-template-columns:repeat(3,minmax(0,1fr))}.rchain .rarrow{display:none}}
+@media (max-width:760px){.rchain,.rsup,.agcols,.yn2{grid-template-columns:minmax(0,1fr)}.ba{grid-template-columns:minmax(0,1fr)}.ba .ar{transform:rotate(90deg);height:20px}}
 .evgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .evc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
 .evc .big{font:600 24px/1.1 var(--display);font-variant-numeric:tabular-nums}
@@ -297,13 +333,14 @@ pre.code{margin:0;font:400 13px/1.55 var(--mono);background:var(--sunk);border:1
 <header class="top"><div class="top-in">
   <div class="brand">Agentic Delivery<small>Framework</small></div>
   <nav id="nav" aria-label="Разделы">
-    <a href="#base" class="newtab">1 · Основа</a><a href="#pr" class="newtab">2 · Принципы</a><span class="navsep" aria-hidden="true"></span><a href="#model">Модель</a><a href="#conveyor">Конвейер</a><a href="#spec">Спека</a><a href="#harness">Обвязка</a><a href="#andon">Andon</a><a href="#control">Контроль</a><a href="#metrics">Метрики</a><a href="#rhythm">Ритм</a><a href="#adoption">Внедрение</a><a href="#platform">Платформа</a><a href="#startup">Стартап-кит</a><a href="#evidence">Основания</a>
+    <a href="#base" class="newtab">1 · Основа</a><a href="#pr" class="newtab">2 · Принципы</a><a href="#roles" class="newtab">3 · Роли</a><span class="navsep" aria-hidden="true"></span><a href="#model">Модель</a><a href="#conveyor">Конвейер</a><a href="#spec">Спека</a><a href="#harness">Обвязка</a><a href="#andon">Andon</a><a href="#control">Контроль</a><a href="#metrics">Метрики</a><a href="#rhythm">Ритм</a><a href="#adoption">Внедрение</a><a href="#platform">Платформа</a><a href="#startup">Стартап-кит</a><a href="#evidence">Основания</a>
   </nav>
 </div></header>
 
 <main>
 <div class="view" id="v-base" hidden></div>
 <div class="view" id="v-pr" hidden></div>
+<div class="view" id="v-roles" hidden></div>
 <div class="view" id="v-model"></div>
 <div class="view" id="v-conveyor" hidden></div>
 <div class="view" id="v-spec" hidden></div>
@@ -1258,8 +1295,8 @@ function renderBase(){
   ['Контроль',[['Класс риска','R0, R1 или R2. Определяет, сколько контроля нужно изменению.'],['Andon','Автоматическая остановка агента и передача задачи человеку.']]]];
  const blocks=[
   ['1','Основа','Цель, главное правило, границы, словарь','on'],
-  ['2','Принципы','PMI, Lean, Agile, DevOps и что в них меняют агенты','ready'],
-  ['3','Роли и права решений','Кто решает и кто отвечает',''],
+  ['2','Принципы','PMI, Lean, Agile, DevOps и что в них меняют агенты','ready','pr'],
+  ['3','Роли и права решений','Кто решает, кто отвечает, что делает агент','ready','roles'],
   ['4','Жизненный цикл','Стадии SDLC: решение человека, работа агента, ворота',''],
   ['5','Поток','Размер задач, лимит очереди, остановка агента',''],
   ['6','Качество и контроль','Проверки, классы риска, безопасность, аудит',''],
@@ -1352,7 +1389,7 @@ function renderBase(){
  <section class="blk" id="map">
   <h3>Карта фреймворка</h3>
   <p class="muted">Восемь блоков, каждый опирается на предыдущие. Шаблоны, примеры и основания вынесены в приложения.</p>
-  <div class="bmap">${blocks.map(b=>`<div class="bt ${b[3]}"><span class="n">${b[0]}</span><b>${b[1]}</b><span>${b[2]}</span>${b[3]==='on'?pill('our','ВЫ ЗДЕСЬ'):b[3]==='ready'?L('pr','Открыть блок'):pill('info','ДАЛЬШЕ')}</div>`).join('')}</div>
+  <div class="bmap">${blocks.map(b=>`<div class="bt ${b[3]}"><span class="n">${b[0]}</span><b>${b[1]}</b><span>${b[2]}</span>${b[3]==='on'?pill('our','ВЫ ЗДЕСЬ'):b[3]==='ready'?L(b[4],'Открыть блок'):pill('info','ДАЛЬШЕ')}</div>`).join('')}</div>
  </section>`;
 }
 
@@ -1438,8 +1475,187 @@ function renderPr(){
  </section>`;
 }
 
+/* ================= БЛОК 3: РОЛИ ================= */
+const RL8=[
+ {k:'pm',n:'Продакт-менеджер',sub:'бизнес-владелец',an:['PMI: спонсор','Scrum: Product Owner','Lean: chief engineer'],q:'Зачем и что берём в работу?',
+  was:'Ведёт бэклог и приоритеты, утверждает объём релиза. Узкое место — разработка: идей больше, чем рук.',
+  now:'Агент сделает почти любую поставленную задачу, поэтому узким местом становится отбор: что не делать. Агент приоритизации даёт категорию, балл и уверенность в данных. Решает продакт-менеджер, он же отвечает за видение всего продукта.',
+  yes:['Видение продукта и результат, ради которого он делается','Решение «берём или нет» и порядок: Now, Next, Validate, Park, Reject','Подтверждает «зачем» и критерий изменения на приёме','Утверждает обмен при срочном включении: что вытесняется','Смотрит, пользуются ли выпущенным'],
+  no:['Как реализовать и как это устроено','Одобрение изменений в коде','Правила обвязки и проверки'],
+  lk:[['spec:intake','Приём и приоритет'],['base:chain','Зачем → Что должно измениться → Что делаем'],['pr:p1','Принцип 1']]},
+ {k:'spec',n:'Автор спеки',sub:'продакт или аналитик',an:['Scrum: Product Owner','Kanban: Service Request Manager','аналитик'],q:'Что именно должно получиться?',
+  was:'Пишет user stories. Детали уточняются в разговоре с разработчиком по ходу работы.',
+  now:'Агент там, где человек переспросил бы, часто додумывает сам (Google, с. 34). Поэтому всё нужное фиксируется до запуска: пакет спецификации с критериями и тестами-критериями. ИИ помогает найти краевые случаи, которые человек пропустил (Google, с. 21).',
+  yes:['Намерение и критерии приёмки','Тесты-критерии: агент их не меняет','Метки задачи, по которым считается класс риска; может повысить класс','Приёмка результата в окружении предпросмотра до мержа'],
+  no:['Приоритет и видение продукта','Архитектурные решения','Реализация'],
+  lk:[['spec:package','Пакет спецификации'],['spec:session','Сессия нарезки'],['pr:p2','Принцип 2']]},
+ {k:'arch',n:'Архитектор проекта',sub:'новая отдельная роль',an:['SAFe: System Architect','в Scrum и Kanban роли нет'],q:'Как это устроено в целом?',
+  was:'Задаёт архитектуру в начале проекта. Дальше многие решения принимаются прямо в коде и нигде не записаны.',
+  now:'Агент хорошо реализует архитектурное решение, когда оно уже принято и описано (Google, с. 22). Если решения нет, агент примет его сам, и такую ошибку заметить труднее всего (Google, с. 34). Поэтому решения принимаются до запуска агента, пишутся в журнал и превращаются в проверки обвязки.',
+  yes:['Решения с долгими последствиями: их агенту не отдают','Контракт и границы capability в пакете спеки','Запись решений в журнал (ADR)','Архитектурные ограничения, которые обвязка проверяет автоматически, вместе с владельцем обвязки','Изменения, которые выходят за принятые решения'],
+  no:['Что строить и в каком порядке','Ведение каждой задачи','Одобрение каждого изменения: это ревьюер'],
+  lk:[['spec:noagent','Когда задачу агенту не давать'],['model:decisions','Журнал решений'],['harness:matrix','Структурные проверки']]},
+ {k:'task',n:'Владелец задачи',sub:'инженер',an:['Scrum: Developers'],q:'Кому и как отдать работу?',
+  was:'Пишет код сам.',
+  now:'Ставит задачу агенту по спеке, выбирает режим работы, следит за ходом и ведёт изменение до статуса Verified. Сам пишет код там, где задачу агенту не дают.',
+  yes:['Постановка задачи агенту по спеке','Режим работы: дирижёр или оркестратор','Ход работы и возвраты после ревью','Изменение до статуса Verified'],
+  no:['Одобрение своего результата','Решения за пределами спеки и принятой архитектуры'],
+  lk:[['conveyor:run','Пост 2: работа агента'],['roles:rl-modes','Режимы работы'],['pr:p7','Принцип 7']]},
+ {k:'rev',n:'Ревьюер',sub:'senior-инженер; для R2 двое',an:['Scrum: Developers','code review'],q:'Можно выпускать?',
+  was:'Читает каждую строку: стиль, опечатки, логику.',
+  now:'Стиль и типовые ошибки ловят линтеры и ИИ-ревью. Человек судит то, что автоматике не по силам: решает ли изменение задачу, вписывается ли в принятую архитектуру, безопасно ли оно. Читает и спеку с тестами. Код от ИИ требует не меньше внимания, чем код человека (Google, с. 44).',
+  yes:['Замысел, соответствие архитектуре, безопасность','Спека и тесты-критерии как часть ревью','Одобрение мержа; для R2 нужны двое'],
+  no:['Изменение, которое сам ставил агенту','Переписывание задачи за автора спеки'],
+  lk:[['conveyor:review','Пост 5: ревью человека'],['model:risk','Классы риска'],['pr:p4','Принцип 4']]},
+ {k:'flow',n:'Диспетчер потока',sub:'delivery-менеджер',an:['Scrum Master','Kanban: Service Delivery Manager','Lean: team leader'],q:'Не застрял ли поток?',
+  was:'Фасилитирует встречи и снимает блокеры.',
+  now:'Агенты производят изменения быстрее, чем люди успевают их проверить. Диспетчер держит лимит очереди ревью, отвечает на остановки Andon в срок и назначает инженера на разбор. Как team leader в Toyota: выходит на сигнал сразу, а не ждёт встречи.',
+  yes:['Лимит очереди ревью и запас готовых спек','Срок реакции на Andon и назначение на разбор','Остановка запуска агентов, когда очередь переполнена','Снятие задачи с агента, если её крутят промптами по кругу'],
+  no:['Что делать и в каком порядке','Качество кода'],
+  lk:[['andon','Andon'],['pr:p3','Принцип 3'],['pr:p8','Принцип 8']]},
+ {k:'harness',n:'Владелец обвязки',sub:'платформенная команда',an:['платформенная команда','Google: named engineers'],q:'По каким правилам работает агент?',
+  was:'Платформа и CI/CD обслуживают людей.',
+  now:'Модель у всех одна, результат различают правила и проверки вокруг неё. AGENTS.md, гейты, песочницы и наборы проверок ведутся как код, у каждого есть названный владелец (Google, с. 44).',
+  yes:['AGENTS.md, правила и наборы проверок','Гейты, песочницы, бюджеты','Пороги Andon, вместе с диспетчером','Изменения правил через журнал решений'],
+  no:['Продуктовые решения','Ревью отдельных изменений'],
+  lk:[['harness','Обвязка'],['harness:rules','Правила обвязки'],['pr:p5','Принцип 5']]},
+ {k:'risk',n:'Владелец риска',sub:'комплаенс и безопасность',an:['PMI: управление рисками','комплаенс','безопасность'],q:'Где нужна особая строгость?',
+  was:'Аудит постфактум, по выборке.',
+  now:'Задаёт границы заранее: какие пути и задачи относятся к R2, какие инструменты разрешены агентам, что пишется в аудит-трейл. Обязателен в регулируемых компаниях.',
+  yes:['Правила классов риска','Аудит-трейл: кто что решил и что сделал агент','Политика разрешённых инструментов и доступов'],
+  no:['Ревью каждого изменения','Продуктовые приоритеты'],
+  lk:[['model:risk','Классы риска'],['control','Контроль'],['pr:p6','Принцип 6']]}
+];
+/* RACI: pm, spec, arch, task, rev, flow, harness, risk | агент */
+const RACI=[
+ ['Берём ли задачу и в каком порядке',['A','C','C','','','C','',''],'предлагает: категория, балл, уверенность'],
+ ['Что должно измениться и по какому критерию (спека)',['C','A','C','C','','','',''],'предлагает краевые случаи'],
+ ['Класс риска задачи',['','R','C','','','','R','A'],'—'],
+ ['Архитектурное решение',['C','I','A','C','I','','C',''],'исполняет принятое'],
+ ['Отдать задачу агенту и в каком режиме',['','','','A','','C','',''],'исполняет'],
+ ['Одобрить изменение к мержу',['','C','','R','A','','',''],'проверяет: ИИ-ревью'],
+ ['Остановить агента, снять задачу',['','','','R','','A','C',''],'—'],
+ ['Изменить правила обвязки',['','','C','I','','C','A','C'],'предлагает'],
+ ['Правила риска и разрешённые инструменты',['I','','C','','','','R','A'],'—']
+];
+const RLMIX=[
+ ['Продакт-менеджер','Основатель','Продакт-менеджер продукта','Продакт-менеджер направления'],
+ ['Автор спеки','Основатель или продакт','Продакт или аналитик вместе с лидом','Аналитик или продакт команды'],
+ ['Архитектор проекта','Лид, совмещает с ревьюером','Отдельный человек на одну или несколько команд','Отдельная роль, решения через журнал'],
+ ['Владелец задачи','Каждый инженер','Каждый инженер','Каждый инженер'],
+ ['Ревьюер','Лид или основатель','Senior-инженеры; для R2 двое','Senior-инженеры; для R2 двое'],
+ ['Диспетчер потока','Основатель или лид','Delivery-менеджер или ПМ','Delivery-менеджер'],
+ ['Владелец обвязки','Лид','Платформенная команда','Платформенная команда'],
+ ['Владелец риска','Основатель','Безопасность','Комплаенс и безопасность, обязателен']
+];
+function renderRoles(){
+ const box=(r,cls)=>`<a class="rbox ${cls}" href="#roles" data-t="roles:rl-${r.k}" style="text-decoration:none;color:inherit"><span class="who">${r.n}</span><span class="q">${r.q}</span></a>`;
+ const R=k=>RL8.find(r=>r.k===k);
+ const chain=['pm','spec','arch','task'].map(k=>box(R(k),'h')).join('<span class="rarrow">→</span>')
+  +`<span class="rarrow">→</span><div class="rbox m"><span class="who">Агент</span><span class="q">Исполняет и проверяет</span><small>роли не занимает</small></div><span class="rarrow">→</span>`+box(R('rev'),'h');
+ const sup=['flow','harness','risk'].map(k=>`<a class="rbox" href="#roles" data-t="roles:rl-${R(k).k}" style="text-decoration:none;color:inherit"><span class="who">${R(k).n}</span><span class="q">${R(k).q}</span></a>`).join('');
+ const lt=v=>v?`<span class="rl ${v}">${v}</span>`:'';
+ $('#v-roles').innerHTML=`
+ <section class="blk bhero">
+  <div class="eyebrow">Блок 3 из 8 · Роли и права решений</div>
+  <h2>Кто решает, кто отвечает, что делает агент</h2>
+  <p class="lead" style="margin-top:0">Восемь ролей, все — люди. Агент роли не занимает: он исполняет, проверяет и предлагает, а решение и ответственность остаются у человека. Роль — это не должность: в маленькой команде один человек совмещает несколько ролей, в большой каждая роль отдельная. Роли собраны из Scrum, Kanban, PMI и Lean и сверены с документом Google «The New SDLC With Vibe Coding».</p>
+  <div class="links">${L('base:rule','Главное правило')}${L('pr:p7','Принцип 7: ответственность у человека')}</div>
+ </section>
+
+ <section class="blk" id="rl-map">
+  <h3>Роли на пути задачи</h3>
+  <p class="muted">Верхний ряд — путь одной задачи от идеи до выпуска. Нижний ряд — роли, которые следят за всем потоком сразу. Нажмите на роль, чтобы открыть её карточку.</p>
+  <div class="rchain" role="img" aria-label="Продакт-менеджер, автор спеки, архитектор и владелец задачи готовят работу, агент исполняет и проверяет, ревьюер решает, можно ли выпускать">${chain}</div>
+  <div class="rsuplabel">Над потоком</div>
+  <div class="rsup">${sup}</div>
+  <p class="src" style="margin-top:10px">Google: «The human provides intent, architecture, and judgment» (с. 7). Намерение — продакт-менеджер и автор спеки, архитектура — архитектор, суждение — ревьюер.</p>
+ </section>
+
+ <section class="blk" id="rl-shift">
+  <div class="row"><h3>Что меняется для всех</h3>${ev('src')}</div>
+  <div class="ba"><div class="was"><b>Было</b>Разработчик — главный исполнитель. Узкое место — написание кода.</div><div class="ar">→</div><div class="now"><b>Стало</b>Разработчик проектирует систему и судит качество. Узкие места — постановка задачи, проверка результата, архитектурные решения и ревью.</div></div>
+  <div class="gq" style="margin-top:10px"><i>«…the developer's role shifts from primary implementor to system designer and quality arbiter.»</i><span>The New SDLC With Vibe Coding, с. 19</span></div>
+  <div class="gq" style="margin-top:8px"><i>«…the bottleneck shifts to specification, evaluation, architectural judgment, and review.»</i><span>The New SDLC With Vibe Coding, с. 46</span></div>
+  <p class="src" style="margin-top:10px">Scrum.org о командах с агентами: три зоны ответственности Scrum не исчезают, а концентрируются; агент не может быть Product Owner, цель ставит человек. ${X('https://www.scrum.org/resources/blog/ai-augmented-scrum-framework-when-half-your-team-autonomous-agents','Scrum.org')}</p>
+ </section>
+
+ <section class="blk" id="rl-cards">
+  <h3>Восемь ролей: было → стало</h3>
+  <div class="pgrid">${RL8.map((r,i)=>`<article class="pcard rcard" id="rl-${r.k}">
+   <div class="ph1"><span class="pnum">${i+1}</span><div><h3>${r.n}</h3><span class="muted" style="font-size:13px">${r.sub}</span></div></div>
+   <div class="q2">${r.q}</div>
+   <div class="chips">${r.an.map(x=>`<span class="chip">${x}</span>`).join('')}</div>
+   <div class="ba"><div class="was"><b>Было</b>${r.was}</div><div class="ar">→</div><div class="now"><b>Стало</b>${r.now}</div></div>
+   <div class="yn2"><div class="y"><span class="h">✓ Отвечает за</span><ul>${r.yes.map(x=>`<li>${x}</li>`).join('')}</ul></div><div class="n"><span class="h">✕ Не отвечает за</span><ul>${r.no.map(x=>`<li>${x}</li>`).join('')}</ul></div></div>
+   <div class="links">${r.lk.map(c=>L(c[0],c[1])).join('')}</div>
+  </article>`).join('')}</div>
+  <div class="note">Продакт-менеджер и архитектор — отдельные роли в этом блоке. В старой таблице ролей на вкладке «Модель» их нет: там продакт совмещён с автором спеки, а архитектурное суждение отдано ревьюеру. Ревьюер по-прежнему проверяет соответствие архитектуре, но сами решения теперь принимает архитектор.</div>
+ </section>
+
+ <section class="blk" id="rl-agent">
+  <div class="row"><h3>Агент: исполнитель без ответственности</h3>${ev('our')}</div>
+  <div class="agcols">
+   <div class="card stack"><b>Исполняет</b>${ul(['Пишет код и тесты в своей песочнице и открывает PR','Реализует принятые архитектурные решения'])}</div>
+   <div class="card stack"><b>Проверяет</b>${ul(['ИИ-ревью до человека: сверяет изменение со спекой','Ищет то, что не ловят тесты'])}</div>
+   <div class="card stack"><b>Предлагает</b>${ul(['Категорию и приоритет задачи','Краевые случаи для спеки','Правки правил и обвязки'])}</div>
+  </div>
+  <div class="never" style="margin-top:12px"><b>Никогда не делает</b>${ul(['Не выбирает, что делать, и не меняет план','Не одобряет свою работу','Не выкатывает в прод и не имеет к нему доступа','Не меняет тесты-критерии и правила обвязки','Не придумывает исходные данные'])}<div class="links">${L('base:rule','Полный список в блоке 1')}</div></div>
+  <div class="note">Google называет агентов участниками процесса, а не просто инструментами (с. 46). Мы согласны, что агент участвует в потоке. Но ответственности за результат у него нет: по главному правилу фреймворка решает и отвечает человек.</div>
+ </section>
+
+ <section class="blk" id="rl-raci">
+  <div class="row"><h3>Кто принимает какое решение</h3>${ev('our')}</div>
+  <p class="muted">Матрица RACI: девять ключевых решений. В каждой строке ровно одна буква A — тот, кто утверждает решение и отвечает за него. У агента своей буквы нет: в его столбце написано, что он делает.</p>
+  <div class="scroll raci"><table><thead><tr><th>Решение</th>${RL8.map(r=>`<th>${r.n}</th>`).join('')}<th class="ag">Агент</th></tr></thead><tbody>
+   ${RACI.map(x=>`<tr><td>${x[0]}</td>${x[1].map(v=>`<td>${lt(v)}</td>`).join('')}<td class="ag">${x[2]}</td></tr>`).join('')}
+  </tbody></table></div>
+  <div class="evlegend"><span>${lt('A')} утверждает и отвечает</span><span>${lt('R')} делает работу</span><span>${lt('C')} советуется до решения</span><span>${lt('I')} узнаёт о решении</span></div>
+  ${ul(['Класс риска считается автоматически по путям в репозитории и меткам задачи. Человек может его только повысить.','Для R2 спеку утверждают двое, а к мержу нужны два ревьюера, и ни один из них не ставил задачу агенту.','Агента останавливает обвязка автоматически по порогам Andon. Решение, что делать дальше, принимает диспетчер.'])}
+  <div class="links">${L('model:risk','Классы риска')}${L('andon','Andon')}${L('model:decisions','Журнал решений')}</div>
+ </section>
+
+ <section class="blk" id="rl-modes">
+  <div class="row"><h3>Два режима работы с агентом</h3>${ev('src')}</div>
+  <p class="muted">Режим выбирает владелец задачи. Google описывает два режима (с. 32–33).</p>
+  <div class="cols">
+   <div class="card stack"><b>Дирижёр</b><p>Человек работает с агентом в реальном времени, видит каждое изменение и сразу правит.</p><p class="muted">Когда: сложная логика, отладка, незнакомый код.<br>Риск: человек становится узким местом.</p><div class="gq"><i>«The AI is a powerful instrument, but the developer is actively directing every movement.»</i><span>с. 32</span></div></div>
+   <div class="card stack"><b>Оркестратор</b><p>Человек ставит цели, раздаёт их агентам и проверяет результат. Агенты работают в фоне и параллельно.</p><p class="muted">Когда: чётко поставленные задачи — исправления, фичи по готовым образцам, миграции, генерация тестов.</p><div class="gq"><i>«They define goals, assign them to agents, and review results.»</i><span>с. 33</span></div></div>
+  </div>
+  <div class="note">Связь с классами риска наша. R2: ведёт человек, агент исполняет под спеку — это ближе к дирижёру. R0 и R1: ведёт агент, человек судит результат — это оркестратор. ${L('model:risk','Кто ведёт задачу в каждом классе')}</div>
+ </section>
+
+ <section class="blk" id="rl-skills">
+  <div class="row"><h3>Какие навыки нужны</h3>${ev('src')}</div>
+  <p class="muted">Google называет четыре навыка для работы с агентами (с. 33–34). У каждого навыка есть роли, для которых он главный.</p>
+  ${tbl(['Навык','Что это','Главный для'],[
+   ['Постановка задачи','Описать задачу так, чтобы агент выполнил её без двусмысленности','Автор спеки, владелец задачи'],
+   ['Декомпозиция','Разбить большую задачу на части подходящего размера','Автор спеки, архитектор'],
+   ['Оценка результата','Быстро понять, соответствует ли работа агента стандарту качества','Ревьюер, владелец задачи'],
+   ['Проектирование системы','Задать ограничения, тесты и обратную связь, которые держат агента в рамках','Архитектор, владелец обвязки']])}
+  <div class="note">Чтобы судить работу агента, человеку нужно уметь сделать её самому. Навыки отладки, архитектуры и ревью тренируются специально (Google, с. 44). ${L('pr:p9','Принцип 9')}</div>
+ </section>
+
+ <section class="blk" id="rl-size">
+  <div class="row"><h3>Кто совмещает роли в команде разного размера</h3>${ev('our')}</div>
+  ${tbl(['Роль','Стартап','Скейлап','Крупная и регулируемая'],RLMIX)}
+  <div class="never" style="margin-top:12px"><b>Не совмещается никогда</b>${ul(['Владелец задачи и ревьюер того же изменения. Для R2 оба ревьюера не ставили задачу.','Для R2 спеку утверждает второй человек.','Правила обвязки меняет человек. Агент их только предлагает.','Агент не занимает ни одну роль.'])}</div>
+  <p class="src" style="margin-top:10px">Роли, а не должности: так их вводит Kanban (${X('https://kanban.university/emerging-roles-in-kanban/','Kanban University')}). Размеры команд — как на вкладке ${L('adoption','«Внедрение»')}.</p>
+ </section>
+
+ <section class="blk">
+  <h3>Источники</h3>
+  ${ul([
+   X('https://www.scrum.org/resources/blog/ai-augmented-scrum-framework-when-half-your-team-autonomous-agents','Scrum.org: AI-augmented Scrum, команды с автономными агентами'),
+   X('https://kanban.university/emerging-roles-in-kanban/','Kanban University: роли SRM и SDM'),
+   X('https://www.lean.org/lexicon-terms/team-leader/','Lean Enterprise Institute: Team Leader'),
+   X('https://www.lean.org/lexicon-terms/chief-engineer/','Lean Enterprise Institute: Chief Engineer'),
+   X(GDOC,'Google, «The New SDLC With Vibe Coding», май 2026: с. 7, 19, 21–22, 32–34, 44, 46')])}
+ </section>`;
+}
+
 /* ================= РОУТИНГ ================= */
-const VIEWS=['base','pr','model','conveyor','spec','harness','andon','control','metrics','rhythm','adoption','platform','startup','evidence'];
+const VIEWS=['base','pr','roles','model','conveyor','spec','harness','andon','control','metrics','rhythm','adoption','platform','startup','evidence'];
 const ALIAS={slicing:'spec',basis:'harness',scale:'adoption',transition:'adoption'};
 const curView=()=>{let v=location.hash.slice(1); v=ALIAS[v]||v; return VIEWS.includes(v)?v:'model'};
 let pending;
@@ -1464,7 +1680,7 @@ document.addEventListener('click',e=>{
  if(curView()===v) route(); else location.hash=v;
 });
 window.addEventListener('hashchange',route);
-renderBase();renderPr();renderModel();renderConveyor();renderSpec();renderHarness();renderAndon();renderControl();renderMetrics();renderRhythm();renderAdoption();renderPlatform();renderStartup();renderEvidence();
+renderBase();renderPr();renderRoles();renderModel();renderConveyor();renderSpec();renderHarness();renderAndon();renderControl();renderMetrics();renderRhythm();renderAdoption();renderPlatform();renderStartup();renderEvidence();
 route();
 </script>
 
