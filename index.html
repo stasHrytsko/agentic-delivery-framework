@@ -245,6 +245,31 @@ nav a.newtab[aria-current="page"]{color:var(--our);border-bottom-color:var(--our
 .bt span{font-size:13px;color:var(--muted)}
 @media (max-width:980px){.bmap{grid-template-columns:repeat(2,minmax(0,1fr))}.gloss{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:760px){.rflow,.chain{grid-template-columns:minmax(0,1fr)}.rarrow{transform:rotate(90deg);height:24px}.canlist,.outside{grid-template-columns:minmax(0,1fr)}.shrow{grid-template-columns:minmax(0,1fr) 90px}.shrow .shtrack{grid-column:1/-1;grid-row:2}.rulebig{font-size:24px}.bhero h2{font-size:24px}}
+/* ---- блок 2: принципы ---- */
+.pmx td,.pmx th{text-align:center;vertical-align:middle}
+.pmx td:first-child,.pmx th:first-child{text-align:left}
+.pmx td:first-child a{font-weight:600;text-decoration:none;color:var(--ink)}
+.pmx td:first-child a:hover{color:var(--accent)}
+.pmx .dot{display:inline-block;width:14px;height:14px;border-radius:50%;background:var(--accent)}
+.pmx .dot.g{background:var(--ok)}
+.pmx .dot.p{background:transparent;border:2px solid var(--accent)}
+.pmx .nn{font:600 12px/1 var(--mono);color:var(--muted);margin-right:8px}
+.pgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.pcard{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px;display:flex;flex-direction:column;gap:10px;min-width:0;scroll-margin-top:90px}
+.pcard .ph1{display:flex;gap:12px;align-items:baseline}
+.pcard .pnum{font:700 26px/1 var(--display);color:var(--accent);flex:none}
+.pcard h3{font-size:18px}
+.pcard .say{font-weight:600}
+.pcard dl{margin:0;display:grid;grid-template-columns:110px minmax(0,1fr);gap:6px 12px;font-size:14px}
+.pcard dt{color:var(--muted);font-size:13px}
+.pcard dd{margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:500 12px/1.3 var(--body);border:1px solid var(--line);border-radius:4px;padding:4px 8px;background:var(--bg)}
+.chip.g{border-color:var(--ok);color:var(--ok)}
+.gq{border-left:3px solid var(--ok);padding:6px 10px;font-size:13px;background:var(--ok-soft);border-radius:0 4px 4px 0}
+.gq i{display:block;font-style:italic}
+.gq span{color:var(--muted)}
+@media (max-width:760px){.pgrid{grid-template-columns:minmax(0,1fr)}.pcard dl{grid-template-columns:minmax(0,1fr);gap:2px}}
 .evgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .evc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
 .evc .big{font:600 24px/1.1 var(--display);font-variant-numeric:tabular-nums}
@@ -272,12 +297,13 @@ pre.code{margin:0;font:400 13px/1.55 var(--mono);background:var(--sunk);border:1
 <header class="top"><div class="top-in">
   <div class="brand">Agentic Delivery<small>Framework</small></div>
   <nav id="nav" aria-label="Разделы">
-    <a href="#base" class="newtab">1 · Основа</a><span class="navsep" aria-hidden="true"></span><a href="#model">Модель</a><a href="#conveyor">Конвейер</a><a href="#spec">Спека</a><a href="#harness">Обвязка</a><a href="#andon">Andon</a><a href="#control">Контроль</a><a href="#metrics">Метрики</a><a href="#rhythm">Ритм</a><a href="#adoption">Внедрение</a><a href="#platform">Платформа</a><a href="#startup">Стартап-кит</a><a href="#evidence">Основания</a>
+    <a href="#base" class="newtab">1 · Основа</a><a href="#pr" class="newtab">2 · Принципы</a><span class="navsep" aria-hidden="true"></span><a href="#model">Модель</a><a href="#conveyor">Конвейер</a><a href="#spec">Спека</a><a href="#harness">Обвязка</a><a href="#andon">Andon</a><a href="#control">Контроль</a><a href="#metrics">Метрики</a><a href="#rhythm">Ритм</a><a href="#adoption">Внедрение</a><a href="#platform">Платформа</a><a href="#startup">Стартап-кит</a><a href="#evidence">Основания</a>
   </nav>
 </div></header>
 
 <main>
 <div class="view" id="v-base" hidden></div>
+<div class="view" id="v-pr" hidden></div>
 <div class="view" id="v-model"></div>
 <div class="view" id="v-conveyor" hidden></div>
 <div class="view" id="v-spec" hidden></div>
@@ -1232,7 +1258,7 @@ function renderBase(){
   ['Контроль',[['Класс риска','R0, R1 или R2. Определяет, сколько контроля нужно изменению.'],['Andon','Автоматическая остановка агента и передача задачи человеку.']]]];
  const blocks=[
   ['1','Основа','Цель, главное правило, границы, словарь','on'],
-  ['2','Принципы','PMI, Lean, Agile, DevOps и что в них меняют агенты',''],
+  ['2','Принципы','PMI, Lean, Agile, DevOps и что в них меняют агенты','ready'],
   ['3','Роли и права решений','Кто решает и кто отвечает',''],
   ['4','Жизненный цикл','Стадии SDLC: решение человека, работа агента, ворота',''],
   ['5','Поток','Размер задач, лимит очереди, остановка агента',''],
@@ -1264,6 +1290,7 @@ function renderBase(){
    <div class="card yes"><b>Агент делает</b><ul>${yes.map(a=>li(a,'✓')).join('')}</ul></div>
    <div class="card no"><b>Агент не делает</b><ul>${no.map(a=>li(a,'✕')).join('')}</ul></div>
   </div>
+  <div class="note">Та же схема описана в документе Google «The New SDLC With Vibe Coding» (2026, с. 25): у разработчика своя зона, где он задаёт спеки и ограничения, ревьюит и одобряет, а агенты работают в «цеху». ${X(GDOC,'Обзор от автора')}</div>
   <div class="note">За каждое изменение отвечает человек-владелец. Тот, кто поставил задачу агенту, её результат не одобряет. ${L('model:principles','Принципы в «Модели»')}</div>
  </section>
 
@@ -1325,12 +1352,94 @@ function renderBase(){
  <section class="blk" id="map">
   <h3>Карта фреймворка</h3>
   <p class="muted">Восемь блоков, каждый опирается на предыдущие. Шаблоны, примеры и основания вынесены в приложения.</p>
-  <div class="bmap">${blocks.map(b=>`<div class="bt ${b[3]}"><span class="n">${b[0]}</span><b>${b[1]}</b><span>${b[2]}</span>${b[3]?pill('our','ВЫ ЗДЕСЬ'):pill('info','ДАЛЬШЕ')}</div>`).join('')}</div>
+  <div class="bmap">${blocks.map(b=>`<div class="bt ${b[3]}"><span class="n">${b[0]}</span><b>${b[1]}</b><span>${b[2]}</span>${b[3]==='on'?pill('our','ВЫ ЗДЕСЬ'):b[3]==='ready'?L('pr','Открыть блок'):pill('info','ДАЛЬШЕ')}</div>`).join('')}</div>
+ </section>`;
+}
+
+/* ================= БЛОК 2: ПРИНЦИПЫ ================= */
+const GDOC='https://addyosmani.com/blog/new-sdlc-vibe-coding/';
+const PR9=[
+ {t:'Ценность важнее объёма',say:'Меряем изменение для пользователя и бизнеса, а не число PR, строк или процент кода от ИИ.',
+  ag:'Объём стал почти бесплатным. Счётчики объёма потеряли смысл, и их легко накрутить.',
+  chk:[['metrics:verified','Verified Capabilities'],['metrics:cost','Стоимость на capability'],['base:chain','Зачем → Что делаем']],
+  src:['PMBOK 8: Focus on value','Сейден: Outcomes Over Output','Agile: работающий продукт — мера прогресса','DORA: фокус на пользователе'],m:[1,1,1,1,0]},
+ {t:'Сначала критерий, потом код',say:'Задача уходит агенту только с проверяемыми критериями приёмки и тестами, которые утвердил человек.',
+  ag:'Агент не восполняет дыры в требованиях, он их угадывает.',
+  chk:[['spec:package','Пакет спецификации'],['metrics:speccov','Покрытие спеки тестами']],
+  src:['PMBOK 8: Embed quality','Agile (XP): тесты до кода'],m:[1,0,1,0,1],
+  g:['Write the tests and evals before generating the code. Together they are the contract with the AI.','с. 43']},
+ {t:'Малые партии',say:'Одна capability — один проход агента и небольшой PR.',
+  ag:'Агент легко пишет много кода за раз. Крупный PR тяжело проверить, и ревью становится узким местом.',
+  chk:[['spec:slice','Размер capability'],['metrics:review','Human Review Time']],
+  src:['Lean: поток по одной детали','Agile: частая поставка','DORA: small batches'],m:[0,1,1,1,0]},
+ {t:'Узкое место — проверка, а не генерация',say:'Темп задаёт ёмкость человеческой проверки. Очередь ревью полна — новые запуски останавливаются.',
+  ag:'Генерация подешевела, проверка нет. Без лимита агенты заваливают людей работой.',
+  chk:[['rhythm:wip','Лимит очереди ревью'],['metrics:review','Human Review Time']],
+  src:['Lean и Kanban: лимит незавершённой работы','DORA: рост пропускной способности вместе с нестабильностью'],m:[0,1,0,1,1],
+  g:['Generation is solved. Verification, judgment, and direction are the new craft.','с. 48']},
+ {t:'Обязательное живёт в проверках, а не в тексте',say:'То, что должно выполняться всегда, проверяют тесты, линтеры и хуки. Инструкцию агент может пропустить.',
+  ag:'Файл правил для агента — это рекомендация. Гарантию даёт только автоматическая проверка.',
+  chk:[['harness:rules','Правила обвязки'],['conveyor:gates','Гейты']],
+  src:['PMBOK 8: Embed quality','Lean: Jidoka и Poka-yoke','DevOps: автоматизация проверок'],m:[1,1,0,1,1],
+  g:['Hooks are the place for things the agent should never forget but often does.','с. 28']},
+ {t:'Мера контроля зависит от риска',say:'Всё, что уходит в прод, проверяет человек. От риска зависят строгость спеки, глубина проверки и число проверяющих.',
+  ag:'Один и тот же агент пишет и прототип, и платёжную систему. Правила для них должны быть разными.',
+  chk:[['model:risk','Классы риска'],['startup:zones','Две зоны кода']],
+  src:['PMBOK 7: Tailoring, адаптация подхода под контекст','PMBOK 8: Adopt a holistic view'],m:[1,0,0,0,1],
+  g:['The right position on this spectrum depends on the stakes.','с. 14']},
+ {t:'Ответственность всегда у человека',say:'У каждого изменения есть человек-владелец. Агент не одобряет и не выкатывает свою работу. Поставил задачу — не одобряешь.',
+  ag:'Агент — инструмент. Отвечать за результат он не может.',
+  chk:[['base:rule','Главное правило'],['control:security','Разделение обязанностей']],
+  src:['PMBOK 8: Be an accountable leader','Разделение обязанностей: банковская практика, GitHub'],m:[1,0,0,0,1],
+  g:['Humans set direction, agents do the implementation.','с. 46']},
+ {t:'Остановка и ошибка — данные для улучшения',say:'Каждая остановка агента и каждый отклонённый PR превращается в правку спеки, правила или проверки. Виноватых не ищем.',
+  ag:'Агент повторит ту же ошибку, пока не поправят обвязку.',
+  chk:[['andon','Andon'],['rhythm:ceremonies','Trace retro']],
+  src:['Lean: Andon и Kaizen','Agile: команда регулярно размышляет и корректирует работу','DevOps: разбор инцидентов без поиска виноватых'],m:[0,1,1,1,1],
+  g:['Most agent failures, examined honestly, are configuration failures.','с. 31']},
+ {t:'Люди остаются сильнее инструмента',say:'Навыки отладки, архитектуры и ревью тренируются специально. Ревьюер, который не понимает код, его не проверяет.',
+  ag:'Когда пишет агент, люди меньше практикуются и хуже понимают код.',
+  chk:[['control:skills','Меры против атрофии навыков']],
+  src:['PMBOK 8: Build an empowered culture','Lean: уважение к людям','Эксперимент Anthropic про навыки'],m:[1,1,0,0,1],
+  g:['Maintain your developer skills.','с. 44']}
+];
+const PRSRC=['PMBOK','Lean','Agile','DevOps / DORA','Google, 2026'];
+function renderPr(){
+ const n=PR9.filter(p=>p.g).length;
+ $('#v-pr').innerHTML=`
+ <section class="blk bhero">
+  <div class="eyebrow">Блок 2 из 8 · Принципы</div>
+  <h2>Девять принципов</h2>
+  <p class="lead" style="margin-top:0">Над ними стоит главное правило из блока 1: ИИ — инструмент, решает человек. Каждый принцип опирается на признанную практику управления проектами или разработки. Колонка Google показывает, где принцип прямо подтверждён в документе «The New SDLC With Vibe Coding» (Google, май 2026): таких ${n} из 9.</p>
+  <div class="links">${L('base:rule','Главное правило')}${X(GDOC,'Обзор документа Google от автора')}</div>
+ </section>
+
+ <section class="blk" id="matrix2">
+  <h3>На чём стоит каждый принцип</h3>
+  <div class="scroll pmx"><table><thead><tr><th>Принцип</th>${PRSRC.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>
+   ${PR9.map((p,i)=>`<tr><td><span class="nn">${i+1}</span><a href="#pr" data-t="pr:p${i+1}">${p.t}</a></td>${p.m.map((v,j)=>`<td>${v?`<span class="dot${j===4?' g':''}" title="есть опора"></span>`:''}</td>`).join('')}</tr>`).join('')}
+  </tbody></table></div>
+  <div class="evlegend"><span><span class="pmx"><span class="dot"></span></span> принцип прямо есть в источнике</span><span><span class="pmx"><span class="dot g"></span></span> подтверждён в документе Google, с цитатой</span></div>
+  <div class="note">Шестой принцип PMBOK 8, «Integrate sustainability», здесь отдельно не выделен. Во фреймворке ему частично соответствуют стоимость на capability и сопровождение кода после выпуска. Связь «стандарт → работа с агентами» везде наша: про агентов в PMBOK, Lean и Agile ничего не сказано.</div>
+ </section>
+
+ <section class="blk" id="cards2">
+  <div class="pgrid">${PR9.map((p,i)=>`<article class="pcard" id="p${i+1}">
+   <div class="ph1"><span class="pnum">${i+1}</span><h3>${p.t}</h3></div>
+   <p class="say">${p.say}</p>
+   <dl><dt>Что меняют агенты</dt><dd>${p.ag}</dd><dt>Где это во фреймворке</dt><dd><div class="links">${p.chk.map(c=>L(c[0],c[1])).join('')}</div></dd></dl>
+   <div class="chips">${p.src.map(x=>`<span class="chip">${x}</span>`).join('')}${p.g?`<span class="chip g">Google, ${p.g[1]}</span>`:''}</div>
+   ${p.g?`<div class="gq"><i>«${p.g[0]}»</i><span>The New SDLC With Vibe Coding, ${p.g[1]}</span></div>`:''}
+  </article>`).join('')}</div>
+ </section>
+
+ <section class="blk">
+  <div class="note">Цифры из документа Google во фреймворк не берём: их источники — блоги-агрегаторы, а часть соотношений сам автор называет иллюстрацией. Документ используем как опору для идей.</div>
  </section>`;
 }
 
 /* ================= РОУТИНГ ================= */
-const VIEWS=['base','model','conveyor','spec','harness','andon','control','metrics','rhythm','adoption','platform','startup','evidence'];
+const VIEWS=['base','pr','model','conveyor','spec','harness','andon','control','metrics','rhythm','adoption','platform','startup','evidence'];
 const ALIAS={slicing:'spec',basis:'harness',scale:'adoption',transition:'adoption'};
 const curView=()=>{let v=location.hash.slice(1); v=ALIAS[v]||v; return VIEWS.includes(v)?v:'model'};
 let pending;
@@ -1355,7 +1464,7 @@ document.addEventListener('click',e=>{
  if(curView()===v) route(); else location.hash=v;
 });
 window.addEventListener('hashchange',route);
-renderBase();renderModel();renderConveyor();renderSpec();renderHarness();renderAndon();renderControl();renderMetrics();renderRhythm();renderAdoption();renderPlatform();renderStartup();renderEvidence();
+renderBase();renderPr();renderModel();renderConveyor();renderSpec();renderHarness();renderAndon();renderControl();renderMetrics();renderRhythm();renderAdoption();renderPlatform();renderStartup();renderEvidence();
 route();
 </script>
 
