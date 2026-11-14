@@ -180,6 +180,71 @@ td:first-child{font-weight:600}
 tr.flash{animation:none}
 tr.flash td{animation:flashbg 1.6s ease-out}
 @keyframes flashbg{0%{background:var(--accent-soft)}100%{background:transparent}}
+/* ---- блок 1: основа ---- */
+nav a.newtab{color:var(--our);font-weight:600}
+nav a.newtab[aria-current="page"]{color:var(--our);border-bottom-color:var(--our)}
+.navsep{flex:none;width:1px;background:var(--line);margin:14px 6px}
+.bhero{display:flex;flex-direction:column;gap:10px}
+.bhero h2{font-size:30px}
+.rulebig{font:700 30px/1.15 var(--display);letter-spacing:-.01em}
+.rulebig span{color:var(--our)}
+.rflow{display:grid;grid-template-columns:minmax(0,1fr) 28px minmax(0,1.15fr) 28px minmax(0,1fr);gap:8px;align-items:stretch}
+.rbox{border:1.5px solid var(--line);border-radius:6px;padding:16px;background:var(--surface);display:flex;flex-direction:column;gap:8px;min-width:0}
+.rbox.h{border-color:var(--our);box-shadow:inset 4px 0 0 var(--our)}
+.rbox.m{border-style:dashed;background-image:repeating-linear-gradient(135deg,var(--hatch) 0 6px,transparent 6px 12px)}
+.rbox .who{font:600 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.rbox.h .who{color:var(--our)}
+.rbox .q{font:600 18px/1.25 var(--display)}
+.rbox .yn{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 8px;font-size:14px}
+.rbox .yn b{font:600 12px/1.6 var(--mono)}
+.rbox .yn .y{color:var(--ok)} .rbox .yn .n{color:var(--crit)}
+.rarrow{display:flex;align-items:center;justify-content:center;font:600 22px/1 var(--display);color:var(--muted)}
+.canlist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.canlist .card{display:flex;flex-direction:column;gap:10px}
+.canlist ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.canlist li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:6px;font-size:14px}
+.canlist li i{font-style:normal;font-weight:700}
+.canlist .yes li i{color:var(--ok)} .canlist .no li i{color:var(--crit)}
+.canlist li small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.shift{display:flex;flex-direction:column;gap:12px}
+.shrow{display:grid;grid-template-columns:minmax(0,230px) minmax(0,1fr) 110px;gap:14px;align-items:center}
+.shrow .lbl{font-weight:600;font-size:15px}
+.shrow .lbl small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.shtrack{height:16px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.shtrack span{display:block;height:100%;border-radius:99px}
+.shtrack .hi{background:var(--our)} .shtrack .lo{background:repeating-linear-gradient(135deg,var(--accent) 0 6px,var(--accent-soft) 6px 12px)}
+.shrow .tag{font:600 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;text-align:right}
+.shrow .tag.hi{color:var(--our)} .shrow .tag.lo{color:var(--accent)}
+.chain{display:grid;grid-template-columns:minmax(0,1fr) 28px minmax(0,1fr) 28px minmax(0,1fr);gap:8px;align-items:stretch}
+.clink{background:var(--surface);border:1.5px solid var(--line);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.clink .step{font:600 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.clink h3{font-size:19px}
+.clink .ex{background:var(--sunk);border-radius:4px;padding:10px 12px;font-size:14px}
+.clink .ex b{display:block;font:600 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.decide{display:inline-flex;align-items:center;gap:6px;font:600 12px/1.2 var(--mono);color:var(--our);background:var(--our-soft);border-radius:4px;padding:6px 8px;align-self:flex-start}
+.scope{border:1.5px solid var(--accent);border-radius:8px;padding:28px 14px 14px;position:relative;background:var(--surface)}
+.scope>.sl{position:absolute;top:-11px;left:14px;background:var(--bg);padding:0 8px;font:600 12px/22px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.stages{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.stage{border:1px solid var(--line);border-radius:4px;padding:8px 10px;font-size:13px;font-weight:600;background:var(--bg)}
+.stage.h{border-color:var(--our);color:var(--our)}
+.stage+.sa{color:var(--muted)}
+.outside{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.outside .card{padding:14px;border-style:dashed;display:flex;flex-direction:column;gap:6px}
+.gloss{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.gloss .gg{display:flex;flex-direction:column;gap:10px}
+.gloss dl{margin:0;display:flex;flex-direction:column;gap:10px}
+.gloss dt{font-weight:700}
+.gloss dd{margin:2px 0 0;color:var(--muted);font-size:14px}
+.bmap{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.bt{border:1px solid var(--line);border-radius:6px;padding:12px;background:var(--surface);display:flex;flex-direction:column;gap:6px;min-width:0}
+.bt.on{border:2px solid var(--our)}
+.bt .pill{align-self:flex-start}
+.bt .n{font:700 22px/1 var(--display);color:var(--muted)}
+.bt.on .n{color:var(--our)}
+.bt b{font:600 14px/1.25 var(--display)}
+.bt span{font-size:13px;color:var(--muted)}
+@media (max-width:980px){.bmap{grid-template-columns:repeat(2,minmax(0,1fr))}.gloss{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:760px){.rflow,.chain{grid-template-columns:minmax(0,1fr)}.rarrow{transform:rotate(90deg);height:24px}.canlist,.outside{grid-template-columns:minmax(0,1fr)}.shrow{grid-template-columns:minmax(0,1fr) 90px}.shrow .shtrack{grid-column:1/-1;grid-row:2}.rulebig{font-size:24px}.bhero h2{font-size:24px}}
 .evgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .evc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
 .evc .big{font:600 24px/1.1 var(--display);font-variant-numeric:tabular-nums}
@@ -207,11 +272,12 @@ pre.code{margin:0;font:400 13px/1.55 var(--mono);background:var(--sunk);border:1
 <header class="top"><div class="top-in">
   <div class="brand">Agentic Delivery<small>Framework</small></div>
   <nav id="nav" aria-label="Разделы">
-    <a href="#model">Модель</a><a href="#conveyor">Конвейер</a><a href="#spec">Спека</a><a href="#harness">Обвязка</a><a href="#andon">Andon</a><a href="#control">Контроль</a><a href="#metrics">Метрики</a><a href="#rhythm">Ритм</a><a href="#adoption">Внедрение</a><a href="#platform">Платформа</a><a href="#startup">Стартап-кит</a><a href="#evidence">Основания</a>
+    <a href="#base" class="newtab">1 · Основа</a><span class="navsep" aria-hidden="true"></span><a href="#model">Модель</a><a href="#conveyor">Конвейер</a><a href="#spec">Спека</a><a href="#harness">Обвязка</a><a href="#andon">Andon</a><a href="#control">Контроль</a><a href="#metrics">Метрики</a><a href="#rhythm">Ритм</a><a href="#adoption">Внедрение</a><a href="#platform">Платформа</a><a href="#startup">Стартап-кит</a><a href="#evidence">Основания</a>
   </nav>
 </div></header>
 
 <main>
+<div class="view" id="v-base" hidden></div>
 <div class="view" id="v-model"></div>
 <div class="view" id="v-conveyor" hidden></div>
 <div class="view" id="v-spec" hidden></div>
@@ -1146,8 +1212,121 @@ function renderEvidence(){
   ${tbl(['Потеря','Как выглядит','Чем закрыта','Где'],MUDA.map(r=>[r[0],r[1],r[2],L(r[3],'Открыть')]))}</section>`;
 }
 
+/* ================= БЛОК 1: ОСНОВА ================= */
+function renderBase(){
+ const yes=[
+  ['Пишет код и тесты в своей песочнице и открывает PR','Конвейер, пост 2','conveyor:run'],
+  ['Проверяет работу до человека: ИИ-ревью','Конвейер, пост 4','conveyor:aireview'],
+  ['Считает приоритет и показывает, каких данных не хватает','Спека, приём и приоритет','spec:intake'],
+  ['Предлагает правки правил и обвязки','Модель, журнал решений','model:decisions']];
+ const no=[
+  ['Не выбирает, что делать, и не меняет план','Спека, правила приёма','spec:intake'],
+  ['Не одобряет свою работу','Модель, принцип 5','model:principles'],
+  ['Не выкатывает в прод и не имеет к нему доступа','Конвейер, пост 6; Контроль','control:security'],
+  ['Не меняет тесты-критерии и правила обвязки','Обвязка, правила','harness:rules'],
+  ['Не придумывает исходные данные','Спека, правила приёма','spec:intake']];
+ const li=(a,m)=>`<li><i>${m}</i><span>${a[0]}<small>${L(a[2],a[1])}</small></span></li>`;
+ const terms=[
+  ['Работа',[['Намерение','Что хочет бизнес и зачем, вместе с ограничениями. Ещё не решение.'],['Результат','Измеримое изменение, которое должно случиться. Записывается критериями приёмки.'],['Поставка','То, что реализует результат: capability, PR, релиз.'],['Capability','Наименьшая единица работы с бинарным результатом: один контракт, проверяемые критерии, один проход агента.'],['Спека','Пакет на вход агенту: намерение, критерии приёмки, контракт, тесты-критерии, класс риска и границы задачи.'],['Verified','Capability, которая влита и пережила окно наблюдения без отката и инцидента.']]],
+  ['Обвязка',[['Обвязка (harness)','Всё вокруг модели, что направляет агента и проверяет его работу.'],['Guide','То, что действует до шага агента: правила, контракты, примеры, границы задачи.'],['Sensor','То, что проверяет результат: тесты, линтеры, ИИ-ревью, человек.'],['Трасса','Запись всех шагов агента по задаче: вызовы инструментов, ошибки, расход.']]],
+  ['Контроль',[['Класс риска','R0, R1 или R2. Определяет, сколько контроля нужно изменению.'],['Andon','Автоматическая остановка агента и передача задачи человеку.']]]];
+ const blocks=[
+  ['1','Основа','Цель, главное правило, границы, словарь','on'],
+  ['2','Принципы','PMI, Lean, Agile, DevOps и что в них меняют агенты',''],
+  ['3','Роли и права решений','Кто решает и кто отвечает',''],
+  ['4','Жизненный цикл','Стадии SDLC: решение человека, работа агента, ворота',''],
+  ['5','Поток','Размер задач, лимит очереди, остановка агента',''],
+  ['6','Качество и контроль','Проверки, классы риска, безопасность, аудит',''],
+  ['7','Измерение и ритм','Метрики и кто, когда, что смотрит',''],
+  ['8','Адаптация и внедрение','Как подогнать под команду и по каким фазам переходить','']];
+ $('#v-base').innerHTML=`
+ <section class="blk bhero">
+  <div class="eyebrow">Блок 1 из 8 · Основа</div>
+  <h2>Фреймворк работы с ИИ-агентами в разработке ИТ-продуктов</h2>
+  <p class="lead" style="margin-top:0">Это подход к тому, как команда решает, что делать, отдаёт работу агентам, проверяет результат и выпускает его. Подход один для любой команды и любого продукта. От размера зависит строгость, а не устройство.</p>
+ </section>
+
+ <section class="blk" id="rule">
+  <div class="eyebrow">Главное правило</div>
+  <p class="rulebig">ИИ — инструмент. <span>Решает человек.</span></p>
+  <p class="lead" style="margin-top:0">Человек принимает два решения: что дать агенту и подходит ли результат. Между ними агент и автоматика делают работу и собирают доказательства.</p>
+  <div class="rflow" role="img" aria-label="Человек решает, что дать агенту; агент и автоматика делают и проверяют; человек решает, подходит ли результат">
+   <div class="rbox h"><span class="who">Человек · решение 1</span><span class="q">Что даём агенту?</span>
+    <div class="yn"><b class="y">ДА</b><span>Спека готова: критерии, тесты, класс риска, границы</span><b class="n">НЕТ</b><span>Задача остаётся у людей</span></div></div>
+   <div class="rarrow" aria-hidden="true">→</div>
+   <div class="rbox m"><span class="who">Агент и автоматика</span><span class="q">Делают и проверяют</span>
+    <span>Агент пишет код в песочнице. Тесты, линтеры и ИИ-ревью проверяют. Всё записывается в трассу.</span></div>
+   <div class="rarrow" aria-hidden="true">→</div>
+   <div class="rbox h"><span class="who">Человек · решение 2</span><span class="q">Результат подходит?</span>
+    <div class="yn"><b class="y">ДА</b><span>Одобрение и выпуск</span><b class="n">НЕТ</b><span>Возврат агенту или работа уходит человеку</span></div></div>
+  </div>
+  <div class="canlist">
+   <div class="card yes"><b>Агент делает</b><ul>${yes.map(a=>li(a,'✓')).join('')}</ul></div>
+   <div class="card no"><b>Агент не делает</b><ul>${no.map(a=>li(a,'✕')).join('')}</ul></div>
+  </div>
+  <div class="note">За каждое изменение отвечает человек-владелец. Тот, кто поставил задачу агенту, её результат не одобряет. ${L('model:principles','Принципы в «Модели»')}</div>
+ </section>
+
+ <section class="blk" id="why">
+  <div class="row"><h3>Почему так</h3>${ev('src')}</div>
+  <p class="muted">Агенты удешевили середину работы. Края остались за людьми, и узкое место теперь там.</p>
+  <div class="card shift" role="img" aria-label="Понять, что строить, и проверить результат стоит дорого; написать код стало дёшево">
+   <div class="shrow"><span class="lbl">Понять, что строить<small>намерение и критерии</small></span><div class="shtrack"><span class="hi" style="width:88%"></span></div><span class="tag hi">дорого · человек</span></div>
+   <div class="shrow"><span class="lbl">Написать код<small>реализация</small></span><div class="shtrack"><span class="lo" style="width:22%"></span></div><span class="tag lo">дёшево · агент</span></div>
+   <div class="shrow"><span class="lbl">Проверить, что построено правильно<small>суждение и приёмка</small></span><div class="shtrack"><span class="hi" style="width:92%"></span></div><span class="tag hi">дорого · человек</span></div>
+   <p class="src">Схема показывает соотношение, а не измеренные доли.</p>
+  </div>
+  <div class="strip three">${FACTS.map(f=>`<a class="tile" href="#evidence" data-t="evidence:facts"><b>${f[0]}</b><span>${f[1]}</span><span class="norm">${f[2]}</span></a>`).join('')}</div>
+ </section>
+
+ <section class="blk" id="chain">
+  <div class="row"><h3>Цепочка: от намерения к поставке</h3>${ev('our')}</div>
+  <p class="muted">Каждое действие связано с тем, зачем оно делается. Пример взят из раздела «Спека».</p>
+  <div class="chain">
+   <div class="clink"><span class="step">Шаг 1</span><h3>Намерение</h3><p>Что хочет бизнес и зачем.</p><div class="ex"><b>Пример</b>«Хотим колесо фортуны для удержания игроков».</div><span class="decide">◆ Человек решает: берём ли в работу</span></div>
+   <div class="rarrow" aria-hidden="true">→</div>
+   <div class="clink"><span class="step">Шаг 2</span><h3>Результат</h3><p>Что должно стать верным. Записывается критериями приёмки.</p><div class="ex"><b>Пример</b>Крутить можно раз в 24 часа после депозита. Выигрыш зачисляется с аудиторским следом. Повторные запросы не дают лишних призов.</div><span class="decide">◆ Человек решает: подходит ли результат</span></div>
+   <div class="rarrow" aria-hidden="true">→</div>
+   <div class="clink"><span class="step">Шаг 3</span><h3>Поставка</h3><p>То, что реализует результат.</p><div class="ex"><b>Пример</b>5 capability, каждая отдельным PR от своего агента, затем релиз.</div><span class="links">${L('spec:example','Пример целиком')}</span></div>
+  </div>
+  <p class="src">Цепочка «намерение → результат → поставка» взята из рабочих заметок автора (PM 3.0).</p>
+ </section>
+
+ <section class="blk" id="scope">
+  <div class="row"><h3>Границы</h3>${ev('our')}</div>
+  <div class="scope"><span class="sl">Что описывает фреймворк</span>
+   <div class="stages"><span class="stage h">Приём и приоритет</span><span class="sa">→</span><span class="stage h">Спека</span><span class="sa">→</span><span class="stage">Работа агента</span><span class="sa">→</span><span class="stage">Проверки</span><span class="sa">→</span><span class="stage h">Суждение человека</span><span class="sa">→</span><span class="stage">Выпуск</span><span class="sa">→</span><span class="stage">Verified</span></div>
+   <p class="src" style="margin-top:10px">Выделены стадии, где решает человек. Подробно они описаны в ${L('conveyor','«Конвейере»')} и ${L('spec:intake','«Спеке»')}.</p>
+  </div>
+  <div class="outside">
+   <div class="card"><b>Продуктовая стратегия</b><span class="muted">Откуда берутся идеи. Фреймворк начинается с приёма запроса.</span></div>
+   <div class="card"><b>Постройка платформы</b><span class="muted">Какие сервисы и в каком порядке строить. Пример плана — во вкладке ${L('platform','«Платформа»')}.</span></div>
+   <div class="card"><b>Выбор инструментов</b><span class="muted">Названия сервисов в ${L('startup','«Стартап-ките»')} — примеры, не рекомендация поставщика.</span></div>
+   <div class="card"><b>Требования регуляторов</b><span class="muted">Фреймворк говорит, где нужен аудит. Конкретные требования сверяются с комплаенсом. ${L('control:provenance','Контроль')}</span></div>
+  </div>
+ </section>
+
+ <section class="blk" id="glossary1">
+  <h3>Словарь</h3>
+  <p class="muted">Двенадцать терминов. Каждый определён один раз, остальные блоки ссылаются сюда.</p>
+  <div class="gloss">${terms.map(g=>`<div class="card gg"><div class="eyebrow">${g[0]}</div><dl>${g[1].map(t=>`<div><dt>${t[0]}</dt><dd>${t[1]}</dd></div>`).join('')}</dl></div>`).join('')}</div>
+ </section>
+
+ <section class="blk" id="marks">
+  <h3>Как читать пометки</h3>
+  ${EVLEG}
+  <p class="muted">Без пометки идут определения и примеры.</p>
+ </section>
+
+ <section class="blk" id="map">
+  <h3>Карта фреймворка</h3>
+  <p class="muted">Восемь блоков, каждый опирается на предыдущие. Шаблоны, примеры и основания вынесены в приложения.</p>
+  <div class="bmap">${blocks.map(b=>`<div class="bt ${b[3]}"><span class="n">${b[0]}</span><b>${b[1]}</b><span>${b[2]}</span>${b[3]?pill('our','ВЫ ЗДЕСЬ'):pill('info','ДАЛЬШЕ')}</div>`).join('')}</div>
+ </section>`;
+}
+
 /* ================= РОУТИНГ ================= */
-const VIEWS=['model','conveyor','spec','harness','andon','control','metrics','rhythm','adoption','platform','startup','evidence'];
+const VIEWS=['base','model','conveyor','spec','harness','andon','control','metrics','rhythm','adoption','platform','startup','evidence'];
 const ALIAS={slicing:'spec',basis:'harness',scale:'adoption',transition:'adoption'};
 const curView=()=>{let v=location.hash.slice(1); v=ALIAS[v]||v; return VIEWS.includes(v)?v:'model'};
 let pending;
@@ -1172,7 +1351,7 @@ document.addEventListener('click',e=>{
  if(curView()===v) route(); else location.hash=v;
 });
 window.addEventListener('hashchange',route);
-renderModel();renderConveyor();renderSpec();renderHarness();renderAndon();renderControl();renderMetrics();renderRhythm();renderAdoption();renderPlatform();renderStartup();renderEvidence();
+renderBase();renderModel();renderConveyor();renderSpec();renderHarness();renderAndon();renderControl();renderMetrics();renderRhythm();renderAdoption();renderPlatform();renderStartup();renderEvidence();
 route();
 </script>
 
