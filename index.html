@@ -417,6 +417,9 @@ nav a.newtab[aria-current="page"]{color:var(--our);border-bottom-color:var(--our
 .msdiv::before,.msdiv::after{content:"";flex:1;height:2px;background:var(--our-soft)}
 @media (max-width:980px){.mrh{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:640px){.mtl{grid-template-columns:28px minmax(0,1fr)}.mtl .mtc,.mtl .mto{grid-column:2}.mto{text-align:left}.mrh{grid-template-columns:minmax(0,1fr)}}
+.adcore{border:2px solid var(--our)!important;background:var(--our-soft)!important}
+.adsteps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:760px){.adsteps{grid-template-columns:minmax(0,1fr)}}
 .evgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .evc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
 .evc .big{font:600 24px/1.1 var(--display);font-variant-numeric:tabular-nums}
@@ -444,7 +447,7 @@ pre.code{margin:0;font:400 13px/1.55 var(--mono);background:var(--sunk);border:1
 <header class="top"><div class="top-in">
   <div class="brand">Agentic Delivery<small>Framework</small></div>
   <nav id="nav" aria-label="Разделы">
-    <a href="#base" class="newtab">1 · Основа</a><a href="#pr" class="newtab">2 · Принципы</a><a href="#roles" class="newtab">3 · Роли</a><a href="#lc" class="newtab">4 · Цикл</a><a href="#fl" class="newtab">5 · Поток</a><a href="#qc" class="newtab">6 · Качество</a><a href="#ms" class="newtab">7 · Измерение</a><span class="navsep" aria-hidden="true"></span><a href="#model">Модель</a><a href="#conveyor">Конвейер</a><a href="#spec">Спека</a><a href="#harness">Обвязка</a><a href="#andon">Andon</a><a href="#control">Контроль</a><a href="#metrics">Метрики</a><a href="#rhythm">Ритм</a><a href="#adoption">Внедрение</a><a href="#platform">Платформа</a><a href="#startup">Стартап-кит</a><a href="#evidence">Основания</a>
+    <a href="#base" class="newtab">1 · Основа</a><a href="#pr" class="newtab">2 · Принципы</a><a href="#roles" class="newtab">3 · Роли</a><a href="#lc" class="newtab">4 · Цикл</a><a href="#fl" class="newtab">5 · Поток</a><a href="#qc" class="newtab">6 · Качество</a><a href="#ms" class="newtab">7 · Измерение</a><a href="#ad" class="newtab">8 · Внедрение</a><span class="navsep" aria-hidden="true"></span><a href="#model">Модель</a><a href="#conveyor">Конвейер</a><a href="#spec">Спека</a><a href="#harness">Обвязка</a><a href="#andon">Andon</a><a href="#control">Контроль</a><a href="#metrics">Метрики</a><a href="#rhythm">Ритм</a><a href="#adoption">Внедрение</a><a href="#platform">Платформа</a><a href="#startup">Стартап-кит</a><a href="#evidence">Основания</a>
   </nav>
 </div></header>
 
@@ -456,6 +459,7 @@ pre.code{margin:0;font:400 13px/1.55 var(--mono);background:var(--sunk);border:1
 <div class="view" id="v-fl" hidden></div>
 <div class="view" id="v-qc" hidden></div>
 <div class="view" id="v-ms" hidden></div>
+<div class="view" id="v-ad" hidden></div>
 <div class="view" id="v-model"></div>
 <div class="view" id="v-conveyor" hidden></div>
 <div class="view" id="v-spec" hidden></div>
@@ -1074,7 +1078,7 @@ const SEG=[
  {k:'startup',n:'Стартап',sub:'до 20 инженеров',
   model:'Агенты пишут почти всё, основатель думает и ревьюит',harness:'Минимальная: AGENTS.md, быстрый CI, песочница без доступа к проду',review:'Основатель или лид; ИИ-ревью на каждом PR',metrics:'Скорость выпуска, с платящими клиентами — откаты и инциденты',risk:'Агент с доступом к проду; небезопасные настройки по умолчанию',stop:'Фаза 4 в упрощённом виде: два класса вместо трёх',
   ex:[['Y Combinator, зимний набор 2025: примерно у четверти компаний около 95% кода сгенерировано ИИ. Основатели при этом сильные инженеры.','https://techcrunch.com/2025/03/06/a-quarter-of-startups-in-ycs-current-cohort-have-codebases-that-are-almost-entirely-ai-generated','заявление YC'],['Replit, июль 2025: агент удалил продовую базу во время объявленной заморозки кода. После этого Replit автоматически разделил среды.','https://incidentdatabase.ai/cite/1152/','инцидент'],['Lovable: у 170 из 1 645 проверенных приложений таблицы были открыты наружу.','https://cvefeed.io/vuln/detail/CVE-2025-48757','CVE-2025-48757']],
-  ph:[['1 неделя','Гигиена: среды разделены, доступ к данным закрыт политиками, основная ветка защищена, стоит лимит трат. Базовой линии нет — сравнивать не с чем, и это нормально.'],['та же неделя','Сливается с фазой 0: AGENTS.md и CI ставятся сразу.'],['недели 2–8','Две зоны кода. Периферия пишется свободно, без спек. Ядро (деньги, авторизация, схема данных) — только через спеку, тесты и ревью основателя.'],['месяцы 3–6','Начинается с первыми платящими клиентами: фоновые агенты, обязательная регрессия, запрет вливать в ядро без ревью.'],['от 6 месяцев','Обычно хватает двух классов: ядро живёт по правилам R2, остальное по R1.'],['не нужна','Пока каждый PR ревьюят один-два человека, больше агентов значит только длиннее очередь.']],
+  ph:[['1 неделя','Гигиена: среды разделены, доступ к данным закрыт политиками, основная ветка защищена, стоит лимит трат. Базовой линии нет — сравнивать не с чем, и это нормально.'],['та же неделя','Сливается с фазой 0: AGENTS.md и CI ставятся сразу.'],['недели 2–8','Две зоны кода. Периферия — короткие задачи с критерием и короткое ревью человека; эксперименты, которые не идут в прод, — свободно. Ядро (деньги, авторизация, схема данных) — только через спеку, тесты и ревью основателя.'],['месяцы 3–6','Начинается с первыми платящими клиентами: фоновые агенты, обязательная регрессия, запрет вливать в ядро без ревью.'],['от 6 месяцев','Обычно хватает двух классов: ядро живёт по правилам R2, остальное по R1.'],['не нужна','Пока каждый PR ревьюят один-два человека, больше агентов значит только длиннее очередь.']],
   kit:1},
  {k:'scaleup',n:'Скейлап',sub:'50–500 инженеров',
   model:'Своя платформа фоновых агентов поверх готовых моделей',harness:'Полная: песочницы, внутренние инструменты через MCP, сценарии из детерминированных и агентных шагов',review:'ИИ-ревью до человека; одобряет всегда человек',metrics:'Влитые PR на инженера вместе с противовесами качества',risk:'Перегрузка ревью, рост расходов, сопротивление приказам сверху',stop:'Фаза 4–5',
@@ -1242,7 +1246,7 @@ const ZONES=[
  ['Класс риска','R1, для черновиков R0','R2'],
  ['Как пишем','Свободно, можно без спеки','Только по пакету спецификации'],
  ['Тесты','По желанию. Не взлетело — ветка удаляется','Тесты-критерии до запуска, агент их не меняет'],
- ['Ревью','ИИ-ревью, человек по желанию','ИИ-ревью и обязательно основатель или лид']
+ ['Ревью','ИИ-ревью и короткое ревью человека','ИИ-ревью и обязательно основатель или лид']
 ];
 const AGENTSMD=`# AGENTS.md
 
@@ -1416,7 +1420,7 @@ function renderBase(){
   ['5','Поток','Узкое место, лимиты, порядок, остановка агента, откуда числа, ритм без спринтов','ready','fl'],
   ['6','Качество и контроль','Слои проверок, evals, чек-лист ревьюера, безопасность, три линии, аудит','ready','qc'],
   ['7','Измерение и ритм','Дерево метрик, анти-метрики, базовая линия, ритм, ускоряет ли ИИ','ready','ms'],
-  ['8','Адаптация и внедрение','Как подогнать под команду и по каким фазам переходить','']];
+  ['8','Адаптация и внедрение','Ядро и настройки, подгонка по размеру, шесть фаз, стартап-кит','ready','ad']];
  $('#v-base').innerHTML=`
  <section class="blk bhero">
   <div class="eyebrow">Блок 1 из 8 · Основа</div>
@@ -2637,8 +2641,194 @@ function renderQc(){
  </section>`;
 }
 
+/* ================= БЛОК 8: АДАПТАЦИЯ И ВНЕДРЕНИЕ ================= */
+const ADCORE=['Решает и отвечает человек, агент только исполняет, проверяет и предлагает','Критерий до кода: тест-критерий утверждает человек, агент его не меняет','Всё, что уходит в прод, проверяет человек — в любом классе риска','У агента нет доступа к проду и прав на выкатку','Кто поставил задачу агенту, тот её не одобряет','Агента останавливают по триггерам, а не по ощущению разработчика'];
+const ADTUNE=['Глубина спеки: от короткой задачи до полного пакета','Сколько ревьюеров и на каком классе','Кто какие роли совмещает','Лимиты очереди и пороги остановки — по своим данным','Ритм встреч и набор метрик','Какие пути в коде относятся к R2'];
+const ADSZ=[
+ ['Роли','Основатель — продакт и автор спеки. Лид — архитектор, ревьюер и владелец обвязки','Роли раздельно. Обвязкой владеет платформенная команда','Все роли раздельно, центр компетенций','Как у крупной плюс обязательный владелец риска'],
+ ['Цикл','Все 7 ворот, но короткие. Два класса: ядро — R2, периферия — R0–R1','7 ворот, три класса риска','То же плюс пилот перед раскаткой','То же. В R2 спеку утверждают двое, откат проверяют до выкатки'],
+ ['Поток','Темп задаёт ревью основателя или лида. Один агент','Лимит очереди от пропускной способности, фоновые агенты','Агенты на ограниченных задачах: миграции, тесты, перевод легаси в спеки','То же. Задачи R2 ведёт человек'],
+ ['Качество и контроль','Среды разделены, у агента нет доступа к проду, политики данных проверяются в CI, ИИ-ревью на каждом PR','13 контролей, бюджеты на шлюзе','Платформа владеет учётными записями агентов, аудит-трейлом и бюджетами','Независимые логи, доказуемое происхождение, внешний аудит'],
+ ['Измерение','С первой недели: скорость выпуска, с клиентами — откаты и инциденты','Базовая линия 4 недели, DORA, время на ревью','Пилот 6 недель с контрольной группой','То же плюс готовность к аудиту'],
+ ['Главный риск','Агент с доступом к проду, небезопасные настройки по умолчанию','Перегрузка ревью, рост расходов, сопротивление приказам сверху','Ускорение кода не доходит до уровня компании','Аудит, зависимость от поставщика, атрофия навыков'],
+ ['Где остановиться','Фаза 4 в упрощённом виде: два класса вместо трёх','Фаза 4–5','Фаза 4; фаза 5 точечно','Фаза 4 для R0 и R1; R2 остаётся на фазе 3']
+];
+const ADPH=PH.map((p,i)=>Object.assign({},p,
+ i===3?{proc:'Планирование превращается в подготовку спек. Спринты сменяет поток: цель инициативы и недельный ритм. Темп задаёт ревью.'}:{},
+ i===4?{proc:'Инженер в основном пишет спеки и судит результат.'}:{}));
+const ADSEGPH={scaleup:{4:['дальше','Агенты запускаются из чата и трекера. Мерим срок и стабильность поставки против базовой линии; число PR смотрим только рядом с качеством и не делаем целью.']},startup:{2:['недели 2–8','Две зоны кода. Периферия — короткие задачи с критерием и короткое ревью человека; эксперименты, которые не идут в прод, — свободно. Ядро (деньги, авторизация, схема данных) — только через спеку, тесты и ревью основателя.']}};
+const ADNOTE={regulated:'<b>Пример: продукт под лицензией.</b> В R2 попадают деньги клиентов, проверка личности, лимиты и ограничения, которых требует лицензия, и отчётность регулятору. До проверки аудит-трейла R2 не уходит дальше фазы 3, а требования регулятора к процессу разработки сверяются с комплаенсом на фазе 0.'};
+const ADDORA=[
+ ['Ясная позиция компании по ИИ','Что можно, что нельзя, какими инструментами','0','qc:qc-sec','Контроли: список разрешённых инструментов'],
+ ['Здоровые данные','Данные продукта и метрик полные и доступные','0–1','ms:ms-base','Базовая линия'],
+ ['Доступ ИИ к внутренним данным','Документы, решения и код доступны агенту в контексте','1','qc:qc-layers','Правила до шага: AGENTS.md, контракты'],
+ ['Сильный контроль версий','Всё через PR, защищённые ветки, история изменений','0','qc:qc-prov','Происхождение изменений'],
+ ['Малые партии','Маленькие задачи и маленькие PR','2–3','fl:fl-unit','Capability'],
+ ['Фокус на пользователе','Понятно, что должно измениться для пользователя','0','base:chain','Зачем → что должно измениться → что делаем'],
+ ['Качественная внутренняя платформа','Песочницы, CI, инструменты агентов работают как продукт','2–4','roles:rl-harness','Владелец обвязки']
+];
+const ADZONES=[
+ ['Что входит','Лендинги, интерфейс, админка','Деньги, авторизация, схема данных, всё регуляторное'],
+ ['Класс риска','R0–R1','R2'],
+ ['Как пишем','Короткая задача с критерием','Только по пакету спецификации'],
+ ['Тесты','Критерий проверяется тестом или в окружении предпросмотра','Тесты-критерии до запуска, агент их не меняет'],
+ ['Ревью','ИИ-ревью и короткое ревью человека','ИИ-ревью и обязательно основатель или лид'],
+ ['Эксперименты','Свободно, если не идут в прод. Не взлетело — ветка удаляется','Нет']
+];
+const ADKITWHERE={'пост 1':'Спека','пост 2':'Работа агента','пост 3':'Проверки','пост 4':'Проверки: ИИ-ревью','пост 6':'Выпуск','Andon':'Остановка агента','метрики':'Измерение'};
+const ADMIST=[
+ ['Приказ «всем пользоваться ИИ» без цели на результат','Цифры внедрения растут, поставка нет, люди сопротивляются','Цель на результат с противовесами качества'],
+ ['Нет базовой линии','Эффект не с чем сравнить, остаются ощущения — а они обманывают','4 недели замера до агентов'],
+ ['Цель «процент кода от ИИ»','Команда гонит объём','Метрики ценности и поставки'],
+ ['Агенту дали доступ к проду «для удобства»','Инцидент: агент удалил продовую базу (Replit, 2025)','Разделить среды в фазе 0'],
+ ['Больше агентов при перегруженном ревью','Очередь растёт, ревью становится поверхностным','Лимит очереди, агентов не больше свободных мест'],
+ ['Огромный AGENTS.md без владельца','Агент тонет в контексте, правила устаревают','Файл-карта на ~100 строк, у него есть владелец'],
+ ['Прототип случайно уезжает в прод','Код без спеки и тестов оказывается у пользователей','Явная граница: прототип — отдельные ветки и среды'],
+ ['Самостоятельность агента на R2 до проверки аудит-трейла','Риск на аудите и для денег клиентов','R2 остаётся на фазе 3, пока аудит-трейл не проверен']
+];
+const ADSTEPS=[
+ ['Определить размер и регулирование','Какой из четырёх профилей ближе. Есть ли регулятор.','ad:ad-size'],
+ ['Разметить классы риска','Какие пути в коде — R2. Для стартапа хватит двух зон.','qc:qc-risk'],
+ ['Распределить роли','Кто какие роли совмещает. Что не совмещается никогда.','roles:rl-size'],
+ ['Выбрать фазу старта','Почти всегда — фаза 0, даже если ассистентами уже пользуются.','ad:ad-phases'],
+ ['Снять базовую линию','До первых агентов: срок, стабильность, время на ревью.','ms:ms-base'],
+ ['Назначить ритм','Ежедневный обход, недельный обзор, старт и финиш инициатив.','ms:ms-rhythm'],
+ ['Пересматривать раз в квартал','Фазу, пороги, роли и классы риска — по данным, а не по ощущениям.','ms:ms-tree']
+];
+const ADSTD=[
+ ['PMBOK 7, подгонка (tailoring)','Подход осознанно подгоняется под проект и организацию','Ядро и настройки, подгонка по размеру'],
+ ['PMI, Standard for AI in Portfolio, Program and Project Management (2026)','Принципы, домены и руководство по подгонке для работы с ИИ; человек в контуре','Неизменяемое ядро, пошаговая подгонка'],
+ ['DORA AI Capabilities Model','Семь условий, при которых ИИ даёт эффект','Предпосылки по фазам'],
+ ['AWS AI-DLC','Самостоятельность — безопасными шагами; профили по типу работы','Шесть фаз; две оси строгости из блока 4'],
+ ['Google, The New SDLC With Vibe Coding','Рекомендации руководителям и организациям (с. 44–46)','Люди и изменения, граница прототипа и прода'],
+ ['McKinsey, Bain','Выигрыш дают перестройка процесса и операционной модели, а не инструмент','Почему фазы, а не раздача лицензий']
+];
+function renderAd(){
+ let saved={}; try{saved=JSON.parse(localStorage.getItem('ad-week')||'{}')}catch(e){}
+ let n=0;
+ $('#v-ad').innerHTML=`
+ <section class="blk bhero">
+  <div class="eyebrow">Блок 8 из 8 · Адаптация и внедрение</div>
+  <h2>Как подогнать под себя и как перейти</h2>
+  <p class="lead" style="margin-top:0">Фреймворк один для стартапа и банка. Подгонка меняет строгость и то, кто какие роли совмещает, но не главные правила. Переход идёт по шести фазам: стартап проходит первые за неделю, банк задерживается на каждой и для самого рискованного кода останавливается раньше.</p>
+  <div class="links">${L('base:rule','Главное правило')}${L('ms:ms-time','Ускоряет ли ИИ')}</div>
+ </section>
+
+ <section class="blk" id="ad-core">
+  <div class="row"><h3>Ядро и настройки</h3>${ev('our')}</div>
+  <div class="cols">
+   <div class="card stack adcore"><b>🔒 Не меняется никогда</b>${ul(ADCORE)}</div>
+   <div class="card stack"><b>⚙ Настраивается под команду</b>${ul(ADTUNE)}</div>
+  </div>
+  <p class="src" style="margin-top:8px">Подгонка подхода под проект — раздел PMBOK 7 (tailoring). Ядро — главное правило из блока 1 и принципы из блока 2.</p>
+ </section>
+
+ <section class="blk" id="ad-size">
+  <div class="row"><h3>Подгонка по размеру компании</h3>${ev('our')}</div>
+  ${tbl(['','Стартап <small>до 20 инженеров</small>','Скейлап <small>50–500</small>','Крупная <small>тысячи</small>','Регулируемая <small>банки, финтех, страхование, медицина</small>'],ADSZ.map(r=>[`<b>${r[0]}</b>`,r[1],r[2],r[3],r[4]]))}
+  <div class="links" style="margin-top:8px">${L('roles:rl-size','Совмещение ролей')}${L('qc:qc-lines','Три линии контроля')}${L('ms:ms-base','Базовая линия')}</div>
+ </section>
+
+ <section class="blk" id="ad-phases">
+  <div class="row"><h3>Шесть фаз перехода</h3>${ev('our')}</div>
+  <p class="muted">Единой модели зрелости в индустрии нет. Вендоры считают прогрессом рост самостоятельности агентов, DORA и McKinsey — фундамент и перестройку процесса. Мы идём за вторыми. Выберите размер компании: в каждой фазе появится, как её проходит этот сегмент.</p>
+  <div class="seg" id="ad-seg">${SEG.map(s=>`<button data-k="${s.k}">${s.n}<small>${s.k==='regulated'?'банки, финтех и др.':s.sub}</small></button>`).join('')}</div>
+  <div id="ad-panel" class="stack" style="gap:20px"></div>
+ </section>
+
+ <section class="blk" id="ad-dora">
+  <div class="row"><h3>Предпосылки: семь условий DORA</h3>${ev('src')}</div>
+  <p class="muted">DORA 2025: ИИ усиливает то, что в компании уже есть. Эти семь условий делают усиление положительным. Их закрывают по ходу фаз.</p>
+  ${tbl(['Условие','Что это','Фаза','Где у нас'],ADDORA.map(r=>[`<b>${r[0]}</b>`,r[1],`<span class="mono">${r[2]}</span>`,L(r[3],r[4])]))}
+ </section>
+
+ <section class="blk" id="ad-kit">
+  <div class="row"><h3>Стартап-кит: фазы 0–2 за неделю</h3>${ev('our')}</div>
+  <p class="muted">Для команды до 20 человек хватает шести-семи сервисов. Важнее не набор инструментов, а два правила: агент не видит прод, а в ядро ничего не попадает без спеки и человека.</p>
+  <h4 style="margin:10px 0 6px">Сервисы по стадиям</h4>
+  ${tbl(['Что','Стадия','Чем закрыть','Когда'],KIT.map(k=>[`<b>${k[0]}</b>`,ADKITWHERE[k[1]]||k[1],k[2],pill(WHEN[k[3]][0],WHEN[k[3]][1])]))}
+  <p class="src">Названия сервисов — примеры, а не рекомендация поставщика. Внутри строки они взаимозаменяемы.</p>
+  <h4 style="margin:16px 0 6px">Первая неделя</h4>
+  <div class="cols">${WEEK.map((w,i)=>`<label class="check card" for="adw${i}"><input type="checkbox" id="adw${i}" ${saved[i]?'checked':''}><span class="stack" style="gap:4px"><b>${i+1}. ${w[0]}</b><span class="muted">${w[1]}</span></span></label>`).join('')}</div>
+  <div id="adw-out"></div>
+  <h4 style="margin:16px 0 6px">Две зоны кода</h4>
+  ${tbl(['','Периферия','Ядро'],ADZONES.map(r=>[`<b>${r[0]}</b>`,r[1],r[2]]))}
+  <div class="gq" style="margin-top:10px"><i>«Teams that keep this distinction blurry produce prototypes that ship by accident.»</i><span>The New SDLC With Vibe Coding, с. 45 — о границе между прототипом и продом</span></div>
+  <div class="note">Если продукт регулируемый, стартап-режим относится только к периферии. Ядро с первого дня живёт по правилам R2, даже если в команде три человека.</div>
+  <div class="row" style="margin-top:16px"><h4 style="margin:0">Шаблон AGENTS.md</h4><button class="btn" data-adcopy="a">Скопировать</button></div>
+  <p class="muted">Пример под Next.js и Supabase. Замените стек и папки на свои.</p><pre class="code">${AGENTSMD.replace(/</g,'&lt;')}</pre>
+  <div class="row" style="margin-top:16px"><h4 style="margin:0">Шаблон CI</h4><button class="btn" data-adcopy="c">Скопировать</button></div>
+  <p class="muted">GitHub Actions. Скрипт check:rls нужно написать под свою схему: он читает список таблиц и падает, если у какой-то нет политики.</p><pre class="code">${CIYML.replace(/</g,'&lt;')}</pre>
+  <h4 style="margin:16px 0 6px">Две привычки, которые экономят недели</h4>
+  <div class="cols"><div class="card stack"><b>Проверка идеи до кода</b><p>Попросите модель сыграть скептичного клиента: пять причин не платить и три краевых случая. Это короткая версия сессии нарезки.</p></div>
+   <div class="card stack"><b>Уборка раз в неделю</b><p>Агент ищет мёртвый код, дубликаты и неиспользуемые зависимости и открывает PR на удаление. Задача класса R0, ревью человека короткое.</p></div></div>
+  <h4 style="margin:16px 0 6px">Что пока не нужно</h4>
+  <div class="cols">${SKIP.map(s=>`<div class="card stack"><b>${s[0]}</b><p class="muted">${s[1]}</p></div>`).join('')}</div>
+ </section>
+
+ <section class="blk" id="ad-people">
+  <div class="row"><h3>Люди и изменения</h3>${ev('src')}</div>
+  <div class="cols">
+   <div class="card stack"><b>Роли меняются, а не исчезают</b><p>Разработчик проектирует систему и судит качество. Продакт отбирает, что делать. Появляются владелец обвязки и диспетчер потока.</p><div class="links">${L('roles:rl-cards','Было → стало по ролям')}</div></div>
+   <div class="card stack"><b>Учить четырём навыкам</b><p>Постановка задачи, декомпозиция, оценка результата, проектирование ограничений.</p><div class="links">${L('roles:rl-skills','Навыки')}</div></div>
+   <div class="card stack"><b>Беречь навыки</b><p>Ротация без агента, письменное объяснение решений в R2, путь для начинающих.</p><div class="links">${L('qc:qc-people','Люди — тоже слой контроля')}</div></div>
+   <div class="card stack"><b>Пилот, а не приказ</b><p>Сначала пилот с контрольной группой и базовой линией, потом раскатка по результатам.</p><div class="links">${L('ms:ms-base','Базовая линия')}</div></div>
+  </div>
+  <div class="gq" style="margin-top:10px"><i>«Treat AI-assisted development as an engineering investment, not a productivity feature.»</i><span>The New SDLC With Vibe Coding, с. 45</span></div>
+  <div class="gq" style="margin-top:8px"><i>«Invest in the harness components as a shared team asset.»</i><span>The New SDLC With Vibe Coding, с. 45</span></div>
+ </section>
+
+ <section class="blk" id="ad-mist">
+  <div class="row"><h3>Типичные ошибки внедрения</h3>${ev('src')}</div>
+  ${tbl(['Ошибка','Что происходит','Вместо этого'],ADMIST.map(r=>[`<b>${r[0]}</b>`,r[1],r[2]]))}
+ </section>
+
+ <section class="blk" id="ad-steps">
+  <div class="row"><h3>Как подогнать под себя: семь шагов</h3>${ev('our')}</div>
+  <div class="adsteps">${ADSTEPS.map((s,i)=>{n++;return `<label class="check card" for="ads${n}"><input type="checkbox" id="ads${n}"><span class="stack" style="gap:4px"><b>${i+1}. ${s[0]}</b><span class="muted">${s[1]}</span><span>${L(s[2],'Открыть')}</span></span></label>`}).join('')}</div>
+ </section>
+
+ <section class="blk" id="ad-std">
+  <div class="row"><h3>Сверка со стандартами</h3>${ev('src')}</div>
+  ${tbl(['Источник','Что говорит','Где у нас'],ADSTD.map(r=>[`<b>${r[0]}</b>`,r[1],r[2]]))}
+ </section>
+
+ <section class="blk">
+  <h3>Источники</h3>
+  ${ul([
+   X('https://www.pmi.org/standards/artificial-intelligence','PMI: The Standard for Artificial Intelligence in Portfolio, Program, and Project Management'),
+   X('https://www.pmi.org/standards/pmbok','PMI: PMBOK Guide — подгонка подхода'),
+   X('https://services.google.com/fh/files/misc/2025_state_of_ai_assisted_software_development.pdf','DORA 2025: AI Capabilities Model'),
+   X(AIDLC,'AWS AI-DLC: принцип безопасных шагов и профили работы'),
+   X(GDOC,'Google, «The New SDLC With Vibe Coding», май 2026: с. 44–46'),
+   X('https://www.mckinsey.com/capabilities/tech-and-ai/our-insights/beyond-the-copilot-scaling-the-agentic-product-development-life-cycle','McKinsey: Beyond the copilot'),
+   X('https://www.bain.com/insights/from-pilots-to-payoff-generative-ai-in-software-development-technology-report-2025','Bain Technology Report 2025')])}
+ </section>`;
+ const upd=()=>{const st={};let k=0;$$('#ad-kit input[id^="adw"]').forEach((c,i)=>{if(c.checked){st[i]=1;k++}});try{localStorage.setItem('ad-week',JSON.stringify(st))}catch(e){}
+  $('#adw-out').innerHTML=k===WEEK.length?`<div class="verdict ok"><b>Фазы 0 и 1 закрыты</b>Можно переходить к двум зонам кода.</div>`:`<div class="verdict info"><b>Сделано ${k} из ${WEEK.length}</b>Пока список не закрыт, агент не получает задач в ядро.</div>`};
+ $$('#ad-kit input[id^="adw"]').forEach(c=>c.onchange=upd); upd();
+ $$('#v-ad [data-adcopy]').forEach(b=>b.onclick=()=>{const txt=b.dataset.adcopy==='a'?AGENTSMD:CIYML, pre=b.parentElement.nextElementSibling.nextElementSibling;
+  const done=()=>{b.textContent='Скопировано';setTimeout(()=>b.textContent='Скопировать',1600)};
+  const sel=()=>{const r=document.createRange();r.selectNodeContents(pre);const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Выделено, нажмите Ctrl+C'};
+  try{navigator.clipboard.writeText(txt).then(done,sel)}catch(e){sel()}});
+ $('#ad-seg').onclick=e=>{const b=e.target.closest('button'); if(b) adPick(b.dataset.k)};
+ adPick('scaleup');
+}
+function adPick(k){const s=SEG.find(x=>x.k===k); if(!s) return;
+ $$('#ad-seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));
+ const sp=i=>(ADSEGPH[k]&&ADSEGPH[k][i])||s.ph[i];
+ const note=ADNOTE[k]||'';
+ $('#ad-panel').innerHTML=`
+  ${note?`<blockquote>${note}</blockquote>`:''}
+  <div class="phases">${ADPH.map((p,i)=>`<div class="ph"><div class="pn">${i}</div><div class="stack" style="gap:10px"><div class="row"><b>${p.n}</b>${p.hard?pill('crit','САМЫЙ ТРУДНЫЙ ПЕРЕХОД'):''}${p.opt?pill('info','ПО ЖЕЛАНИЮ'):''}</div><p>${p.what}</p><p class="muted">${p.proc}</p>
+   <div class="segnote"><b>${s.n} · ${sp(i)[0]}</b>${sp(i)[1]}</div>
+   <div class="gate"><div><b>Вход</b>${p.inp}</div><div><b>Выход</b>${p.out}</div></div><p class="src"><b>Типичная ошибка.</b> ${p.err}</p>
+   ${p.hard?`<p class="src">Почему трудно: генерация растёт сразу, а пропускная способность ревью — нет. Снимается только вложениями в проверки: тесты, структурные проверки, ИИ-ревью. Это наш вывод из данных о ревью, а не измеренный факт.</p>`:''}</div></div>`).join('')}</div>
+  <div class="stack"><h4 style="margin:0">Что делают компании этого размера</h4><div class="cols">${s.ex.map(e=>`<div class="card stack"><p>${e[0]}</p><span class="src">${X(e[1],'Источник')} · ${e[2]}</span></div>`).join('')}</div></div>`;
+}
+
 /* ================= РОУТИНГ ================= */
-const VIEWS=['base','pr','roles','lc','fl','qc','ms','model','conveyor','spec','harness','andon','control','metrics','rhythm','adoption','platform','startup','evidence'];
+const VIEWS=['base','pr','roles','lc','fl','qc','ms','ad','model','conveyor','spec','harness','andon','control','metrics','rhythm','adoption','platform','startup','evidence'];
 const ALIAS={slicing:'spec',basis:'harness',scale:'adoption',transition:'adoption'};
 const curView=()=>{let v=location.hash.slice(1); v=ALIAS[v]||v; return VIEWS.includes(v)?v:'model'};
 let pending;
@@ -2663,7 +2853,7 @@ document.addEventListener('click',e=>{
  if(curView()===v) route(); else location.hash=v;
 });
 window.addEventListener('hashchange',route);
-renderBase();renderPr();renderRoles();renderLc();renderFl();renderQc();renderMs();renderModel();renderConveyor();renderSpec();renderHarness();renderAndon();renderControl();renderMetrics();renderRhythm();renderAdoption();renderPlatform();renderStartup();renderEvidence();
+renderBase();renderPr();renderRoles();renderLc();renderFl();renderQc();renderMs();renderAd();renderModel();renderConveyor();renderSpec();renderHarness();renderAndon();renderControl();renderMetrics();renderRhythm();renderAdoption();renderPlatform();renderStartup();renderEvidence();
 route();
 </script>
 
