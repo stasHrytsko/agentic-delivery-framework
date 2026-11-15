@@ -396,6 +396,27 @@ nav a.newtab[aria-current="page"]{color:var(--our);border-bottom-color:var(--our
 .qa{display:flex;align-items:center;justify-content:center;color:var(--muted);font-weight:700}
 @media (max-width:980px){.qcl{grid-template-columns:repeat(2,minmax(0,1fr))}.qcl .qa{display:none}}
 @media (max-width:640px){.qcl{grid-template-columns:minmax(0,1fr)}}
+.mstree{display:flex;flex-direction:column;gap:4px}
+.mtl{display:grid;grid-template-columns:36px minmax(0,1.1fr) minmax(0,1.6fr) minmax(0,.9fr);gap:12px;align-items:center;border:1.5px solid var(--line);border-radius:6px;padding:10px 12px;background:var(--surface)}
+.mtl:first-child{border:2px solid var(--our);background:var(--our-soft)}
+.mtl .n{font:700 22px/1 var(--display);color:var(--muted)}
+.mtl:first-child .n{color:var(--our)}
+.mtm b{display:block;font:600 16px/1.2 var(--display)}
+.mtm span{font-size:13px;color:var(--muted)}
+.mtc{display:flex;flex-wrap:wrap;gap:6px}
+.mto{font:600 12px/1.3 var(--mono);color:var(--our);text-align:right}
+.mtup{text-align:center;font:600 11px/1 var(--mono);color:var(--muted);letter-spacing:.06em}
+.msrh{display:flex;flex-direction:column;gap:8px}
+.mrh{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) minmax(0,1fr) minmax(0,1.3fr);gap:12px;border:1px solid var(--line);border-radius:6px;padding:12px;background:var(--surface);font-size:14px}
+.mrh .w span{display:block;font:600 11px/1 var(--mono);color:var(--our);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.mrh .w b{display:block;font:600 15px/1.2 var(--display)}
+.mrh .w small{color:var(--muted);font-size:12px}
+.mrh .lab{display:block;font:600 11px/1 var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.mrh .say{font-style:italic;color:var(--muted);font-size:13px}
+.msdiv{display:flex;align-items:center;gap:12px;margin:36px 0 8px;font:700 13px/1 var(--mono);color:var(--our);text-transform:uppercase;letter-spacing:.08em}
+.msdiv::before,.msdiv::after{content:"";flex:1;height:2px;background:var(--our-soft)}
+@media (max-width:980px){.mrh{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.mtl{grid-template-columns:28px minmax(0,1fr)}.mtl .mtc,.mtl .mto{grid-column:2}.mto{text-align:left}.mrh{grid-template-columns:minmax(0,1fr)}}
 .evgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .evc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
 .evc .big{font:600 24px/1.1 var(--display);font-variant-numeric:tabular-nums}
@@ -1394,7 +1415,7 @@ function renderBase(){
   ['4','Жизненный цикл','Стадии, ворота, петли возврата, строгость по типу работы и риску','ready','lc'],
   ['5','Поток','Узкое место, лимиты, порядок, остановка агента, откуда числа, ритм без спринтов','ready','fl'],
   ['6','Качество и контроль','Слои проверок, evals, чек-лист ревьюера, безопасность, три линии, аудит','ready','qc'],
-  ['7','Измерение и ритм','Метрики и кто, когда, что смотрит. Готов раздел «Ускоряет ли ИИ»','part','ms'],
+  ['7','Измерение и ритм','Дерево метрик, анти-метрики, базовая линия, ритм, ускоряет ли ИИ','ready','ms'],
   ['8','Адаптация и внедрение','Как подогнать под команду и по каким фазам переходить','']];
  $('#v-base').innerHTML=`
  <section class="blk bhero">
@@ -2209,15 +2230,170 @@ const MSPRE=[
  ['Агент без перестройки потока','код вдвое быстрее, ожидание ревью +91% (Faros)',25,50,15,91],
  ['Мгновенный код','потолок: код занимает ноль времени',35,100,0,0]
 ];
+/* ---- Блок 7: метрики, ритм ---- */
+const MSLEVELS=[
+ {k:'value',n:'Ценность',q:'Изменилось ли то, ради чего делали?',own:'Продакт-менеджер',ms:['Польза выпущенного']},
+ {k:'deliv',n:'Поставка',q:'Как быстро и надёжно доходит до пользователей?',own:'Диспетчер потока',ms:['5 метрик DORA','Verified Capabilities','Lead time по стадиям']},
+ {k:'flow',n:'Поток',q:'Где застревает работа?',own:'Диспетчер потока',ms:['4 метрики Kanban','Время на ревью','Запас спек']},
+ {k:'qual',n:'Качество',q:'Не уезжают ли ошибки в прод?',own:'Ревьюеры и владелец риска',ms:['Качество после мержа','Покрытие спеки тестами']},
+ {k:'harn',n:'Обвязка',q:'Хорошо ли работает агент в наших правилах?',own:'Владелец обвязки',ms:['First-Time Pass','Принятие агентных PR','Остановки Andon']},
+ {k:'cost',n:'Стоимость',q:'Во что обходится результат?',own:'Продакт-менеджер',ms:['Стоимость на Verified Capability']}
+];
+const MSLVLOF={verified:'Поставка',lead:'Поставка',review:'Поток',buffer:'Поток',postmerge:'Качество',speccov:'Качество',cost:'Стоимость',firstpass:'Обвязка',accept:'Обвязка',andonrate:'Обвязка'};
+const MSOWN={verified:'Диспетчер потока',lead:'Диспетчер потока',review:'Диспетчер потока',buffer:'Диспетчер потока',postmerge:'Ревьюеры и владелец риска',speccov:'Автор спеки',cost:'Продакт-менеджер',firstpass:'Владелец обвязки',accept:'Владелец обвязки',andonrate:'Владелец обвязки'};
+const MSEVN={
+ lead:'Lead time — метрика DORA. У нас он считается от ворот 2 «Готово к работе» до мержа и раскладывается по стадиям: так видно, где копится работа.',
+ review:'То, что ущерб проявляется здесь, показывают Faros и LinearB (вендоры аналитики). Пороги — из блока 5: тревога после 4 рабочих часов ожидания, предел 1 рабочий день.',
+ speccov:'Идея «спека равна тестам» лежит в основе GitHub Spec Kit и AWS Kiro. Требование 100% для ворот 2 — наше.'};
+const MSNEW=[
+ {k:'value',lvl:'Ценность',own:'Продакт-менеджер',n:'Польза выпущенного',ev:'our',
+  what:'Достигнут ли критерий «что должно измениться» и пользуются ли выпущенным.',
+  formula:'Достижение = инициативы с выполненным критерием / закрытые инициативы × 100%\nИспользование = пользователи, воспользовавшиеся функцией за N дней / целевая аудитория',
+  src:'Продуктовая аналитика, критерий из спеки и цели инициативы.',
+  read:'Главная метрика уровня. Если всё остальное зелёное, а пользы нет, команда быстро делает не то.',
+  evn:'Цепочка «зачем → что должно измениться → что делаем» — PMBOK 7 и Seiden, «Outcomes Over Output». Формулы наши.'},
+ {k:'dora',lvl:'Поставка',own:'Диспетчер потока',n:'Пять метрик DORA',ev:'src',
+  what:'Скорость и стабильность поставки: как часто выпускаем, как быстро изменение доходит до прода, как часто ломаем и как быстро чиним.',
+  formula:'Частота выпусков = выкатки в прод за период\nLead time изменения = выкатка − коммит (медиана)\nДоля неудачных изменений = выкатки с инцидентом или откатом / все выкатки\nВремя восстановления = восстановление − начало сбоя после неудачной выкатки\nДоля переделок = незапланированные выкатки для исправления ошибок / все выкатки',
+  src:'Пайплайн деплоя, git, журнал инцидентов.',
+  read:'Скорость без стабильности — не ускорение. По DORA 2024, с ростом использования ИИ стабильность падает: две последние метрики смотрите обязательно.',
+  evn:'DORA: четыре классические метрики плюс доля переделок (rework rate), добавленная в 2024 году.'}
+];
+const MSANTI=[
+ ['Строки кода','Агент пишет сколько угодно строк. Больше строк — чаще больше дублей и сложности','Verified Capabilities, польза выпущенного'],
+ ['Число PR и коммитов','Растёт всегда: у Faros +98% PR при неизменной поставке','Lead time изменения, доля неудачных изменений'],
+ ['Доля кода, написанного ИИ','Показывает, как работают, а не что получили. Если сделать целью, начнут гнать объём','Только как контекст рядом с метриками результата'],
+ ['Story points и velocity','Для агентной работы не имеют смысла: Scrum.org советует их не использовать','Пропускная способность и время цикла'],
+ ['Самоотчёт «ИИ экономит N часов»','Ощущения расходятся с замерами: у METR ждали +24%, получили −19%','Замер срока и качества против базовой линии'],
+ ['Число запущенных агентов','Больше агентов — длиннее очередь ревью, а не быстрее поставка','Время на ревью, возраст очереди']
+];
+const MSBASE=[
+ ['Стартап','Базовой линии нет — сравнивать не с чем, и это нормально. Начните мерить с первой недели','С первого дня'],
+ ['Скейлап','Lead time, доля неудачных изменений, время восстановления, время на ревью. Без базовой линии эффект не доказать ни себе, ни совету директоров','4 недели до внедрения'],
+ ['Крупная и регулируемая','То же плюс контролируемый пилот с контрольной группой. Самоотчёты разработчиков не считаются','Пилот 6 недель']
+];
+const MSRH=[
+ ['Каждый день','Обход потока','Диспетчер потока и команда, 10–15 минут','Очередь ревью, самый старый PR, остановки за сутки, запас спек','Стоп новых запусков, кто разбирает остановку, кто идёт писать спеки','«В очереди 5 PR при лимите 4. До обеда агентов не запускаем, двое помогают с ревью»'],
+ ['Каждую неделю','Обзор с командой','Продакт-менеджер и команда','Что стало Verified, прогресс к цели инициативы, что поправили в требованиях','Что поправить в требованиях, что отсечь','«Две capability Verified, третья вернулась на спеку: критерий был двусмысленным»'],
+ ['Каждую неделю','Пополнение и обвязка','Продакт-менеджер, автор спеки, диспетчер, владелец обвязки','Запас спек, остановки и их причины, First-Time Pass, принятие PR, откаты','Что берём дальше, что чинить в обвязке','«Четыре остановки на модуле отчётности, причина — двусмысленность в спеке. Спеку переписали, в CI добавили проверку»'],
+ ['Старт и финиш инициативы','Цель и итог','Продакт-менеджер и команда','Критерий изменения, бюджет времени; на финише — польза, стоимость, качество после выпуска','Закрыть, срезать объём или продлить','«Критерий выполнен на 80%, бюджет вышел. Срезаем последний сценарий и закрываем»'],
+ ['Каждый месяц','Обзор направления','Руководители направлений','Verified за месяц, узкое место, стоимость на Verified, lead time: медиана и P90','Куда добавить людей, что упростить','«Закрыли 21 capability. Узкое место — ревью R2, добавляем второго ревьюера»'],
+ ['Каждый квартал','Обзор компании','Руководство','Срок, бюджет и качество против базовой линии, стабильность по DORA. Для регулируемых — готовность к аудиту','Масштабировать, держать или откатить подход','«Доля неудачных изменений на уровне до агентов, одна capability стала на 15% дешевле»']
+];
+const MSBOARD=[
+ ['Merged / Verified','65 / 58','из 120 в скоупе','ok','В ГРАФИКЕ','ms:ms-m-verified'],
+ ['Очередь ревью','3 PR','лимит 4 на двоих ревьюеров','warn','ВНИМАНИЕ','fl:fl-n-wip'],
+ ['Самый старый PR','1,5 ч','тревога после 4 рабочих часов','ok','В НОРМЕ','fl:fl-n-age'],
+ ['Остановки за сутки','2','обе разобраны в срок','ok','РАЗОБРАНЫ','ms:ms-m-andonrate'],
+ ['Запас спек','3 дня','меньше 1 дня — агенты встанут','ok','В НОРМЕ','ms:ms-m-buffer'],
+ ['First-Time Pass','84%','неделю назад 86%','ok','СТАБИЛЬНО','ms:ms-m-firstpass']
+];
+const MSSIG=[
+ ['Растут время ревью и возраст очереди','Остановить новые запуски, резать capability мельче, усилить ИИ-ревью','ms:ms-m-review','Faros, LinearB'],
+ ['Падает First-Time Pass','Разобрать причины, повторяющееся перенести в правила или проверки','ms:ms-m-firstpass','AIDev: отклонённые PR чаще падают в CI'],
+ ['Кончается запас спек','Перевести людей на спеки, сократить число запусков','ms:ms-m-buffer','Наш вывод'],
+ ['В спеках копятся открытые вопросы','Не запускать агентов на таких спеках, отдать вопросы владельцам','lc:lc-s2','Наш вывод'],
+ ['Стоимость растёт быстрее результата','Искать циклы и крупные задачи, ужесточить бюджеты','ms:ms-m-cost','Gartner'],
+ ['Откаты растут вместе с числом мержей','Усилить проверки, повысить класс риска модуля','ms:ms-m-dora','DORA'],
+ ['Большие PR одобряются за минуты','Ротация, письменное объяснение решения в R2','qc:qc-people','Anthropic, Thoughtworks']
+];
+const MSSTD=[
+ ['DORA','Пять метрик поставки; ИИ — усилитель','Уровень «Поставка», базовая линия'],
+ ['SPACE (Forsgren и др., 2021)','Продуктивность нельзя свести к одной метрике: удовлетворённость, результат, активность, коммуникация, поток','Дерево из шести уровней вместо одного числа'],
+ ['Kanban Guide','Четыре метрики потока','Уровень «Поток»'],
+ ['Закон Гудхарта','Метрика, ставшая целью, перестаёт быть хорошей метрикой','Анти-метрики'],
+ ['PMBOK 7','Домен эффективности «Измерение»: метрики служат решениям','У каждой встречи — свои решения'],
+ ['Seiden, «Outcomes Over Output»','Мерить изменение поведения людей, а не объём выпущенного','Уровень «Ценность»']
+];
+function msCards(){
+ const base=M.filter(m=>m.k!=='uncertainty').map(m=>({k:m.k,lvl:MSLVLOF[m.k],own:MSOWN[m.k],n:m.n,ev:m.ev,what:m.what,formula:m.formula,src:m.src,read:m.read,evn:MSEVN[m.k]||m.evn}));
+ const all=[...MSNEW,...base];
+ const order=MSLEVELS.map(l=>l.n);
+ all.sort((a,b)=>order.indexOf(a.lvl)-order.indexOf(b.lvl));
+ return all.map(m=>`<article class="pcard" id="ms-m-${m.k}">
+  <div class="row"><span class="eyebrow">${m.lvl} · ${m.own}</span>${ev(m.ev)}</div>
+  <h3>${m.n}</h3><p>${m.what}</p>
+  <div class="formula">${m.formula}</div>
+  <dl><dt>Данные</dt><dd>${m.src}</dd><dt>Как читать</dt><dd>${m.read}</dd><dt>Основание</dt><dd class="src">${m.evn}</dd></dl>
+ </article>`).join('');
+}
+function msTop(){
+ return `
+ <section class="blk bhero">
+  <div class="eyebrow">Блок 7 из 8 · Измерение и ритм</div>
+  <h2>Что мерить, кто смотрит и когда</h2>
+  <p class="lead" style="margin-top:0">Мерим результат, а не активность. Метрики собраны в дерево из шести уровней, у каждого есть владелец. Ритм встреч решает, кто, когда и на какие метрики смотрит и какие решения по ним принимает. В конце блока — что уже намерили другие: ускоряет ли ИИ на самом деле.</p>
+  <div class="links">${L('ms:ms-time','Ускоряет ли ИИ')}${L('fl:fl-metrics','Метрики потока')}${L('fl:fl-cadence','Ритм без спринтов')}</div>
+ </section>
+
+ <section class="blk" id="ms-how">
+  <div class="row"><h3>Три правила измерения</h3>${ev('src')}</div>
+  <div class="cols3">
+   <div class="card stack"><b>Результат, а не активность</b><p>Строки, PR и токены растут всегда. Смотрим, изменилось ли то, ради чего делали, и дошло ли это до пользователей без поломок.</p><span class="src">Seiden; принцип 1</span></div>
+   <div class="card stack"><b>Одной метрики не бывает</b><p>Скорость без качества, качество без стоимости — каждая по отдельности врёт. Поэтому дерево, а не одно число.</p><span class="src">SPACE, DORA</span></div>
+   <div class="card stack"><b>Метрика — не цель</b><p>Как только метрику делают целью, её начинают накручивать. Метрики служат решениям на встречах, а не оценке людей.</p><span class="src">Закон Гудхарта</span></div>
+  </div>
+ </section>
+
+ <section class="blk" id="ms-tree">
+  <div class="row"><h3>Дерево метрик</h3>${ev('our')}</div>
+  <p class="muted">Сверху — то, ради чего работаем. Ниже — то, что объясняет верхний уровень. Если ценности нет, ищем причину на уровнях ниже.</p>
+  <div class="mstree">${MSLEVELS.map((l,i)=>`<div class="mtl"><span class="n">${i+1}</span><div class="mtm"><b>${l.n}</b><span>${l.q}</span></div><div class="mtc">${l.ms.map(x=>`<span class="chip">${x}</span>`).join('')}</div><div class="mto">${l.own}</div></div>`).join('<div class="mtup">↑ объясняет</div>')}</div>
+  <div class="links" style="margin-top:8px">${L('roles','Роли')}</div>
+ </section>
+
+ <section class="blk" id="ms-cards">
+  <h3>Метрики: формулы и как читать</h3>
+  <p class="muted">Четыре метрики потока — в блоке 5. Пороги стартовые, их калибруют по своей базовой линии.</p>
+  <div class="pgrid">${msCards()}</div>
+ </section>
+
+ <section class="blk" id="ms-anti">
+  <div class="row"><h3>Анти-метрики: что не делать целью</h3>${ev('src')}</div>
+  ${tbl(['Метрика','Почему не цель','Что смотреть вместо'],MSANTI.map(r=>[`<b>${r[0]}</b>`,r[1],r[2]]))}
+ </section>
+
+ <section class="blk" id="ms-base">
+  <div class="row"><h3>Базовая линия до агентов</h3>${ev('hyp')}</div>
+  <p class="muted">Без замера «до» ускорение не доказать. Сроки стартовые.</p>
+  ${tbl(['Размер','Что снять','Когда'],MSBASE.map(r=>[`<b>${r[0]}</b>`,r[1],r[2]]))}
+ </section>
+
+ <section class="blk" id="ms-rhythm">
+  <div class="row"><h3>Ритм: кто, когда и что решает</h3>${ev('our')}</div>
+  <p class="muted">День, неделя и инициатива — из блока 5. Месяц и квартал — для руководства. У каждой встречи есть решения, которые на ней принимают: метрики без решений не нужны.</p>
+  <div class="msrh">${MSRH.map(r=>`<div class="mrh"><div class="w"><span>${r[0]}</span><b>${r[1]}</b><small>${r[2]}</small></div><div><span class="lab">Смотрят</span>${r[3]}</div><div><span class="lab">Решают</span>${r[4]}</div><div class="say">${r[5]}</div></div>`).join('')}</div>
+ </section>
+
+ <section class="blk" id="ms-board">
+  <div class="row"><h3>Табло диспетчера</h3>${ev('our')}</div>
+  <p class="muted">Пример с условными цифрами: что видно на ежедневном обходе. Обход идёт справа налево, от готового к началу: сначала разгружаем выход — очередь ревью и остановки, потом смотрим на вход — запас спек.</p>
+  <div class="strip">${MSBOARD.map(d=>`<a class="tile" href="#${d[5].split(':')[0]}" data-t="${d[5]}"><span class="eyebrow">${d[0]}</span><b>${d[1]}</b><span class="norm">${d[2]}</span>${pill(d[3],d[4])}</a>`).join('')}</div>
+  <div class="card stack" style="margin-top:12px"><b>Калькулятор очереди ревью</b>
+   <div class="fields"><label for="msw-pr">PR агентов в ревью<input type="number" id="msw-pr" min="0" value="3"></label><label for="msw-rv">Ревьюеров<input type="number" id="msw-rv" min="1" value="2"></label><label for="msw-lim">Лимит на ревьюера<input type="number" id="msw-lim" min="1" value="2"></label><label for="msw-age">Самый старый PR, рабочих часов<input type="number" id="msw-age" min="0" step="0.5" value="1.5"></label></div><div id="msw-out"></div></div>
+  <div class="links" style="margin-top:8px">${L('fl:fl-numbers','Откуда лимит 2 PR и 4 часа')}</div>
+ </section>
+
+ <section class="blk" id="ms-signals">
+  <div class="row"><h3>Ранние сигналы</h3>${ev('our')}</div>
+  ${tbl(['Сигнал','Что делать','Метрика','Основание'],MSSIG.map(s=>[`<b>${s[0]}</b>`,s[1],L(s[2],'Открыть'),s[3]]))}
+ </section>
+
+ <div class="msdiv"><span>Ускоряет ли ИИ на самом деле</span></div>`;
+}
+function msWip(){
+ const pr=num('msw-pr'),rv=Math.max(1,num('msw-rv')),per=Math.max(1,num('msw-lim')),age=num('msw-age'),lim=rv*per; let s='ok',h='Очередь в норме',t=[`Лимит ${lim} PR: по ${per} на ревьюера. Свободно ${lim-pr}.`];
+ if(pr>lim){s='crit';h='Стоп новых запусков';t=[`В очереди ${pr} PR при лимите ${lim}. Агентов не запускаем, пока очередь не разобрана.`]}
+ else if(pr>=lim-1&&pr>0){s='warn';h='Внимание';t=[`${pr} из ${lim}. Ещё ${lim-pr+1} PR — и запуски останавливаются.`]}
+ if(age>=8){s='crit';h='Стоп новых запусков';t.push(`Самый старый PR ждёт ${String(age).replace('.',',')} ч — это рабочий день, предел. Новые запуски останавливаются.`)}
+ else if(age>4){if(s==='ok')s='warn';t.push(`Самый старый PR ждёт ${String(age).replace('.',',')} ч, порог тревоги 4 рабочих часа.`)}
+ $('#msw-out').innerHTML=`<div class="verdict ${s}"><b>${h}</b>${t.join(' ')}</div>`;
+}
+
 function renderMs(){
  const lnk=(u,t)=>u?X(u,t):t;
  $('#v-ms').innerHTML=`
- <section class="blk bhero">
-  <div class="eyebrow">Блок 7 из 8 · Измерение и ритм</div>
-  <h2>Ускоряет ли ИИ на самом деле</h2>
-  <p class="lead" style="margin-top:0">Первый раздел блока 7. Перед тем как мерить свою команду, полезно знать, что уже намерили другие. Короткий ответ: отдельные задачи ИИ ускоряет заметно, процесс целиком — мало, а иногда замедляет. Остальные разделы блока появятся после согласования плана.</p>
-  <div class="links">${L('fl','Поток: узкое место')}${L('metrics','Метрики (старая вкладка)')}${X(MSREP,'Полный отчёт с источниками')}</div>
- </section>
+ ${msTop()}
 
  <section class="blk" id="ms-time">
   <div class="row"><h3>Сколько времени уходит на сам код</h3>${ev('src')}</div>
@@ -2276,7 +2452,26 @@ g — насколько выросло ожидание ревью</div>
   <h3>Насколько можно верить этим цифрам</h3>
   ${ul(['Часть первоисточников мы читали по выдержкам, а не целиком. Полный разбор с пометками — в отчёте.','Исследования продавцов инструментов помечены «вендор».','Цифры компаний о себе — их собственные заявления без независимого аудита.','Все цифры здесь — чужие замеры. Для своей команды нужна своя базовая линия.'])}
   <div class="links">${X(MSREP,'Отчёт: research/ai_speedup_evidence.md')}</div>
+ </section>
+
+ <section class="blk" id="ms-std">
+  <div class="row"><h3>Сверка со стандартами</h3>${ev('src')}</div>
+  ${tbl(['Источник','Что говорит','Где у нас'],MSSTD.map(r=>[`<b>${r[0]}</b>`,r[1],r[2]]))}
+ </section>
+
+ <section class="blk">
+  <h3>Источники</h3>
+  ${ul([
+   X('https://dora.dev/guides/dora-metrics-four-keys/','DORA: метрики поставки'),
+   X('https://services.google.com/fh/files/misc/2024_final_dora_report.pdf','DORA 2024: доля переделок и влияние ИИ'),
+   X('https://queue.acm.org/detail.cfm?id=3454124','Forsgren и др. The SPACE of Developer Productivity, ACM Queue, 2021'),
+   X('https://kanbanguides.org/english/','The Kanban Guide: метрики потока'),
+   X('https://www.scrum.org/resources/blog/ai-augmented-scrum-framework-when-half-your-team-autonomous-agents','Scrum.org: без story points для агентов'),
+   'Seiden J. Outcomes Over Output, 2019',
+   'Goodhart C. Problems of Monetary Management, 1975',
+   X(MSREP,'Отчёт «Ускоряет ли ИИ»: все цифры с источниками')])}
  </section>`;
+ msWip(); ['msw-pr','msw-rv','msw-lim','msw-age'].forEach(i=>$('#'+i).oninput=msWip);
  const run=()=>{const p=num('ms-p'),r=num('ms-r'),q=num('ms-q'),g=num('ms-g');
   const saved=p*r/100, added=q*g/100, d=added-saved, sp=100/(100+d), f=v=>v.toFixed(1).replace('.',',');
   const s=d<=-10?'ok':d<0?'warn':'crit';
