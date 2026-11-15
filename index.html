@@ -335,6 +335,21 @@ nav a.newtab[aria-current="page"]{color:var(--our);border-bottom-color:var(--our
 .lcloop{margin-top:10px;padding:10px 12px;border:1.5px dashed var(--our);border-radius:6px;color:var(--our);font-weight:600;font-size:14px}
 @media (max-width:980px){.lcph{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:640px){.lcph{grid-template-columns:minmax(0,1fr)}.lcrow{grid-template-columns:minmax(0,1fr);gap:4px}.lcbar span{font-size:11px;padding:8px 3px;white-space:normal;overflow-wrap:anywhere;hyphens:auto;line-height:1.2}}
+.flpipe{display:grid;grid-template-columns:minmax(0,1fr) 22px minmax(0,1.6fr) 22px minmax(0,.8fr) 22px minmax(0,1fr);gap:6px;align-items:center}
+.fz{border:1.5px solid var(--line);border-radius:6px;padding:14px 10px;background:var(--surface);display:flex;flex-direction:column;gap:4px;min-width:0;text-align:center}
+.fz b{font:600 14px/1.2 var(--display)}
+.fz span{font-size:12px;color:var(--muted)}
+.fz.m{border-style:dashed;background-image:repeating-linear-gradient(135deg,var(--hatch) 0 6px,transparent 6px 12px);padding:26px 10px}
+.fz.h{border:2px solid var(--crit);background:var(--crit-soft);padding:8px 6px}
+.fz.h span{color:var(--crit);font-weight:600}
+.fa{color:var(--muted);font-weight:700;text-align:center}
+.flrope{margin-top:10px;padding:8px 12px;border:1.5px dashed var(--our);border-radius:6px;color:var(--our);font-weight:600;font-size:14px}
+.flsteps{margin:0 0 12px;padding-left:22px;display:flex;flex-direction:column;gap:6px;font-size:15px}
+.flnums{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.flnums .pcard dl{grid-template-columns:110px minmax(0,1fr)}
+.flnums .pnum{font-size:22px;white-space:nowrap}
+.flnums .scroll td,.flnums .scroll th{font-size:13px}
+@media (max-width:640px){.flnums .pcard dl{grid-template-columns:minmax(0,1fr);gap:2px}.flpipe{grid-template-columns:minmax(0,1fr)}.flpipe .fa{transform:rotate(90deg);height:18px}}
 .evgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .evc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
 .evc .big{font:600 24px/1.1 var(--display);font-variant-numeric:tabular-nums}
@@ -362,7 +377,7 @@ pre.code{margin:0;font:400 13px/1.55 var(--mono);background:var(--sunk);border:1
 <header class="top"><div class="top-in">
   <div class="brand">Agentic Delivery<small>Framework</small></div>
   <nav id="nav" aria-label="Разделы">
-    <a href="#base" class="newtab">1 · Основа</a><a href="#pr" class="newtab">2 · Принципы</a><a href="#roles" class="newtab">3 · Роли</a><a href="#lc" class="newtab">4 · Цикл</a><span class="navsep" aria-hidden="true"></span><a href="#model">Модель</a><a href="#conveyor">Конвейер</a><a href="#spec">Спека</a><a href="#harness">Обвязка</a><a href="#andon">Andon</a><a href="#control">Контроль</a><a href="#metrics">Метрики</a><a href="#rhythm">Ритм</a><a href="#adoption">Внедрение</a><a href="#platform">Платформа</a><a href="#startup">Стартап-кит</a><a href="#evidence">Основания</a>
+    <a href="#base" class="newtab">1 · Основа</a><a href="#pr" class="newtab">2 · Принципы</a><a href="#roles" class="newtab">3 · Роли</a><a href="#lc" class="newtab">4 · Цикл</a><a href="#fl" class="newtab">5 · Поток</a><span class="navsep" aria-hidden="true"></span><a href="#model">Модель</a><a href="#conveyor">Конвейер</a><a href="#spec">Спека</a><a href="#harness">Обвязка</a><a href="#andon">Andon</a><a href="#control">Контроль</a><a href="#metrics">Метрики</a><a href="#rhythm">Ритм</a><a href="#adoption">Внедрение</a><a href="#platform">Платформа</a><a href="#startup">Стартап-кит</a><a href="#evidence">Основания</a>
   </nav>
 </div></header>
 
@@ -371,6 +386,7 @@ pre.code{margin:0;font:400 13px/1.55 var(--mono);background:var(--sunk);border:1
 <div class="view" id="v-pr" hidden></div>
 <div class="view" id="v-roles" hidden></div>
 <div class="view" id="v-lc" hidden></div>
+<div class="view" id="v-fl" hidden></div>
 <div class="view" id="v-model"></div>
 <div class="view" id="v-conveyor" hidden></div>
 <div class="view" id="v-spec" hidden></div>
@@ -1328,7 +1344,7 @@ function renderBase(){
   ['2','Принципы','PMI, Lean, Agile, DevOps и что в них меняют агенты','ready','pr'],
   ['3','Роли и права решений','Кто решает, кто отвечает, что делает агент','ready','roles'],
   ['4','Жизненный цикл','Стадии, ворота, петли возврата, строгость по типу работы и риску','ready','lc'],
-  ['5','Поток','Размер задач, лимит очереди, остановка агента',''],
+  ['5','Поток','Узкое место, лимиты, порядок, остановка агента, откуда числа','ready','fl'],
   ['6','Качество и контроль','Проверки, классы риска, безопасность, аудит',''],
   ['7','Измерение и ритм','Метрики и кто, когда, что смотрит',''],
   ['8','Адаптация и внедрение','Как подогнать под команду и по каким фазам переходить','']];
@@ -1915,8 +1931,194 @@ function renderLc(){
  </section>`;
 }
 
+/* ================= БЛОК 5: ПОТОК ================= */
+const FLNUM=[
+ {k:'wip',v:'2 PR',n:'Лимит очереди на одного ревьюера',
+  f:'Лимит = λ × W\nλ = время на ревью в день / время на одно PR\nW = допустимое ожидание PR (4 рабочих часа)',
+  as:[['Время на ревью в день','1,5–3 ч из ~6 продуктивных','2 ч'],['Размер PR одной capability','150–300 строк кода и тестов плюс спека','—'],['Скорость внимательного ревью','не больше 300–500 строк в час (SmartBear, Cisco)','—'],['Время на одно PR','20–60 мин','30 мин']],
+  calc:'λ = 2 ч / 0,5 ч = 4 PR в день = 0,5 PR в рабочий час.\nЛимит = 0,5 PR/ч × 4 ч = 2 PR.\nДиапазон: при λ от 2 до 8 PR в день лимит от 1 до 4.',
+  why:'Это закон Литтла: очередь равна пропускной способности, умноженной на время ожидания. Лимит и срок ожидания — одно уравнение. Меняете одно — меняется другое.',
+  cal:'Замерьте, сколько PR ревьюер реально закрывает за день, и подставьте в формулу. Ревьюер закрывает 8 PR в день — лимит можно поднять до 4.'},
+ {k:'age',v:'4 ч',n:'Сколько PR может ждать ревью',
+  f:'W = Лимит / λ\nW_ритм ≈ рабочий день / число разборов очереди в день',
+  as:[['Лимит очереди','из расчёта выше','2 PR'],['Пропускная способность','из расчёта выше','0,5 PR/ч'],['Сколько раз в день ревьюер разбирает очередь','2–3','2'],['Внешняя норма','Google: ответить на ревью не позже чем через 1 рабочий день','—']],
+  calc:'Из закона Литтла: W = 2 / 0,5 = 4 ч.\nИз ритма ревьюера: 8 ч / 2 разбора = 4 ч в худшем случае.\nДве независимые оценки сошлись.',
+  why:'Пока PR ждёт, основная ветка уходит вперёд, растут конфликты, а владелец задачи теряет контекст. Агенты производят больше PR, чем люди, поэтому берём половину нормы Google.',
+  cal:'4 ч — порог тревоги: диспетчер разбирается, почему стоит. 1 рабочий день — жёсткий предел: новые запуски агентов останавливаются.'},
+ {k:'ci',v:'2 раунда',n:'Раундов CI на один запуск агента',
+  f:'Польза раунда n = задачи, спасённые в раунде n × время передачи человеку\nЦена раунда n = задачи, которые его ждут × время раунда\nСтоп, когда цена > пользы',
+  as:[['Проходят CI с первого раза','50–70%','60%'],['Агент чинит упавшее после первой подсказки','50–70%: опечатки, линтер, простые тесты','60%'],['Чинит после второй подсказки','20–30%: проблема обычно в спеке или окружении','25%'],['Время раунда CI','10–20 мин','20 мин'],['Время передачи задачи человеку','30–60 мин','45 мин']],
+  calc:'На 100 задач.\nРаунд 1: проходят 60, ждут все 100.\nРаунд 2: проходят ещё 40 × 0,6 = 24, ждут 40.\nРаунд 3: проходят ещё 16 × 0,25 = 4, ждут 16.\nПольза раунда 3: 4 × 45 мин = 3 ч. Цена: 16 × 20 мин ≈ 5,3 ч.\nЦена больше пользы, поэтому раундов 2.',
+  why:'С каждым лишним раундом растёт ещё и риск, что агент начнёт подгонять код под тесты. Вывод совпадает с правилом Stripe Minions.',
+  cal:'Считайте долю PR, которые прошли с 1-го, 2-го и 3-го раунда. Третий раунд спасает больше 10% задач — лимит можно поднять до 3.'},
+ {k:'loop',v:'3 повтора',n:'Одинаковых действий подряд — это цикл',
+  f:'P(законный повтор №k) ≈ f^(k−1)\nf — доля нестабильных (flaky) прогонов тестов',
+  as:[['Законная причина повторить тот же вызов','только нестабильный тест','—'],['Доля нестабильных прогонов','Google Testing Blog: около 1,5%','f = 0,015']],
+  calc:'Повтор №2: законен с вероятностью ~1,5% — это обычная перепроверка. Порог 2 даст много ложных тревог.\nПовтор №3: 0,015² ≈ 0,02% — практически никогда.\nПовтор №4 и дальше — сожжённые токены.',
+  why:'3 — наименьший порог, при котором ложных срабатываний почти нет. Циклы — первый признак сбоя агента по Кенту Беку.',
+  cal:'Замерьте долю нестабильных тестов у себя. Если она выше 10%, сначала чините тесты, а не поднимаете порог.'}
+];
+const FLLIM=[
+ ['Запас готовых спек','Хватает, чтобы агенты не простаивали, но не больше, чем команда успевает проверить','Мало — люди идут писать спеки, запусков меньше. Много — спеки устаревают, это потеря «запасы»','our'],
+ ['Агенты в работе','Не больше, чем свободных мест в очереди ревью','Новый запуск ждёт, пока освободится место','our'],
+ ['Очередь ревью','Пропускная способность ревьюера × 4 ч, на старте 2 PR на человека','Новые запуски агентов останавливаются','hyp'],
+ ['Возраст PR в очереди','Тревога после 4 рабочих часов, предел 1 рабочий день','Тревога — диспетчер разбирается. Предел — стоп запусков','hyp'],
+ ['Раунды CI на запуск','2','Andon: задача уходит человеку','hyp']
+];
+const FLCOS=[
+ ['Expedite','Critical','Инцидент на проде, серьёзный риск для денег, безопасности или регуляторики','Идёт вне очереди. Обязательно видно, что он вытесняет'],
+ ['Fixed date','Committed','Контрактное, регуляторное или релизное обязательство','Порядок по дате и последствиям срыва'],
+ ['Standard','Opportunity','Новая коммерческая или продуктовая возможность','Порядок по стоимости задержки, делённой на длительность'],
+ ['Intangible','Техдолг и улучшения — новая','Рефакторинг, миграции, правки обвязки. В приёме отдельной категории нет','Постоянная доля ёмкости, чтобы не копилось']
+];
+const FLMET=[
+ ['WIP','Сколько задач начато и не закончено','Растёт — начинаем больше, чем заканчиваем'],
+ ['Пропускная способность','Сколько задач закончено за период','Главный ориентир для лимитов и прогноза'],
+ ['Время цикла','Сколько прошло от начала работы до готовности','Для прогноза сроков по истории, а не по оценкам'],
+ ['Возраст задачи','Сколько уже идёт незаконченная задача','Ранний сигнал: задача застряла ещё до того, как это видно по времени цикла']
+];
+const FLSTD=[
+ ['Kanban Method (Anderson)','Визуализировать, ограничить WIP, управлять потоком, явные правила, петли обратной связи, улучшать','Лимиты по участкам, классы обслуживания, табло диспетчера'],
+ ['Kanban Guide (Vacanti, Coleman)','Четыре метрики потока, тянущая система','Метрики потока, запуск агентов по свободному месту'],
+ ['Lean / TPS','Малые партии, pull, jidoka, андон','Capability, автоматическая остановка агента'],
+ ['Теория ограничений (Goldratt)','Темп системы равен темпу узкого места, пять шагов фокусировки','Ревью — ограничение, запуски агентов подчинены ему'],
+ ['Reinertsen, Product Development Flow','Стоимость задержки, размер партии, очереди','Порядок по стоимости задержки, малые capability'],
+ ['DORA','Работа малыми партиями','Один проход агента, малые PR'],
+ ['AWS AI-DLC','Units of work, граф зависимостей, условие остановки','Параллельность по графу, Andon']
+];
+function renderFl(){
+ $('#v-fl').innerHTML=`
+ <section class="blk bhero">
+  <div class="eyebrow">Блок 5 из 8 · Поток</div>
+  <h2>Темп задаёт человек, а не агент</h2>
+  <p class="lead" style="margin-top:0">Агенты делают изменения быстрее, чем люди успевают их проверить. Если запускать агентов на полную мощность, растёт очередь, ревью становится поверхностным и дефекты уходят в прод. Поэтому поток строится от узкого места: агентов запускают ровно столько, сколько люди успевают проверить.</p>
+  <div class="links">${L('pr:p3','Принцип 3: малые партии')}${L('pr:p4','Принцип 4: узкое место — проверка')}${L('lc','Жизненный цикл')}</div>
+ </section>
+
+ <section class="blk" id="fl-constraint">
+  <div class="row"><h3>Где узкое место</h3>${ev('src')}</div>
+  <div class="flpipe" role="img" aria-label="Запас спек, агенты в работе, узкая очередь ревью, выпуск; сигнал от очереди ревью разрешает новые запуски">
+   <div class="fz"><b>Запас спек</b><span>люди</span></div><span class="fa">→</span>
+   <div class="fz m wide"><b>Агенты в работе</b><span>быстро, параллельно</span></div><span class="fa">→</span>
+   <div class="fz h narrow"><b>Очередь ревью</b><span>узкое место</span></div><span class="fa">→</span>
+   <div class="fz"><b>Выпуск</b><span>пайплайн</span></div>
+  </div>
+  <div class="flrope">↶ Сигнал «есть место в очереди» разрешает следующий запуск агента</div>
+  <p class="muted" style="margin-top:12px">Теория ограничений Голдратта: скорость системы равна скорости её узкого места, всё остальное ему подчиняется. Пять шагов в нашем случае:</p>
+  <ol class="flsteps">
+   <li><b>Найти ограничение.</b> Ревью человека и подготовка спек.</li>
+   <li><b>Выжать из него максимум.</b> Ревьюер смотрит только замысел, архитектуру и безопасность. Стиль и типовые ошибки ловит автоматика.</li>
+   <li><b>Подчинить ему всё остальное.</b> Агента запускают, только когда в очереди ревью есть место.</li>
+   <li><b>Расширить ограничение.</b> ИИ-ревью до человека, сильнее обвязка, обучение ревьюеров.</li>
+   <li><b>Повторить.</b> Когда ревью перестаёт тормозить, узким местом становится что-то другое, чаще всего спеки.</li>
+  </ol>
+  <div class="gq"><i>«Generation is solved…»</i><span>The New SDLC With Vibe Coding, с. 48. Генерация решена, теперь дело в проверке.</span></div>
+ </section>
+
+ <section class="blk" id="fl-unit">
+  <div class="row"><h3>Единица потока — capability</h3>${ev('src')}</div>
+  <div class="cols3">
+   <div class="card stack"><b>Один домен</b><p>Один контракт данных или один сервис.</p></div>
+   <div class="card stack"><b>Бинарный результат</b><p>Тест прошёл или не прошёл. Состояния «наполовину» нет.</p></div>
+   <div class="card stack"><b>Один проход агента</b><p>Одна сессия, небольшой PR, не больше 2 раундов CI.</p></div>
+  </div>
+  <h4 style="margin:14px 0 6px">Признаки, что нарезано крупно</h4>
+  ${ul(['Агент регулярно упирается в пороги Andon.','PR больше 300–400 строк: внимательно такой объём за один подход уже не проверить (SmartBear, Cisco).','Ревью одного PR идёт дольше часа.','Нельзя сформулировать один бинарный критерий готовности.'])}
+  <p class="src">Малые партии — практика DORA и Lean. В AWS AI-DLC та же единица называется unit of work.</p>
+  <div class="links">${L('spec:slice','Размер capability')}${L('spec:session','Сессия нарезки')}</div>
+ </section>
+
+ <section class="blk" id="fl-pull">
+  <div class="row"><h3>Тянущая система и лимиты</h3>${ev('src')}</div>
+  <p class="muted">Работа не проталкивается вперёд, а вытягивается: следующий участок берёт задачу, когда у него есть место. Это Kanban: лимиты незавершённой работы по участкам.</p>
+  ${tbl(['Участок','Лимит','Что происходит при превышении',''],FLLIM.map(r=>[`<b>${r[0]}</b>`,r[1],r[2],ev(r[3])]))}
+  <p class="src" style="margin-top:8px">Откуда числа — в разделе ниже. ${L('rhythm:wip','Калькулятор очереди')}</p>
+ </section>
+
+ <section class="blk" id="fl-numbers">
+  <div class="row"><h3>Откуда стартовые числа</h3>${ev('hyp')}</div>
+  <p class="muted">Каждое число посчитано методом Ферми: раскладываем на величины, которые можно оценить по порядку, берём диапазон и смотрим, куда попадает результат. Допущения наши, поэтому числа стартовые. Под каждым написано, как откалибровать его на своих данных.</p>
+  <div class="flnums">${FLNUM.map(x=>`<article class="pcard" id="fl-n-${x.k}">
+   <div class="ph1"><span class="pnum">${x.v}</span><h3>${x.n}</h3></div>
+   <div class="formula">${x.f}</div>
+   <div class="scroll"><table><thead><tr><th>Величина</th><th>Диапазон</th><th>Берём</th></tr></thead><tbody>${x.as.map(a=>`<tr><td>${a[0]}</td><td>${a[1]}</td><td>${a[2]}</td></tr>`).join('')}</tbody></table></div>
+   <dl><dt>Расчёт</dt><dd><div class="formula" style="margin:0">${x.calc}</div></dd><dt>Почему так</dt><dd>${x.why}</dd><dt>Калибровка</dt><dd>${x.cal}</dd></dl>
+  </article>`).join('')}</div>
+ </section>
+
+ <section class="blk" id="fl-order">
+  <div class="row"><h3>Порядок в очереди</h3>${ev('our')}</div>
+  <p class="muted">Три класса обслуживания Kanban совпадают с категориями приёма, четвёртый мы добавляем. Класс задаёт не балл, а способ обработки. Категория приёма Unvalidated в поток не входит: такую задачу сначала проверяют.</p>
+  ${tbl(['Класс Kanban','Наша категория','Что это','Как идёт в потоке'],FLCOS.map(r=>[`<span class="mono">${r[0]}</span>`,`<b>${r[1]}</b>`,r[2],r[3]]))}
+  <div class="links">${L('spec:intake','Приём и приоритет')}</div>
+ </section>
+
+ <section class="blk" id="fl-parallel">
+  <div class="row"><h3>Сколько агентов запускать одновременно</h3>${ev('our')}</div>
+  <div class="formula">Агентов в работе ≤ свободных мест в очереди ревью</div>
+  ${ul(['Параллельность ограничивают не машины и не деньги на токены, а ревью.','Независимые capability идут параллельно, каждая в своей песочнице.','Зависимые идут по графу зависимостей: следующая начинается, когда влита предыдущая.','У нового продукта или крупной фичи первой идёт сквозная capability: самый маленький кусок, который работает от начала до конца.'])}
+  <div class="gq"><i>«Agents may be working in the background, in parallel, on different parts of a codebase.»</i><span>The New SDLC With Vibe Coding, с. 33</span></div>
+  <p class="src" style="margin-top:8px">Граф зависимостей и сквозная первая часть — из AWS AI-DLC.</p>
+ </section>
+
+ <section class="blk" id="fl-stop">
+  <div class="row"><h3>Остановка агента — часть потока</h3>${ev('src')}</div>
+  <p class="muted">Как jidoka в Lean: брак не идёт дальше, линия останавливается. Агента останавливает обвязка, а не разработчик: в этот момент человеку всегда кажется, что следующий промпт всё исправит.</p>
+  <div class="cols">
+   <div class="card stack"><b>Жёсткие триггеры</b>${ul(['Цикл: 3 одинаковых действия подряд','Исчерпаны 2 раунда CI','Попытка изменить тесты-критерии','Выход за границы задачи'])}<div class="links">${L('andon:triggers','Триггеры')}</div></div>
+   <div class="card stack"><b>Калибруемые пороги</b>${ul(['Шаги или время выше P95 своего класса задач','Бюджет токенов','Три промпта подряд на одну ошибку','Регрессия в несвязанных тестах'])}<div class="links">${L('andon:calib','Как калибровать')}</div></div>
+  </div>
+  <h4 style="margin:14px 0 6px">После остановки: три исхода</h4>
+  <div class="cols3">
+   <div class="card stack"><b>Человек доделывает</b><p>До результата близко, причина понятна.</p></div>
+   <div class="card stack"><b>Спека — на переработку</b><p>Агент угадывал требования, или задача крупная.</p></div>
+   <div class="card stack"><b>Правка обвязки и перезапуск</b><p>Агенту не хватило инструмента, мока или правила.</p></div>
+  </div>
+  <div class="gq" style="margin-top:10px"><i>«Most agent failures, examined honestly, are configuration failures.»</i><span>The New SDLC With Vibe Coding, с. 31</span></div>
+  <p class="src" style="margin-top:8px">Диспетчер потока выходит на остановку сразу и назначает инженера на разбор. Остановка — данные для правки спеки или обвязки. Условие остановки с передачей человеку есть и в AWS AI-DLC. ${L('pr:p8','Принцип 8')} ${L('andon:playbooks','Плейбуки')}</p>
+ </section>
+
+ <section class="blk" id="fl-metrics">
+  <div class="row"><h3>Четыре метрики потока</h3>${ev('src')}</div>
+  <p class="muted">Kanban Guide называет четыре обязательные метрики. Их связывает закон Литтла: среднее время цикла = WIP / пропускная способность. Хотите быстрее — сначала уменьшите WIP. Кто и когда на них смотрит — в блоке 7.</p>
+  ${tbl(['Метрика','Что это','Зачем'],FLMET.map(r=>[`<b>${r[0]}</b>`,r[1],r[2]]))}
+ </section>
+
+ <section class="blk" id="fl-waste">
+  <div class="row"><h3>Потери потока с агентами</h3>${ev('our')}</div>
+  ${tbl(['Потеря','Как выглядит с агентами','Чем закрыта'],MUDA.map(m=>[`<b>${m[0]}</b>`,m[1],L(m[3],m[2])]))}
+ </section>
+
+ <section class="blk" id="fl-cadence">
+  <div class="row"><h3>Спринт необязателен, ритм встреч обязателен</h3>${ev('src')}</div>
+  <div class="ba"><div class="was"><b>Было</b>Работа упакована в спринт: что взяли на две недели, то и делаем.</div><div class="ar">→</div><div class="now"><b>Стало</b>Задача идёт, как только у следующего участка есть место. Планирование, ретро и обзор остаются, но как ритм команды, а не как коробка для задач.</div></div>
+  <p class="src" style="margin-top:10px">Scrum.org: не выставлять агентам story points и не сокращать спринт из-за того, что агенты быстрые. Темп задаёт ёмкость человеческого ревью. В Kanban Method ритм встреч — отдельная практика, «петли обратной связи». ${L('rhythm:ceremonies','Что происходит с церемониями')}</p>
+ </section>
+
+ <section class="blk" id="fl-std">
+  <div class="row"><h3>Сверка со стандартами</h3>${ev('src')}</div>
+  ${tbl(['Источник','Что говорит','Где у нас'],FLSTD.map(r=>[`<b>${r[0]}</b>`,r[1],r[2]]))}
+ </section>
+
+ <section class="blk">
+  <h3>Источники</h3>
+  ${ul([
+   X('https://kanbanguides.org/english/','The Kanban Guide (Vacanti, Coleman)'),
+   X('https://kanban.university/kanban-guide/','Kanban University: The Official Kanban Guide (Anderson)'),
+   X('https://www.tocinstitute.org/five-focusing-steps.html','Теория ограничений: пять шагов фокусировки'),
+   X('https://dora.dev/capabilities/working-in-small-batches/','DORA: Working in small batches'),
+   X('https://smartbear.com/learn/code-review/best-practices-for-peer-code-review/','SmartBear: исследование ревью кода в Cisco'),
+   X('https://google.github.io/eng-practices/review/reviewer/speed.html','Google Engineering Practices: скорость ревью'),
+   X('https://testing.googleblog.com/2016/05/flaky-tests-at-google-and-how-we.html','Google Testing Blog: нестабильные тесты'),
+   X(GDOC,'Google, «The New SDLC With Vibe Coding», май 2026: с. 31, 33, 48'),
+   X(AIDLC,'AWS AI-DLC: units of work и условие остановки'),
+   'Little J. D. C. A Proof for the Queuing Formula L = λW. Operations Research, 1961',
+   'Reinertsen D. The Principles of Product Development Flow, 2009'])}
+ </section>`;
+}
+
 /* ================= РОУТИНГ ================= */
-const VIEWS=['base','pr','roles','lc','model','conveyor','spec','harness','andon','control','metrics','rhythm','adoption','platform','startup','evidence'];
+const VIEWS=['base','pr','roles','lc','fl','model','conveyor','spec','harness','andon','control','metrics','rhythm','adoption','platform','startup','evidence'];
 const ALIAS={slicing:'spec',basis:'harness',scale:'adoption',transition:'adoption'};
 const curView=()=>{let v=location.hash.slice(1); v=ALIAS[v]||v; return VIEWS.includes(v)?v:'model'};
 let pending;
@@ -1941,7 +2143,7 @@ document.addEventListener('click',e=>{
  if(curView()===v) route(); else location.hash=v;
 });
 window.addEventListener('hashchange',route);
-renderBase();renderPr();renderRoles();renderLc();renderModel();renderConveyor();renderSpec();renderHarness();renderAndon();renderControl();renderMetrics();renderRhythm();renderAdoption();renderPlatform();renderStartup();renderEvidence();
+renderBase();renderPr();renderRoles();renderLc();renderFl();renderModel();renderConveyor();renderSpec();renderHarness();renderAndon();renderControl();renderMetrics();renderRhythm();renderAdoption();renderPlatform();renderStartup();renderEvidence();
 route();
 </script>
 
