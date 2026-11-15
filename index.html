@@ -306,6 +306,35 @@ nav a.newtab[aria-current="page"]{color:var(--our);border-bottom-color:var(--our
 .never b{color:var(--crit)}
 @media (max-width:980px){.rchain{grid-template-columns:repeat(3,minmax(0,1fr))}.rchain .rarrow{display:none}}
 @media (max-width:760px){.rchain,.rsup,.agcols,.yn2{grid-template-columns:minmax(0,1fr)}.ba{grid-template-columns:minmax(0,1fr)}.ba .ar{transform:rotate(90deg);height:20px}}
+.lcbars{display:flex;flex-direction:column;gap:10px}
+.lcrow{display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px;align-items:center}
+.lcrow .lbl{font:600 12px/1.2 var(--mono);color:var(--muted)}
+.lcbar{display:flex;gap:4px;min-width:0}
+.lcbar span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:10px 8px;border-radius:4px;background:var(--sunk);font-size:13px;border:1px solid var(--line)}
+.lcbar span.hot{background:var(--our-soft);border-color:var(--our);font-weight:600}
+.lcbar span.ag{background-image:repeating-linear-gradient(135deg,var(--hatch) 0 6px,transparent 6px 12px);border-style:dashed}
+.lclegend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted);margin-bottom:10px}
+.lclegend span{display:inline-flex;align-items:center;gap:6px}
+.lclegend .sw{display:inline-block;width:16px;height:12px;border-radius:2px;border:1.5px solid var(--line)}
+.lclegend .sw.h{border-color:var(--our);background:var(--surface)}
+.lclegend .sw.m{border-style:dashed;background-image:repeating-linear-gradient(135deg,var(--hatch) 0 4px,transparent 4px 8px)}
+.lclegend .sw.a{background:var(--sunk);border-style:dashed}
+.lclegend .gi,.lgt i{color:var(--crit);font-style:normal}
+.lcph{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.lcol{display:flex;flex-direction:column;gap:6px;border:1px solid var(--line);border-radius:6px;padding:10px;background:var(--surface);min-width:0}
+.lph{display:flex;justify-content:space-between;align-items:baseline;gap:6px;border-bottom:1px solid var(--line);padding-bottom:6px;margin-bottom:2px}
+.lph b{font:600 15px/1.2 var(--display)}
+.lph span{font:600 11px/1 var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.lst{display:flex;gap:8px;align-items:center;padding:9px 10px;border-radius:4px;border:1.5px solid var(--line);text-decoration:none;color:var(--ink);font-weight:600;font-size:14px;background:var(--surface)}
+.lst .n{font:700 13px/1 var(--mono);color:var(--muted)}
+.lst.h{border-color:var(--our);box-shadow:inset 3px 0 0 var(--our)}
+.lst.m{border-style:dashed;background-image:repeating-linear-gradient(135deg,var(--hatch) 0 6px,transparent 6px 12px)}
+.lst.a{border-style:dashed;background:var(--sunk)}
+.lst:hover{border-color:var(--accent)}
+.lgt{display:inline-flex;gap:6px;align-items:center;font:600 12px/1.3 var(--mono);color:var(--body);padding:2px 4px}
+.lcloop{margin-top:10px;padding:10px 12px;border:1.5px dashed var(--our);border-radius:6px;color:var(--our);font-weight:600;font-size:14px}
+@media (max-width:980px){.lcph{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.lcph{grid-template-columns:minmax(0,1fr)}.lcrow{grid-template-columns:minmax(0,1fr);gap:4px}.lcbar span{font-size:11px;padding:8px 3px;white-space:normal;overflow-wrap:anywhere;hyphens:auto;line-height:1.2}}
 .evgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .evc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
 .evc .big{font:600 24px/1.1 var(--display);font-variant-numeric:tabular-nums}
@@ -333,7 +362,7 @@ pre.code{margin:0;font:400 13px/1.55 var(--mono);background:var(--sunk);border:1
 <header class="top"><div class="top-in">
   <div class="brand">Agentic Delivery<small>Framework</small></div>
   <nav id="nav" aria-label="Разделы">
-    <a href="#base" class="newtab">1 · Основа</a><a href="#pr" class="newtab">2 · Принципы</a><a href="#roles" class="newtab">3 · Роли</a><span class="navsep" aria-hidden="true"></span><a href="#model">Модель</a><a href="#conveyor">Конвейер</a><a href="#spec">Спека</a><a href="#harness">Обвязка</a><a href="#andon">Andon</a><a href="#control">Контроль</a><a href="#metrics">Метрики</a><a href="#rhythm">Ритм</a><a href="#adoption">Внедрение</a><a href="#platform">Платформа</a><a href="#startup">Стартап-кит</a><a href="#evidence">Основания</a>
+    <a href="#base" class="newtab">1 · Основа</a><a href="#pr" class="newtab">2 · Принципы</a><a href="#roles" class="newtab">3 · Роли</a><a href="#lc" class="newtab">4 · Цикл</a><span class="navsep" aria-hidden="true"></span><a href="#model">Модель</a><a href="#conveyor">Конвейер</a><a href="#spec">Спека</a><a href="#harness">Обвязка</a><a href="#andon">Andon</a><a href="#control">Контроль</a><a href="#metrics">Метрики</a><a href="#rhythm">Ритм</a><a href="#adoption">Внедрение</a><a href="#platform">Платформа</a><a href="#startup">Стартап-кит</a><a href="#evidence">Основания</a>
   </nav>
 </div></header>
 
@@ -341,6 +370,7 @@ pre.code{margin:0;font:400 13px/1.55 var(--mono);background:var(--sunk);border:1
 <div class="view" id="v-base" hidden></div>
 <div class="view" id="v-pr" hidden></div>
 <div class="view" id="v-roles" hidden></div>
+<div class="view" id="v-lc" hidden></div>
 <div class="view" id="v-model"></div>
 <div class="view" id="v-conveyor" hidden></div>
 <div class="view" id="v-spec" hidden></div>
@@ -1297,7 +1327,7 @@ function renderBase(){
   ['1','Основа','Цель, главное правило, границы, словарь','on'],
   ['2','Принципы','PMI, Lean, Agile, DevOps и что в них меняют агенты','ready','pr'],
   ['3','Роли и права решений','Кто решает, кто отвечает, что делает агент','ready','roles'],
-  ['4','Жизненный цикл','Стадии SDLC: решение человека, работа агента, ворота',''],
+  ['4','Жизненный цикл','Стадии, ворота, петли возврата, строгость по типу работы и риску','ready','lc'],
   ['5','Поток','Размер задач, лимит очереди, остановка агента',''],
   ['6','Качество и контроль','Проверки, классы риска, безопасность, аудит',''],
   ['7','Измерение и ритм','Метрики и кто, когда, что смотрит',''],
@@ -1654,8 +1684,239 @@ function renderRoles(){
  </section>`;
 }
 
+/* ================= БЛОК 4: ЖИЗНЕННЫЙ ЦИКЛ ================= */
+const AIDLC='https://github.com/awslabs/aidlc-workflows';
+const LC9=[
+ {k:'s1',n:'Приём и приоритет',ph:'a',c:'h',
+  dec:['roles:rl-pm','Продакт-менеджер'],
+  ag:'Считает категорию, приоритет и уверенность в данных, показывает, каких данных не хватает.',
+  au:'—',
+  out:'Ворота 1: принято в работу.',
+  back:'Критерий изменения не формулируется — задача уходит в Validate, Park или Reject.',
+  lk:[['spec:intake','Приём и приоритет']]},
+ {k:'s2',n:'Спека',ph:'b',c:'h',
+  dec:['roles:rl-spec','Автор спеки; для R2 второй человек'],
+  ag:'Задаёт уточняющие вопросы и предлагает краевые случаи. Ничего не додумывает молча.',
+  au:'Проверяет, что у каждого критерия есть исполняемый тест.',
+  out:'Ворота 2: готово к работе (DoR).',
+  back:'Критерий приёмки не удаётся сформулировать — задача исследовательская, агенту её не дают.',
+  lk:[['spec:package','Пакет спецификации'],['spec:slice','Размер capability'],['spec:noagent','Когда агенту не давать']]},
+ {k:'s3',n:'Архитектура',ph:'b',c:'h',
+  dec:['roles:rl-arch','Архитектор'],
+  ag:'Разбирает существующий код и показывает, какие места и принятые решения задача затрагивает.',
+  au:'Структурные проверки уже принятых решений.',
+  out:'Ворота 3: архитектура согласована.',
+  back:'Нужно новое решение с долгими последствиями — его принимает архитектор и пишет в журнал. Агенту такое решение не отдают.',
+  lk:[['model:decisions','Журнал решений'],['harness:matrix','Структурные проверки']]},
+ {k:'s4',n:'Работа агента',ph:'c',c:'m',
+  dec:['roles:rl-task','Владелец задачи: ставит задачу и выбирает режим'],
+  ag:'Пишет код и тесты в своей песочнице, сам запускает тесты и открывает PR.',
+  au:'Песочница, бюджеты и условие остановки: лимит шагов, времени и денег.',
+  out:'PR открыт, тесты-критерии зелёные в песочнице.',
+  back:'Сработал триггер — Andon, задача уходит человеку.',
+  lk:[['conveyor:run','Пост 2'],['andon:triggers','Триггеры Andon'],['roles:rl-modes','Режимы работы']]},
+ {k:'s5',n:'Проверки',ph:'c',c:'a',
+  dec:null,
+  ag:'ИИ-ревью: сверяет изменение со спекой и ищет то, что не ловят тесты.',
+  au:'Гейты: типы, линтеры, сборка, тесты, уязвимости, зависимости.',
+  out:'Ворота 4: проверки пройдены.',
+  back:'Агент исправляет сам, не больше 2 раундов CI. Не уложился — Andon.',
+  lk:[['conveyor:gates','Пост 3: гейты'],['conveyor:aireview','Пост 4: ИИ-ревью']]},
+ {k:'s6',n:'Суждение человека',ph:'c',c:'h',
+  dec:['roles:rl-rev','Ревьюер; для R2 двое'],
+  ag:'—',
+  au:'—',
+  out:'Ворота 5: одобрено к мержу.',
+  back:'Один возврат агенту с замечаниями. Повторный отказ — Andon.',
+  lk:[['conveyor:review','Пост 5'],['model:risk','Классы риска']]},
+ {k:'s7',n:'Выпуск',ph:'d',c:'h',
+  dec:['conveyor:release','Человек, названный в решении Go/No-Go; для R2 двое'],
+  ag:'Не выкатывает и доступа к проду не имеет.',
+  au:'Пайплайн выкатывает за флагом и постепенно. При выходе за пороги SLO сам откатывает и сразу шлёт алерт человеку.',
+  out:'Изменение у части пользователей, началось окно наблюдения.',
+  back:'No-Go — назад в сборку. Автооткат — разбор.',
+  lk:[['conveyor:release','Релиз и откат'],['control:security','Контроли']]},
+ {k:'s8',n:'Наблюдение',ph:'d',c:'a',
+  dec:null,
+  ag:'Помогает искать причину инцидента. Изменения вносит человек.',
+  au:'Мониторинг SLO и ошибок, запись в аудит-трейл.',
+  out:'Ворота 7: статус Verified — за окно наблюдения не было отката и инцидента.',
+  back:'Откат или инцидент снимает статус. Разбор на trace retro, задача снова на приёме.',
+  lk:[['metrics:verified','Verified Capabilities'],['control:provenance','Аудит-трейл']]},
+ {k:'s9',n:'Сопровождение и обратная связь',ph:'d',c:'h',
+  dec:['roles:rl-pm','Продакт-менеджер: что из обратной связи берём. Владелец обвязки: какие правки правил принимаем'],
+  ag:'Разбирает легаси, предлагает рефакторинги и миграции, предлагает новые правила по итогам правок человека.',
+  au:'Собирает сигналы: инциденты, ошибки, метрики использования.',
+  out:'Новые запросы на приём. Правки правил через журнал решений.',
+  back:'—',
+  lk:[['rhythm:ceremonies','Trace retro'],['model:decisions','Журнал решений']]}
+];
+const LCPH={a:['Замысел','Ideation'],b:['Проработка','Inception'],c:['Сборка','Construction'],d:['Эксплуатация','Operation']};
+const LCG={1:'Принято в работу',2:'Готово к работе (DoR)',3:'Архитектура согласована',4:'Проверки пройдены',5:'Одобрено к мержу',6:'Go / No-Go',7:'Verified'};
+const LCGATES=[
+ ['1','Принято в работу','Категория и ссылки на доказательства; что должно измениться и по какому критерию; бизнес-эффект подтверждён; уверенность в данных','Продакт-менеджер','our'],
+ ['2','Готово к работе (DoR)','Каждый критерий привязан к исполняемому тесту, который пока падает; класс риска присвоен; границы задачи заданы','Автор спеки; для R2 второй человек','src'],
+ ['3','Архитектура согласована','Задача укладывается в принятые решения или новое решение записано в журнал; контракт и границы есть в спеке','Архитектор','our'],
+ ['4','Проверки пройдены','Все гейты зелёные, у ИИ-ревью нет блокирующих замечаний, уложились в 2 раунда CI','Автоматика','src'],
+ ['5','Одобрено к мержу','Изменение решает задачу, вписывается в архитектуру и безопасно. Тот, кто ставил задачу агенту, его не одобряет','Ревьюер; для R2 двое','src'],
+ ['6','Go / No-Go','Тесты-критерии зелёные, трасса и аудит-трейл на месте, нет открытых критических дефектов, есть нужные разрешения, мониторинг включён, сценарий отката описан и проверен','Названный человек; для R2 двое','our'],
+ ['7','Verified','За окно наблюдения не было отката и инцидента','Ставится по факту','our']
+];
+const LCLOOP=[
+ ['Спека','Критерий не формулируется','Задача остаётся у людей как исследование'],
+ ['Работа агента, проверки','Сработал Andon','Человек доделывает сам, спека переписывается или режется мельче, либо правится обвязка'],
+ ['Суждение человека','Второй отказ','Andon'],
+ ['Выпуск','No-Go или автооткат','Назад в сборку, разбор причины'],
+ ['Наблюдение','Откат или инцидент','Статус Verified снимается, trace retro, задача снова на приёме'],
+ ['Любая стадия','Человек поправил агента','Правка становится предложением нового правила. В обвязку оно попадает только после одобрения человека']
+];
+const LCTYPE=[
+ ['Новый продукт или крупная фича','Полностью','Полная спека, архитектура обязательна','Первая capability — сквозной каркас (walking skeleton)','Полностью'],
+ ['Фича','Приём','Спека; архитектура — проверка соответствия','Обычно','Выпуск за флагом, наблюдение'],
+ ['Баг','Приём; инцидент на проде — категория Critical','Короткая спека: тест, который воспроизводит баг и пока падает','Обычно','Выпуск, наблюдение'],
+ ['Рефакторинг','Приём','Критерий — поведение не меняется: существующие тесты зелёные','Обычно','Выпуск, наблюдение'],
+ ['Инфраструктура','Приём','Архитектура обязательна; класс R2','Обычно','Выпуск с проверенным откатом'],
+ ['Патч безопасности','Срочное включение, категория Critical','Короткая спека; владелец риска в курсе','Класс по путям, часто R2','Выпуск с проверенным откатом'],
+ ['Прототип','Приём','Минимальная спека','Агент в песочнице','В прод не идёт']
+];
+const LCRISK=[
+ ['Спека (ворота 2)','Короткая задача с критерием','Полный пакет','Полный пакет, утверждают двое'],
+ ['Архитектура (ворота 3)','—','Проверка соответствия','Архитектор обязательно'],
+ ['Ревью (ворота 5)','Один человек, короткое ревью','Один человек','Двое, ни один не ставил задачу'],
+ ['Выпуск (ворота 6)','Обычный','За флагом, постепенно','За флагом, канарейка с малой доли, пробный откат на staging, решение принимают двое']
+];
+const LCSTD=[
+ ['Приём и приоритет','Business or mission analysis','Plan','Ideation','Уточнение бэклога'],
+ ['Спека','Stakeholder needs and requirements definition','Plan','Inception: требования, истории, units of work','Definition of Ready (практика)'],
+ ['Архитектура','Architecture definition, Design definition','Plan','Inception: domain design, contract design','—'],
+ ['Работа агента','Implementation, Integration','Code, Build','Construction: code generation','Работа над инкрементом'],
+ ['Проверки','Verification','Test','Construction: build and test, CI','Definition of Done'],
+ ['Суждение человека','Verification, Validation','—','Approval gate','—'],
+ ['Выпуск','Transition','Release, Deploy','Operation: deployment','Инкремент'],
+ ['Наблюдение','Validation, Operation','Operate, Monitor','Operation: observability, performance validation','—'],
+ ['Сопровождение','Operation, Maintenance','Monitor → Plan','Operation: incident response, feedback → Ideation','Ретроспектива']
+];
+function renderLc(){
+ const S=k=>LC9.find(s=>s.k===k);
+ const st=k=>{const s=S(k),i=LC9.indexOf(s)+1;return `<a class="lst ${s.c}" href="#lc" data-t="lc:lc-${k}"><span class="n">${i}</span>${s.n}</a>`};
+ const gt=n=>`<span class="lgt"><i>◆</i>${n} · ${LCG[n]}</span>`;
+ const col=(p,items)=>`<div class="lcol"><div class="lph"><b>${LCPH[p][0]}</b><span>${LCPH[p][1]}</span></div>${items.join('')}</div>`;
+ const who={h:'решает человек',m:'работает агент',a:'работает автоматика'};
+ $('#v-lc').innerHTML=`
+ <section class="blk bhero">
+  <div class="eyebrow">Блок 4 из 8 · Жизненный цикл</div>
+  <h2>Один цикл для любого продукта</h2>
+  <p class="lead" style="margin-top:0">Девять стадий в четырёх фазах и семь ворот между ними. Цикл одинаковый для стартапа и банка. От типа работы и класса риска зависит строгость ворот, а не их порядок. Автоматика забирает всё больше проверок, но решение о результате всегда остаётся за человеком.</p>
+  <div class="links">${L('base:rule','Главное правило')}${L('roles','Роли')}${L('conveyor','Конвейер: посты подробно')}</div>
+ </section>
+
+ <section class="blk" id="lc-shift">
+  <div class="row"><h3>Куда смещается работа людей</h3>${ev('src')}</div>
+  <div class="lcbars">
+   <div class="lcrow"><span class="lbl">Классический SDLC</span><div class="lcbar"><span style="flex:2">Требования</span><span style="flex:2">Дизайн</span><span style="flex:5" class="hot">Реализация</span><span style="flex:3">Тесты</span><span style="flex:1.2">Выпуск</span></div></div>
+   <div class="lcrow"><span class="lbl">С агентами</span><div class="lcbar"><span style="flex:3" class="hot">Требования и спека</span><span style="flex:3" class="hot">Архитектура</span><span style="flex:1.2" class="ag">Код</span><span style="flex:4" class="hot">Проверка и ревью</span><span style="flex:1.2">Выпуск</span></div></div>
+  </div>
+  <p class="src" style="margin-top:8px">Ширина условная: схема показывает, где теперь основная работа людей, а не замер. Выделено то, что остаётся в человеческом темпе.</p>
+  <div class="gq" style="margin-top:10px"><i>«…implementation that once took weeks can now be done in hours, while requirements, architecture, and verification remain stubbornly human-paced.»</i><span>The New SDLC With Vibe Coding, с. 19</span></div>
+ </section>
+
+ <section class="blk" id="lc-map">
+  <div class="row"><h3>Цикл одной картинкой</h3>${ev('our')}</div>
+  <div class="lclegend"><span><i class="sw h"></i>решает человек</span><span><i class="sw m"></i>работает агент</span><span><i class="sw a"></i>работает автоматика</span><span><i class="gi">◆</i>ворота</span></div>
+  <div class="lcph" role="img" aria-label="Четыре фазы: замысел, проработка, сборка, эксплуатация; девять стадий и семь ворот; из эксплуатации работа снова приходит на приём">
+   ${col('a',[st('s1'),gt(1)])}
+   ${col('b',[st('s2'),gt(2),st('s3'),gt(3)])}
+   ${col('c',[st('s4'),st('s5'),gt(4),st('s6'),gt(5)])}
+   ${col('d',[gt(6),st('s7'),st('s8'),gt(7),st('s9')])}
+  </div>
+  <div class="lcloop">↺ Из сопровождения новая работа снова идёт на приём. Цикл замкнут.</div>
+  <p class="src" style="margin-top:10px">Названия фаз сверены с AWS AI-DLC (${X(AIDLC,'awslabs/aidlc-workflows')}). На границе фаз автоматика проверяет трассируемость: у каждого требования есть критерий, у критерия — тест, у теста — код. Так это устроено в AI-DLC.</p>
+ </section>
+
+ <section class="blk" id="lc-stages">
+  <h3>Девять стадий</h3>
+  <div class="pgrid">${LC9.map((s,i)=>`<article class="pcard" id="lc-${s.k}">
+   <div class="ph1"><span class="pnum">${i+1}</span><div><h3>${s.n}</h3><span class="muted" style="font-size:13px">${LCPH[s.ph][0]} · ${who[s.c]}</span></div></div>
+   <dl><dt>Кто решает</dt><dd>${s.dec?L(s.dec[0],s.dec[1]):'Никто: результат бинарный'}</dd><dt>Агент</dt><dd>${s.ag}</dd><dt>Автоматика</dt><dd>${s.au}</dd><dt>Выход</dt><dd>${s.out}</dd><dt>Если не так</dt><dd>${s.back}</dd></dl>
+   <div class="links">${s.lk.map(c=>L(c[0],c[1])).join('')}</div>
+  </article>`).join('')}</div>
+ </section>
+
+ <section class="blk" id="lc-gates">
+  <h3>Семь ворот</h3>
+  <p class="muted">Ворота — точка, где задача либо идёт дальше, либо возвращается. У каждых ворот есть список доказательств и человек, который за них подписывается. Исключения — ворота 4, их проходит автоматика, и ворота 7, где статус ставится по факту.</p>
+  ${tbl(['#','Ворота','Какие доказательства нужны','Кто подписывает',''],LCGATES.map(g=>[`<span class="lgt"><i>◆</i>${g[0]}</span>`,`<b>${g[1]}</b>`,g[2],g[3],ev(g[4])]))}
+ </section>
+
+ <section class="blk" id="lc-loops">
+  <div class="row"><h3>Петли возврата</h3>${ev('our')}</div>
+  <p class="muted">Задача не обязана идти только вперёд. Ниже — куда она возвращается и по какому правилу.</p>
+  ${tbl(['Где','Что случилось','Куда идёт'],LCLOOP.map(r=>[r[0],r[1],'↩ '+r[2]]))}
+  <p class="src" style="margin-top:10px">Последняя петля — петля обучения из AI-DLC: правка человека становится кандидатом в правило, а в правила попадает только после одобрения человека.</p>
+ </section>
+
+ <section class="blk" id="lc-harness">
+  <div class="row"><h3>Обвязка работает в каждой фазе</h3>${ev('src')}</div>
+  <div class="cols">
+   <div class="card stack"><b>1. Настраиваем</b><span class="muted">Замысел, проработка</span><p>AGENTS.md, архитектурные ограничения, инструменты и правила, которые агенту нельзя нарушать.</p></div>
+   <div class="card stack"><b>2. Запускаем</b><span class="muted">Работа агента</span><p>Песочница, инструменты, границы задачи.</p></div>
+   <div class="card stack"><b>3. Петля обратной связи</b><span class="muted">Проверки</span><p>Упал тест — обвязка возвращает агенту текст ошибки, он исправляет.</p></div>
+   <div class="card stack"><b>4. Наблюдаем</b><span class="muted">Ревью, выпуск, эксплуатация</span><p>Хуки блокируют опасное, наблюдаемость показывает стоимость, задержки и дрейф агента.</p></div>
+  </div>
+  <div class="gq" style="margin-top:10px"><i>«…this harness must be present in every phase where an AI agent operates.»</i><span>The New SDLC With Vibe Coding, с. 29–30</span></div>
+  <div class="links" style="margin-top:8px">${L('harness','Обвязка')}${L('pr:p5','Принцип 5')}</div>
+ </section>
+
+ <section class="blk" id="lc-axes">
+  <div class="row"><h3>Две оси строгости</h3>${ev('our')}</div>
+  <p class="muted">Первая ось — тип работы: какие стадии нужны. Её мы взяли из профилей AI-DLC (от prototype до enterprise). Вторая ось — класс риска: насколько строгие ворота. Стадии и ворота не меняются, меняется глубина.</p>
+  <h4 style="margin:6px 0">Ось 1. Тип работы</h4>
+  ${tbl(['Тип работы','Замысел','Проработка','Сборка','Эксплуатация'],LCTYPE)}
+  <h4 style="margin:16px 0 6px">Ось 2. Класс риска</h4>
+  ${tbl(['Ворота',RC('R0'),RC('R1'),RC('R2')],LCRISK)}
+  <div class="note">Для R0 здесь стоит короткое ревью одним человеком, а не выборочный аудит, как на старой вкладке «Модель». Так требует главное правило: всё, что уходит в прод, проверяет человек.</div>
+  <div class="links">${L('model:risk','Классы риска')}${L('pr:p6','Принцип 6')}</div>
+ </section>
+
+ <section class="blk" id="lc-std">
+  <div class="row"><h3>Сверка со стандартами</h3>${ev('src')}</div>
+  <p class="muted">Стадии не придуманы заново. Это известные процессы, разложенные под работу с агентами.</p>
+  ${tbl(['Наша стадия','ISO/IEC/IEEE 12207','DevOps','AWS AI-DLC','Scrum-практики'],LCSTD)}
+  <p class="src" style="margin-top:10px">PMBOK называет такой цикл адаптивным или гибридным: стадии повторяются для каждой capability, а не идут один раз на весь проект.</p>
+ </section>
+
+ <section class="blk" id="lc-aidlc">
+  <div class="row"><h3>Что взяли из AWS AI-DLC и что нет</h3>${ev('src')}</div>
+  <div class="canlist">
+   <div class="card yes"><b>Берём механику</b><ul>
+    <li><i>✓</i><span>Проверку трассируемости на границе фаз</span></li>
+    <li><i>✓</i><span>Сквозной каркас первой capability</span></li>
+    <li><i>✓</i><span>Эксплуатацию как полную фазу с петлёй обратно на приём</span></li>
+    <li><i>✓</i><span>Профили по типу работы</span></li>
+    <li><i>✓</i><span>Условие остановки агента и передачу человеку</span></li>
+    <li><i>✓</i><span>Петлю обучения с одобрением человека</span></li></ul></div>
+   <div class="card no"><b>Не берём философию автономии</b><ul>
+    <li><i>✕</i><span>Курс на автономную поставку с уменьшением участия человека</span></li>
+    <li><i>✕</i><span>Ответственность оркестратора за результат («Goal Ownership»)</span></li>
+    <li><i>✕</i><span>Агентов с названиями ролей: у нас роли — люди</span></li>
+    <li><i>✕</i><span>«Принять как есть» после трёх правок: у нас застрявшую задачу режут мельче или доделывает человек</span></li></ul></div>
+  </div>
+  <p class="src" style="margin-top:10px">Читали репозиторий awslabs/aidlc-workflows и спецификацию «AI-DLC Workflows 2.0» (Raja SP, AWS, июль 2026). Конспект — в папке research/ репозитория.</p>
+ </section>
+
+ <section class="blk">
+  <h3>Источники</h3>
+  ${ul([
+   X(GDOC,'Google, «The New SDLC With Vibe Coding», май 2026: с. 19, 21–24, 29–30'),
+   X(AIDLC,'AWS, AI-DLC: репозиторий awslabs/aidlc-workflows и спецификация v2'),
+   X('https://aws.amazon.com/blogs/devops/ai-driven-development-life-cycle','AWS DevOps Blog: AI-Driven Development Life Cycle'),
+   X('https://www.iso.org/standard/63712.html','ISO/IEC/IEEE 12207:2017, процессы жизненного цикла ПО'),
+   X('https://sre.google/workbook/canarying-releases/','Google SRE Workbook: канареечные релизы')])}
+ </section>`;
+}
+
 /* ================= РОУТИНГ ================= */
-const VIEWS=['base','pr','roles','model','conveyor','spec','harness','andon','control','metrics','rhythm','adoption','platform','startup','evidence'];
+const VIEWS=['base','pr','roles','lc','model','conveyor','spec','harness','andon','control','metrics','rhythm','adoption','platform','startup','evidence'];
 const ALIAS={slicing:'spec',basis:'harness',scale:'adoption',transition:'adoption'};
 const curView=()=>{let v=location.hash.slice(1); v=ALIAS[v]||v; return VIEWS.includes(v)?v:'model'};
 let pending;
@@ -1680,7 +1941,7 @@ document.addEventListener('click',e=>{
  if(curView()===v) route(); else location.hash=v;
 });
 window.addEventListener('hashchange',route);
-renderBase();renderPr();renderRoles();renderModel();renderConveyor();renderSpec();renderHarness();renderAndon();renderControl();renderMetrics();renderRhythm();renderAdoption();renderPlatform();renderStartup();renderEvidence();
+renderBase();renderPr();renderRoles();renderLc();renderModel();renderConveyor();renderSpec();renderHarness();renderAndon();renderControl();renderMetrics();renderRhythm();renderAdoption();renderPlatform();renderStartup();renderEvidence();
 route();
 </script>
 
