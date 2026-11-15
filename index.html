@@ -372,6 +372,14 @@ nav a.newtab[aria-current="page"]{color:var(--our);border-bottom-color:var(--our
 .mfb.bad b{color:var(--crit)}
 @media (max-width:980px){.mstiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:640px){.mstiles,.msfeel{grid-template-columns:minmax(0,1fr)}.mslvh{grid-template-columns:auto minmax(0,1fr)}.mslvh em{grid-column:1/-1;text-align:left}}
+.cadlv{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr) minmax(0,1fr);gap:10px;align-items:stretch}
+.cad{border:1.5px solid var(--line);border-radius:6px;padding:14px;background:var(--surface);display:flex;flex-direction:column;gap:6px;min-width:0}
+.cad.main{border:2px solid var(--our);background:var(--our-soft)}
+.cad .t{font:600 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.cad b{font:600 16px/1.2 var(--display)}
+.cad p{font-size:14px;margin:0}
+.cad i{font-style:normal;font-weight:600}
+@media (max-width:760px){.cadlv{grid-template-columns:minmax(0,1fr)}}
 .evgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .evc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
 .evc .big{font:600 24px/1.1 var(--display);font-variant-numeric:tabular-nums}
@@ -1367,7 +1375,7 @@ function renderBase(){
   ['2','Принципы','PMI, Lean, Agile, DevOps и что в них меняют агенты','ready','pr'],
   ['3','Роли и права решений','Кто решает, кто отвечает, что делает агент','ready','roles'],
   ['4','Жизненный цикл','Стадии, ворота, петли возврата, строгость по типу работы и риску','ready','lc'],
-  ['5','Поток','Узкое место, лимиты, порядок, остановка агента, откуда числа','ready','fl'],
+  ['5','Поток','Узкое место, лимиты, порядок, остановка агента, откуда числа, ритм без спринтов','ready','fl'],
   ['6','Качество и контроль','Проверки, классы риска, безопасность, аудит',''],
   ['7','Измерение и ритм','Метрики и кто, когда, что смотрит. Готов раздел «Ускоряет ли ИИ»','part','ms'],
   ['8','Адаптация и внедрение','Как подогнать под команду и по каким фазам переходить','']];
@@ -2113,9 +2121,22 @@ function renderFl(){
  </section>
 
  <section class="blk" id="fl-cadence">
-  <div class="row"><h3>Спринт необязателен, ритм встреч обязателен</h3>${ev('src')}</div>
-  <div class="ba"><div class="was"><b>Было</b>Работа упакована в спринт: что взяли на две недели, то и делаем.</div><div class="ar">→</div><div class="now"><b>Стало</b>Задача идёт, как только у следующего участка есть место. Планирование, ретро и обзор остаются, но как ритм команды, а не как коробка для задач.</div></div>
-  <p class="src" style="margin-top:10px">Scrum.org: не выставлять агентам story points и не сокращать спринт из-за того, что агенты быстрые. Темп задаёт ёмкость человеческого ревью. В Kanban Method ритм встреч — отдельная практика, «петли обратной связи». ${L('rhythm:ceremonies','Что происходит с церемониями')}</p>
+  <div class="row"><h3>Без спринтов: цель задаёт начало и конец, неделя — ритм</h3>${ev('our')}</div>
+  <p class="muted">Работа идёт непрерывным потоком, но человеку важно видеть, где начало и где конец. Поэтому границы есть на трёх уровнях.</p>
+  <div class="cadlv">
+   <div class="cad"><span class="t">Задача · часы–дни</span><b>Capability</b><p><i>Начало:</i> ворота 1 «Принято в работу».<br><i>Конец:</i> ворота 7 «Verified».</p></div>
+   <div class="cad main"><span class="t">Инициатива · недели</span><b>Цель и бюджет времени</b><p><i>Начало:</i> продакт-менеджер утверждает цель, критерий «что должно измениться» и сколько времени готовы на это потратить.<br><i>Конец:</i> цель достигнута или время вышло. Тогда явное решение: закрыть, срезать объём или продлить. Молча работа не продлевается.</p></div>
+   <div class="cad"><span class="t">Ритм · каждую неделю</span><b>Обзор с командой</b><p>Что стало Verified, как идёт поток, что поправили в требованиях. Здесь видно, где мы относительно цели.</p></div>
+  </div>
+  <h4 style="margin:16px 0 6px">Встречи</h4>
+  ${tbl(['Встреча','Когда','Кто','Что решают'],[
+   ['<b>Старт инициативы</b>','Один раз в начале','Продакт-менеджер, автор спеки, архитектор, команда','Цель, критерий изменения, бюджет времени, первая сквозная capability'],
+   ['<b>Обзор с командой</b>','Раз в неделю','Продакт-менеджер и команда','Что готово и как получается. Продакт корректирует требования и отсекает лишнее'],
+   ['<b>Пополнение очереди</b>','Раз в неделю, после обзора','Продакт-менеджер, автор спеки, диспетчер потока','Что берём дальше из приёма, хватает ли запаса спек'],
+   ['<b>Обход потока</b>','Каждый день','Диспетчер потока и команда','Очередь ревью, остановки Andon, застрявшие задачи'],
+   ['<b>Финиш инициативы</b>','Цель достигнута или время вышло','Продакт-менеджер и команда','Закрыть, срезать объём или продлить. Что забрать в правила на trace retro']])}
+  <p class="src" style="margin-top:10px">Продакт-менеджер корректирует требования и между обзорами, по мере того как видит Verified-результаты. Недельный обзор — точка, где это делается вместе с командой.</p>
+  <p class="src">Основания: бюджет времени вместо оценки — «appetite» из Shape Up (Basecamp). Ритм встреч вместо спринта — Kanban Method: пополнение и обзор поставки. Scrum.org советует не выставлять агентам story points и не сокращать спринт из-за того, что агенты быстрые. Связка «цель + недельный ритм» — наше решение. ${L('rhythm:daily','Обход потока')} ${L('rhythm:ceremonies','Что происходит с церемониями')}</p>
  </section>
 
  <section class="blk" id="fl-std">
