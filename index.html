@@ -350,6 +350,28 @@ nav a.newtab[aria-current="page"]{color:var(--our);border-bottom-color:var(--our
 .flnums .pnum{font-size:22px;white-space:nowrap}
 .flnums .scroll td,.flnums .scroll th{font-size:13px}
 @media (max-width:640px){.flnums .pcard dl{grid-template-columns:minmax(0,1fr);gap:2px}.flpipe{grid-template-columns:minmax(0,1fr)}.flpipe .fa{transform:rotate(90deg);height:18px}}
+.mstiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.mst{border:1px solid var(--line);border-radius:6px;padding:14px;background:var(--surface);display:flex;flex-direction:column;gap:6px;min-width:0}
+.mst b{font:700 28px/1 var(--display);color:var(--our)}
+.mst span{font-size:14px}
+.mst small{font-size:12px;color:var(--muted)}
+.mslv{display:flex;flex-direction:column;gap:8px}
+.mslvh{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 12px;border-radius:6px;border-left:5px solid var(--line);background:var(--sunk);margin-top:10px}
+.mslvh .n{font:700 22px/1 var(--display);color:var(--muted)}
+.mslvh b{display:block;font:600 16px/1.2 var(--display)}
+.mslvh span{font-size:13px;color:var(--muted)}
+.mslvh em{font-style:normal;font-weight:700;font-size:14px;text-align:right}
+.mslvh.ok{border-left-color:var(--ok)} .mslvh.ok em{color:var(--ok)}
+.mslvh.warn{border-left-color:var(--warn)} .mslvh.warn em{color:var(--warn)}
+.mslvh.crit{border-left-color:var(--crit)} .mslvh.crit em{color:var(--crit)}
+.msfeel{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.mfb{border:1.5px solid var(--line);border-radius:6px;padding:14px;background:var(--surface);display:flex;flex-direction:column;gap:6px}
+.mfb span{font-size:13px;color:var(--muted)}
+.mfb b{font:700 22px/1.1 var(--display);color:var(--ok)}
+.mfb.bad{border-color:var(--crit);background:var(--crit-soft)}
+.mfb.bad b{color:var(--crit)}
+@media (max-width:980px){.mstiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.mstiles,.msfeel{grid-template-columns:minmax(0,1fr)}.mslvh{grid-template-columns:auto minmax(0,1fr)}.mslvh em{grid-column:1/-1;text-align:left}}
 .evgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .evc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
 .evc .big{font:600 24px/1.1 var(--display);font-variant-numeric:tabular-nums}
@@ -377,7 +399,7 @@ pre.code{margin:0;font:400 13px/1.55 var(--mono);background:var(--sunk);border:1
 <header class="top"><div class="top-in">
   <div class="brand">Agentic Delivery<small>Framework</small></div>
   <nav id="nav" aria-label="Разделы">
-    <a href="#base" class="newtab">1 · Основа</a><a href="#pr" class="newtab">2 · Принципы</a><a href="#roles" class="newtab">3 · Роли</a><a href="#lc" class="newtab">4 · Цикл</a><a href="#fl" class="newtab">5 · Поток</a><span class="navsep" aria-hidden="true"></span><a href="#model">Модель</a><a href="#conveyor">Конвейер</a><a href="#spec">Спека</a><a href="#harness">Обвязка</a><a href="#andon">Andon</a><a href="#control">Контроль</a><a href="#metrics">Метрики</a><a href="#rhythm">Ритм</a><a href="#adoption">Внедрение</a><a href="#platform">Платформа</a><a href="#startup">Стартап-кит</a><a href="#evidence">Основания</a>
+    <a href="#base" class="newtab">1 · Основа</a><a href="#pr" class="newtab">2 · Принципы</a><a href="#roles" class="newtab">3 · Роли</a><a href="#lc" class="newtab">4 · Цикл</a><a href="#fl" class="newtab">5 · Поток</a><a href="#ms" class="newtab">7 · Измерение</a><span class="navsep" aria-hidden="true"></span><a href="#model">Модель</a><a href="#conveyor">Конвейер</a><a href="#spec">Спека</a><a href="#harness">Обвязка</a><a href="#andon">Andon</a><a href="#control">Контроль</a><a href="#metrics">Метрики</a><a href="#rhythm">Ритм</a><a href="#adoption">Внедрение</a><a href="#platform">Платформа</a><a href="#startup">Стартап-кит</a><a href="#evidence">Основания</a>
   </nav>
 </div></header>
 
@@ -387,6 +409,7 @@ pre.code{margin:0;font:400 13px/1.55 var(--mono);background:var(--sunk);border:1
 <div class="view" id="v-roles" hidden></div>
 <div class="view" id="v-lc" hidden></div>
 <div class="view" id="v-fl" hidden></div>
+<div class="view" id="v-ms" hidden></div>
 <div class="view" id="v-model"></div>
 <div class="view" id="v-conveyor" hidden></div>
 <div class="view" id="v-spec" hidden></div>
@@ -1346,7 +1369,7 @@ function renderBase(){
   ['4','Жизненный цикл','Стадии, ворота, петли возврата, строгость по типу работы и риску','ready','lc'],
   ['5','Поток','Узкое место, лимиты, порядок, остановка агента, откуда числа','ready','fl'],
   ['6','Качество и контроль','Проверки, классы риска, безопасность, аудит',''],
-  ['7','Измерение и ритм','Метрики и кто, когда, что смотрит',''],
+  ['7','Измерение и ритм','Метрики и кто, когда, что смотрит. Готов раздел «Ускоряет ли ИИ»','part','ms'],
   ['8','Адаптация и внедрение','Как подогнать под команду и по каким фазам переходить','']];
  $('#v-base').innerHTML=`
  <section class="blk bhero">
@@ -1435,7 +1458,7 @@ function renderBase(){
  <section class="blk" id="map">
   <h3>Карта фреймворка</h3>
   <p class="muted">Восемь блоков, каждый опирается на предыдущие. Шаблоны, примеры и основания вынесены в приложения.</p>
-  <div class="bmap">${blocks.map(b=>`<div class="bt ${b[3]}"><span class="n">${b[0]}</span><b>${b[1]}</b><span>${b[2]}</span>${b[3]==='on'?pill('our','ВЫ ЗДЕСЬ'):b[3]==='ready'?L(b[4],'Открыть блок'):pill('info','ДАЛЬШЕ')}</div>`).join('')}</div>
+  <div class="bmap">${blocks.map(b=>`<div class="bt ${b[3]}"><span class="n">${b[0]}</span><b>${b[1]}</b><span>${b[2]}</span>${b[3]==='on'?pill('our','ВЫ ЗДЕСЬ'):b[3]==='ready'?L(b[4],'Открыть блок'):b[3]==='part'?L(b[4],'Открыть готовый раздел'):pill('info','ДАЛЬШЕ')}</div>`).join('')}</div>
  </section>`;
 }
 
@@ -2117,8 +2140,119 @@ function renderFl(){
  </section>`;
 }
 
+/* ================= БЛОК 7: ИЗМЕРЕНИЕ (раздел «Ускоряет ли ИИ») ================= */
+const MSREP='https://github.com/stasHrytsko/agentic-delivery-framework/blob/main/research/ai_speedup_evidence.md';
+const MSTIME=[
+ ['~11%','недели разработчика — написание кода','Microsoft, опрос 484 человек, 2025','https://arxiv.org/abs/2502.15287'],
+ ['16%','времени — разработка приложений','IDC, опрос, 2024',''],
+ ['52 мин','в день — медиана активного кода в редакторе','Software.com, 250 тыс.+ разработчиков, вендор','https://www.software.com/reports'],
+ ['25–35%','пути от идеи до запуска — код вместе с тестами','Bain Technology Report, 2025','https://www.bain.com/insights/from-pilots-to-payoff-generative-ai-in-software-development-technology-report-2025']
+];
+const MSLVL=[
+ {n:'Отдельная задача',sub:'контролируемые эксперименты',c:'ok',r:'от −56% до +19% времени',rows:[
+  ['GitHub (Peng и др.)','−56% времени на синтетической задаче','RCT, 95 человек, 2023','https://arxiv.org/abs/2302.06590',''],
+  ['Google (Paradis и др.)','−21% времени на корпоративной задаче','RCT, 96 инженеров, 2024','https://arxiv.org/abs/2410.12944',''],
+  ['METR','+19% времени, то есть медленнее. Опытные разработчики, свои реальные репозитории','RCT, 16 человек, 246 задач, 2025','https://arxiv.org/abs/2507.09089','']]},
+ {n:'Команда',sub:'полевые исследования',c:'warn',r:'+20…+100% задач и PR, но больше дефектов',rows:[
+  ['Microsoft, Accenture и др. (Cui и др.)','+26% завершённых задач','3 полевых RCT, ~4 900 человек','https://papers.ssrn.com/abstract=4945566',''],
+  ['Cursor и U. Chicago','+39% смёрженных PR','24 организации против 8','https://cursor.com/blog/productivity','вендор'],
+  ['Faros','PR +98%, время ревью +91%, размер PR +154%','телеметрия, 10 тыс.+ разработчиков','https://www.faros.ai/blog/ai-productivity-paradox-report-2025','вендор'],
+  ['Uplevel','цикл PR без изменений, баги +41%','~800 человек, с контрольной группой','','вендор']]},
+ {n:'Организация',sub:'поставка целиком',c:'crit',r:'0…+15%, у части компаний хуже',rows:[
+  ['Bain','+10–15% от ассистентов; +25–30%, если перестроить весь процесс','опросы, 2025','https://www.bain.com/insights/from-pilots-to-payoff-generative-ai-in-software-development-technology-report-2025',''],
+  ['Google','~10% «скорости инженерии»','внутренняя оценка, 2025','',''],
+  ['Gartner','0–20% в 2025 году','опрос 1 653 инженеров','',''],
+  ['DORA 2024','на каждые +25% внедрения ИИ: пропускная способность −1,5%, стабильность −7,2%','опрос и модель','https://services.google.com/fh/files/misc/2024_final_dora_report.pdf',''],
+  ['DORA 2025','связь с пропускной способностью стала положительной, нестабильность растёт','опрос ~5 000','https://services.google.com/fh/files/misc/2025_state_of_ai_assisted_software_development.pdf',''],
+  ['McKinsey 2026','у ~30% компаний продуктивность упала, заметно ускорились ~25%','опрос','https://www.mckinsey.com/capabilities/tech-and-ai/our-insights/the-top-trends-in-tech','']]}
+];
+const MSPRE=[
+ ['Ассистент','Google RCT: код на 21% быстрее',30,21,0,0],
+ ['Агент без перестройки потока','код вдвое быстрее, ожидание ревью +91% (Faros)',25,50,15,91],
+ ['Мгновенный код','потолок: код занимает ноль времени',35,100,0,0]
+];
+function renderMs(){
+ const lnk=(u,t)=>u?X(u,t):t;
+ $('#v-ms').innerHTML=`
+ <section class="blk bhero">
+  <div class="eyebrow">Блок 7 из 8 · Измерение и ритм</div>
+  <h2>Ускоряет ли ИИ на самом деле</h2>
+  <p class="lead" style="margin-top:0">Первый раздел блока 7. Перед тем как мерить свою команду, полезно знать, что уже намерили другие. Короткий ответ: отдельные задачи ИИ ускоряет заметно, процесс целиком — мало, а иногда замедляет. Остальные разделы блока появятся после согласования плана.</p>
+  <div class="links">${L('fl','Поток: узкое место')}${L('metrics','Метрики (старая вкладка)')}${X(MSREP,'Полный отчёт с источниками')}</div>
+ </section>
+
+ <section class="blk" id="ms-time">
+  <div class="row"><h3>Сколько времени уходит на сам код</h3>${ev('src')}</div>
+  <div class="mstiles">${MSTIME.map(t=>`<div class="mst"><b>${t[0]}</b><span>${t[1]}</span><small>${lnk(t[3],t[2])}</small></div>`).join('')}</div>
+  <p class="muted" style="margin-top:10px">Остальное время — встречи, отладка, ревью, поиск информации, техдолг и ожидание. Значит, даже если код станет мгновенным, большая часть пути останется прежней.</p>
+ </section>
+
+ <section class="blk" id="ms-levels">
+  <div class="row"><h3>Что показывают замеры на трёх уровнях</h3>${ev('src')}</div>
+  <p class="muted">Чем выше уровень, тем меньше выигрыш. Цифры одной строкой: где мерили, что получили, какой выборкой.</p>
+  <div class="mslv">${MSLVL.map((l,i)=>`<div class="mslvh ${l.c}"><span class="n">${i+1}</span><div><b>${l.n}</b><span>${l.sub}</span></div><em>${l.r}</em></div>
+   <div class="scroll"><table><thead><tr><th>Кто</th><th>Результат</th><th>Как мерили</th></tr></thead><tbody>${l.rows.map(r=>`<tr><td><b>${lnk(r[3],r[0])}</b>${r[4]?' '+pill('warn','ВЕНДОР'):''}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('')}</tbody></table></div>`).join('')}</div>
+ </section>
+
+ <section class="blk" id="ms-feel">
+  <div class="row"><h3>Ощущение и замер расходятся</h3>${ev('src')}</div>
+  <div class="msfeel">
+   <div class="mfb"><span>До работы ожидали</span><b>на 24% быстрее</b></div>
+   <div class="mfb"><span>После работы были уверены</span><b>на 20% быстрее</b></div>
+   <div class="mfb bad"><span>Замер показал</span><b>на 19% медленнее</b></div>
+  </div>
+  <p class="src" style="margin-top:8px">METR, 2025: 16 опытных разработчиков, 246 задач в своих open source репозиториях. Повтор в 2026 году дал результат около нуля, сами авторы считают его ненадёжным. Вывод: самоотчёты «ИИ экономит мне 10 часов в неделю» нельзя использовать как доказательство. Мерить надо срок и качество, а не ощущения.</p>
+ </section>
+
+ <section class="blk" id="ms-amdahl">
+  <div class="row"><h3>Почему так: закон Амдала</h3>${ev('src')}</div>
+  <div class="formula">Изменение срока = − p × r + q × g
+p — доля кода в пути от идеи до прода
+r — насколько ускорился код
+q — доля ожидания ревью в пути
+g — насколько выросло ожидание ревью</div>
+  <div class="card stack" style="margin-top:12px">
+   <div class="seg" id="ms-seg">${MSPRE.map((p,i)=>`<button data-i="${i}">${p[0]}</button>`).join('')}</div>
+   <div class="fields">
+    <label for="ms-p">Доля кода, %<input type="number" id="ms-p" min="0" max="100" value="25"></label>
+    <label for="ms-r">Код быстрее на, %<input type="number" id="ms-r" min="0" max="100" value="50"></label>
+    <label for="ms-q">Доля ожидания ревью, %<input type="number" id="ms-q" min="0" max="100" value="15"></label>
+    <label for="ms-g">Ожидание ревью выросло на, %<input type="number" id="ms-g" min="0" value="91"></label>
+   </div>
+   <div id="ms-out"></div>
+  </div>
+  <p class="src" style="margin-top:8px">Первое слагаемое — закон Амдала: ускорение части даёт выигрыш только на её долю. Второе слагаемое — наше: оно учитывает, что агенты удлиняют очередь на ревью. Цифры по организациям (Bain 10–15%, Google ~10%, Gartner 0–20%, DORA 2024 — небольшой минус) совпадают с тем, что даёт формула.</p>
+ </section>
+
+ <section class="blk" id="ms-so">
+  <div class="row"><h3>Что из этого следует</h3>${ev('our')}</div>
+  <div class="cols">
+   <div class="card stack"><b>Выигрыш даёт перестройка потока, а не инструмент</b><p>По Bain, +10–15% дают сами ассистенты и +25–30% — перестройка всего процесса. Поэтому фреймворк про поток, ворота и узкое место, а не про выбор агента.</p><div class="links">${L('fl','Поток')}${L('lc','Жизненный цикл')}</div></div>
+   <div class="card stack"><b>Меряйте путь целиком</b><p>Число PR и строк растёт всегда. Смотрите срок от идеи до прода, долю откатов и инцидентов, время в очереди ревью.</p><div class="links">${L('metrics','Метрики')}${L('pr:p1','Принцип 1')}</div></div>
+   <div class="card stack"><b>Сначала базовая линия</b><p>Без замера «до» ускорение не доказать ни себе, ни руководству. Снимите срок и стабильность до внедрения агентов.</p><div class="links">${L('adoption','Внедрение')}</div></div>
+   <div class="card stack"><b>ИИ — усилитель</b><p>DORA 2025: ИИ усиливает и сильные, и слабые стороны команды. Слабые тесты и ревью с агентами становятся хуже, а не лучше.</p><div class="links">${L('pr:p4','Принцип 4')}${L('pr:p5','Принцип 5')}</div></div>
+  </div>
+ </section>
+
+ <section class="blk">
+  <h3>Насколько можно верить этим цифрам</h3>
+  ${ul(['Часть первоисточников мы читали по выдержкам, а не целиком. Полный разбор с пометками — в отчёте.','Исследования продавцов инструментов помечены «вендор».','Цифры компаний о себе — их собственные заявления без независимого аудита.','Все цифры здесь — чужие замеры. Для своей команды нужна своя базовая линия.'])}
+  <div class="links">${X(MSREP,'Отчёт: research/ai_speedup_evidence.md')}</div>
+ </section>`;
+ const run=()=>{const p=num('ms-p'),r=num('ms-r'),q=num('ms-q'),g=num('ms-g');
+  const saved=p*r/100, added=q*g/100, d=added-saved, sp=100/(100+d), f=v=>v.toFixed(1).replace('.',',');
+  const s=d<=-10?'ok':d<0?'warn':'crit';
+  const h=d<0?`Срок короче на ${f(-d)}%`:d===0?'Срок не изменился':`Срок длиннее на ${f(d)}%`;
+  $('#ms-out').innerHTML=`<div class="verdict ${s}"><b>${h}</b> Код экономит ${f(saved)}% пути, очередь ревью добавляет ${f(added)}%. Ускорение ×${sp.toFixed(2).replace('.',',')}.</div>`};
+ ['ms-p','ms-r','ms-q','ms-g'].forEach(i=>$('#'+i).oninput=run);
+ $('#ms-seg').onclick=e=>{const b=e.target.closest('button'); if(!b) return; const x=MSPRE[+b.dataset.i];
+  [['ms-p',2],['ms-r',3],['ms-q',4],['ms-g',5]].forEach(([id,j])=>$('#'+id).value=x[j]);
+  $$('#ms-seg button').forEach(z=>z.setAttribute('aria-pressed',z===b)); run()};
+ run();
+}
+
 /* ================= РОУТИНГ ================= */
-const VIEWS=['base','pr','roles','lc','fl','model','conveyor','spec','harness','andon','control','metrics','rhythm','adoption','platform','startup','evidence'];
+const VIEWS=['base','pr','roles','lc','fl','ms','model','conveyor','spec','harness','andon','control','metrics','rhythm','adoption','platform','startup','evidence'];
 const ALIAS={slicing:'spec',basis:'harness',scale:'adoption',transition:'adoption'};
 const curView=()=>{let v=location.hash.slice(1); v=ALIAS[v]||v; return VIEWS.includes(v)?v:'model'};
 let pending;
@@ -2143,7 +2277,7 @@ document.addEventListener('click',e=>{
  if(curView()===v) route(); else location.hash=v;
 });
 window.addEventListener('hashchange',route);
-renderBase();renderPr();renderRoles();renderLc();renderFl();renderModel();renderConveyor();renderSpec();renderHarness();renderAndon();renderControl();renderMetrics();renderRhythm();renderAdoption();renderPlatform();renderStartup();renderEvidence();
+renderBase();renderPr();renderRoles();renderLc();renderFl();renderMs();renderModel();renderConveyor();renderSpec();renderHarness();renderAndon();renderControl();renderMetrics();renderRhythm();renderAdoption();renderPlatform();renderStartup();renderEvidence();
 route();
 </script>
 
